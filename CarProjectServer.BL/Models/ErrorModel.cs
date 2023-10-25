@@ -3,7 +3,7 @@ namespace CarProjectServer.API.Models
     /// <summary>
     /// Ошибка.
     /// </summary>
-    public class ErrorViewModel
+    public class ErrorModel
     {
         /// <summary>
         /// Идентификатор запроса.

@@ -3,7 +3,7 @@
     /// <summary>
     /// JWT токен для аутентификации.
     /// </summary>
-    public class JwtToken
+    public class JwtTokenViewModel
     {
         /// <summary>
         /// Токен для доступа.

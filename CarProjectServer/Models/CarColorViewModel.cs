@@ -3,7 +3,7 @@
     /// <summary>
     /// Цвет автомобиля.
     /// </summary>
-    public class CarColor
+    public class CarColorViewModel
     {
         /// <summary>
         /// Идентификатор цвета.
@@ -18,6 +18,6 @@
         /// <summary>
         /// Список моделей данного цвета.
         /// </summary>
-        public ICollection<CarModel> Models { get; set; }
+        public ICollection<CarModelViewModel> Models { get; set; }
     }
 }

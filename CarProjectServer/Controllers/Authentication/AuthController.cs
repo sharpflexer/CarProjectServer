@@ -1,7 +1,5 @@
 ﻿using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.BL.Services.Exceptions;
-using CarProjectServer.DAL.Areas.Identity;
-using CarProjectServer.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -51,16 +49,14 @@ namespace CarProjectServer.API.Controllers.Authentication
         [HttpPost]
         public async Task<IActionResult> Token(string username, string password)
         {
-            User user = await _authenticateService.AuthenticateUser(username, password);
-            string accessToken = _tokenService.CreateToken(user);
-            string refreshToken = _tokenService.CreateRefreshToken();
 
-            user.RefreshToken = refreshToken;
+            string accessToken = _tokenService.GetAccessToken(username, password);
+            string refreshToken = _tokenService.GetRefreshToken(username, password);
+
             HttpContext.Response.Cookies.Append("Refresh", refreshToken, new CookieOptions()
             {
                 HttpOnly = true
             });
-            _requestService.AddRefreshToken(user);
 
             return Ok(accessToken);
         }

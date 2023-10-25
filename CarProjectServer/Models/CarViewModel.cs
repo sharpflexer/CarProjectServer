@@ -3,7 +3,7 @@
     /// <summary>
     /// Автомобиль.
     /// </summary>
-    public class Car
+    public class CarViewModel
     {
         /// <summary>
         /// Идентификатор автомобиля.
@@ -13,16 +13,16 @@
         /// <summary>
         /// Марка автомобиля.
         /// </summary>
-        public Brand Brand { get; set; }
+        public BrandViewModel Brand { get; set; }
 
         /// <summary>
         /// Модель автомобиля.
         /// </summary>
-        public CarModel Model { get; set; }
+        public CarModelViewModel Model { get; set; }
 
         /// <summary>
         /// Цвет автомобиля.
         /// </summary>
-        public CarColor Color { get; set; }
+        public CarColorViewModel Color { get; set; }
     }
 }

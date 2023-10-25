@@ -1,23 +1,23 @@
 ﻿namespace CarProjectServer.API.Models
 {
     /// <summary>
-    /// Цвет автомобиля.
+    /// Марка автомобиля.
     /// </summary>
-    public class CarColor
+    public class BrandViewModel
     {
         /// <summary>
-        /// Идентификатор цвета.
+        /// Идентификатор марки.
         /// </summary>
         public int Id { get; set; }
 
         /// <summary>
-        /// Наименование цвета.
+        /// Наименование марки авто.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Список моделей данного цвета.
+        /// Модели данной марки.
         /// </summary>
-        public ICollection<CarModel> Models { get; set; }
+        public ICollection<CarModelViewModel> Models { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using CarProjectServer.BL.Services.Interfaces;
-using CarProjectServer.DAL.Areas.Identity;
-using CarProjectServer.DAL.Models;
+using CarProjectServer.API.Areas.Identity;
+using CarProjectServer.API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 

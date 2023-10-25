@@ -1,5 +1,5 @@
 ﻿using CarProjectServer.BL.Services.Interfaces;
-using CarProjectServer.DAL.Areas.Identity;
+using CarProjectServer.API.Areas.Identity;
 
 namespace CarProjectServer.BL.Services.Implementations
 {

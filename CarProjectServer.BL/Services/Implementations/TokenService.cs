@@ -1,7 +1,7 @@
 ﻿using CarProjectServer.BL.Services.Extensions;
 using CarProjectServer.BL.Services.Interfaces;
-using CarProjectServer.DAL.Areas.Identity;
-using CarProjectServer.DAL.Models;
+using CarProjectServer.API.Areas.Identity;
+using CarProjectServer.API.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 

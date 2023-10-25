@@ -1,5 +1,5 @@
-﻿using CarProjectServer.DAL.Areas.Identity;
-using CarProjectServer.DAL.Models;
+﻿using CarProjectServer.API.Areas.Identity;
+using CarProjectServer.API.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace CarProjectServer.BL.Services.Interfaces

@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace CarProjectServer.API.Areas.Identity
+namespace CarProjectServer.API.Models
 {
     /// <summary>
     /// Пользователь.
     /// </summary>
-    public class User : IdentityUser<int>
+    public class UserViewModel : IdentityUser<int>
     {
         /// <summary>
         /// Email пользователя, указанный при регистрации.
@@ -25,7 +25,7 @@ namespace CarProjectServer.API.Areas.Identity
         /// <summary>
         /// Роль пользователя, дает права на различные действия с таблицей.
         /// </summary> 
-        public Role Role { get; set; }
+        public RoleViewModel Role { get; set; }
 
         /// <summary>
         /// Токен для обновления Access Token.

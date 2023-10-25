@@ -1,4 +1,6 @@
-﻿namespace CarProjectServer.API.Models
+﻿using CarProjectServer.API.Models;
+
+namespace CarProjectServer.API.Controllers.Models
 {
     /// <summary>
     /// Автомобиль.

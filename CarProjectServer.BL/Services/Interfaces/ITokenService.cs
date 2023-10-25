@@ -1,5 +1,5 @@
-﻿using CarProjectServer.DAL.Areas.Identity;
-using CarProjectServer.DAL.Models;
+﻿using CarProjectServer.API.Areas.Identity;
+using CarProjectServer.API.Models;
 
 namespace CarProjectServer.BL.Services.Interfaces
 {
@@ -27,5 +27,7 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// <param name="oldToken">Устаревший токен.</param>
         /// <returns>Новый токен.</returns>
         JwtToken CreateNewToken(JwtToken oldToken);
+        string GetAccessToken(string username, string password);
+        string GetRefreshToken(string username, string password);
     }
 }

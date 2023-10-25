@@ -1,5 +1,5 @@
 ﻿using CarProjectServer.BL.Services.Options;
-using CarProjectServer.DAL.Areas.Identity;
+using CarProjectServer.API.Areas.Identity;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

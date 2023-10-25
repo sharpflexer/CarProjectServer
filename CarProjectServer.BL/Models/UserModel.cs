@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace CarProjectServer.API.Areas.Identity
+namespace CarProjectServer.API.Controllers.Models
 {
     /// <summary>
     /// Пользователь.
     /// </summary>
-    public class User : IdentityUser<int>
+    public class UserModel : IdentityUser<int>
     {
         /// <summary>
         /// Email пользователя, указанный при регистрации.
