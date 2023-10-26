@@ -1,4 +1,5 @@
-﻿using CarProjectServer.BL.Services.Interfaces;
+﻿using CarProjectServer.API.Models;
+using CarProjectServer.BL.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -8,6 +9,8 @@ namespace CarProjectMVC.Controllers.Authorization
     /// <summary>
     /// Контроллер для аутентификации и авторизации пользователя.
     /// </summary>
+    [Route("api/[controller]")]
+    [ApiController]
     public class LoginController : Controller
     {
         /// <summary>
@@ -81,7 +84,7 @@ namespace CarProjectMVC.Controllers.Authorization
         /// <item><term>Неудачный вход</term><description> BadRequest.</description></item>
         /// </list>
         /// </returns>
-        private async Task<object> SignInIfSucceed(string username, User isSuccess)
+        private async Task<object> SignInIfSucceed(string username, UserViewModel isSuccess)
         {
             if (isSuccess != null)
             {

@@ -1,9 +1,9 @@
-﻿namespace CarProjectServer.API.Controllers.Models
+﻿namespace CarProjectServer.BL.Models
 {
     /// <summary>
     /// Марка автомобиля.
     /// </summary>
-    public class Brand
+    public class BrandModel
     {
         /// <summary>
         /// Идентификатор марки.
@@ -18,6 +18,6 @@
         /// <summary>
         /// Модели данной марки.
         /// </summary>
-        public ICollection<CarModel> Models { get; set; }
+        public ICollection<CarModelModel> Models { get; set; }
     }
 }

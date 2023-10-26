@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace CarProjectServer.API.Controllers.Models
+namespace CarProjectServer.BL.Models
 {
     /// <summary>
     /// Пользователь.
@@ -25,7 +25,7 @@ namespace CarProjectServer.API.Controllers.Models
         /// <summary>
         /// Роль пользователя, дает права на различные действия с таблицей.
         /// </summary> 
-        public Role Role { get; set; }
+        public RoleModel Role { get; set; }
 
         /// <summary>
         /// Токен для обновления Access Token.

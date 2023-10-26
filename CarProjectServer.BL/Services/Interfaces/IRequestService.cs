@@ -1,5 +1,4 @@
-﻿using CarProjectServer.API.Areas.Identity;
-using CarProjectServer.API.Models;
+﻿using CarProjectServer.BL.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace CarProjectServer.BL.Services.Interfaces
@@ -19,7 +18,7 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// Получает список всех автомобилей из БД.
         /// </summary>
         /// <returns>Список автомобилей.</returns>
-        public List<Car> Read();
+        public List<CarModel> Read();
 
         /// <summary>
         /// Обновляет данные автомобиля.
@@ -37,39 +36,39 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// Получает роль пользователя по умолчанию(при регистрации).
         /// </summary>
         /// <returns>Роль по умолчанию</returns>
-        public Role GetDefaultRole();
+        public RoleModel GetDefaultRole();
 
         /// <summary>
         /// Добавляет Refresh Token в таблицу User.
         /// </summary>
         /// <param name="user">Аккаунт пользователя.</param>
         /// <param name="refreshToken">Токен для обновления access token.</param>
-        public void AddRefreshToken(User user);
+        public void AddRefreshToken(UserModel user);
 
         /// <summary>
         /// Добавляет пользователя в БД при регистрации.
         /// </summary>
         /// <param name="user">Аккаунт нового пользователя.</param>
-        Task AddUserAsync(User user);
+        Task AddUserAsync(UserModel user);
 
         /// <summary>
         /// Получает список всех пользователей из БД.
         /// </summary>
         /// <returns>Список пользователей.</returns>
-        Task<IEnumerable<User>> GetUsers();
+        Task<IEnumerable<UserModel>> GetUsers();
 
         /// <summary>
         /// Ищет пользователя по RefreshToken.
         /// </summary>
         /// <param name="refreshToken">Токен обновления.</param>
         /// <returns>Найденный пользователь.</returns>
-        User GetUserByToken(string refreshToken);
+        UserModel GetUserByToken(string refreshToken);
 
         /// <summary>
         /// Обновляет пользователя в таблице.
         /// </summary>
         /// <param name="user">Пользователь для обновления.</param>
-        Task UpdateUser(User user);
+        Task UpdateUser(UserModel user);
 
         /// <summary>
         /// Удаляет пользователя из таблицы.
@@ -87,6 +86,6 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// Получает список всех возможных ролей пользователей.
         /// </summary>
         /// <returns>Список всех ролей.</returns>
-        Task<IEnumerable<Role>> GetRolesAsync();
+        Task<IEnumerable<RoleModel>> GetRolesAsync();
     }
 }

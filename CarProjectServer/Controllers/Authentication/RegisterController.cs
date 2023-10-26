@@ -1,4 +1,7 @@
-﻿using CarProjectServer.BL.Services.Interfaces;
+﻿using AutoMapper;
+using CarProjectServer.API.Models;
+using CarProjectServer.BL.Models;
+using CarProjectServer.BL.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarProjectMVC.Controllers.Authorization
@@ -14,12 +17,18 @@ namespace CarProjectMVC.Controllers.Authorization
         private readonly IRequestService _requestService;
 
         /// <summary>
+        /// Маппер для маппинга моделей между слоями
+        /// </summary>
+        private readonly IMapper _mapper;
+
+        /// <summary>
         /// Инициализирует контроллер сервисом запросов в БД.
         /// </summary>
         /// <param name="requestService">Сервис для отправки запросов в БД.</param>
-        public RegisterController(IRequestService requestService)
+        public RegisterController(IRequestService requestService, IMapper mapper)
         {
             _requestService = requestService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -37,10 +46,12 @@ namespace CarProjectMVC.Controllers.Authorization
         /// <param name="user">Зарегистрированный пользователь.</param>
         /// <returns>Перенаправление на страницу входа.</returns>
         [HttpPost]
-        public async Task<IActionResult> PostAsync(User user)
+        public async Task<IActionResult> PostAsync(UserViewModel user)
         {
-            user.Role = _requestService.GetDefaultRole();
-            _requestService.AddUserAsync(user);
+            var roleModel = _requestService.GetDefaultRole();
+            user.Role = _mapper.Map<RoleViewModel>(roleModel);
+            var userModel = _mapper.Map<UserModel>(user);
+            await _requestService.AddUserAsync(userModel);
             return RedirectToAction("Index", "Login");
         }
     }

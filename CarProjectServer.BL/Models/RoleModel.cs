@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace CarProjectServer.API.Controllers.Models
+namespace CarProjectServer.BL.Models
 {
     /// <summary>
     /// Роль пользователя.
     /// </summary>
-    public class Role : IdentityRole<int>
+    public class RoleModel : IdentityRole<int>
     {
         /// <summary>
         /// Название роли.

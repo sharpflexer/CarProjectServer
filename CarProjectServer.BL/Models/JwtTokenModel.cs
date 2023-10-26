@@ -1,9 +1,9 @@
-﻿namespace CarProjectServer.API.Controllers.Models
+﻿namespace CarProjectServer.BL.Models
 {
     /// <summary>
     /// JWT токен для аутентификации.
     /// </summary>
-    public class JwtToken
+    public class JwtTokenModel
     {
         /// <summary>
         /// Токен для доступа.
