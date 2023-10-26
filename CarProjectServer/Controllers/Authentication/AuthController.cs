@@ -1,10 +1,7 @@
 ﻿using CarProjectServer.BL.Services.Interfaces;
+using CarProjectServer.BL.Services.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using CarProjectServer.BL.Exceptions;
-using CarProjectServer.API.Models;
-using CarProjectServer.BL.Models;
-using AutoMapper;
 
 namespace CarProjectServer.API.Controllers.Authentication
 {
@@ -19,9 +16,14 @@ namespace CarProjectServer.API.Controllers.Authentication
         private readonly ITokenService _tokenService;
 
         /// <summary>
-        /// Маппер для маппинга моделей между слоями
+        /// Сервис для аутентификации пользователей.
         /// </summary>
-        private readonly IMapper _mapper;
+        private readonly IAuthenticateService _authenticateService;
+
+        /// <summary>
+        /// Сервис для отправки запросов в БД.
+        /// </summary>
+        private readonly IRequestService _requestService;
 
         /// <summary>
         /// Инициализирует контроллер сервисами токенов, аутентификации и запросов в БД.
@@ -29,9 +31,11 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// <param name="tokenService">Сервис для работы с JWT токенами.</param>
         /// <param name="authenticateService">Сервис для аутентификации пользователей.</param>
         /// <param name="requestService">Сервис для отправки запросов в БД.</param>
-        public AuthController(ITokenService tokenService)
+        public AuthController(ITokenService tokenService, IAuthenticateService authenticateService, IRequestService requestService)
         {
             _tokenService = tokenService;
+            _authenticateService = authenticateService;
+            _requestService = requestService;
         }
 
         /// <summary>
@@ -45,16 +49,16 @@ namespace CarProjectServer.API.Controllers.Authentication
         [HttpPost]
         public async Task<IActionResult> Token(string username, string password)
         {
-            var jwtTokenModel = await _tokenService.GetJwtTokenAsync(username, password);
 
-            JwtTokenViewModel jwtTokenViewModel = _mapper.Map<JwtTokenViewModel>(jwtTokenModel);
+            string accessToken = _tokenService.GetAccessToken(username, password);
+            string refreshToken = _tokenService.GetRefreshToken(username, password);
 
-            HttpContext.Response.Cookies.Append("Refresh", jwtTokenViewModel.RefreshToken, new CookieOptions()
+            HttpContext.Response.Cookies.Append("Refresh", refreshToken, new CookieOptions()
             {
                 HttpOnly = true
             });
 
-            return Ok(jwtTokenViewModel.AccessToken);
+            return Ok(accessToken);
         }
 
         /// <summary>
@@ -65,7 +69,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         [HttpGet]
         public IActionResult Refresh()
         {
-            JwtTokenViewModel oldToken;
+            JwtToken oldToken;
 
             try
             {
@@ -82,9 +86,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                 return BadRequest("Invalid client request");
             }
 
-            var newTokenModel = _tokenService.CreateNewToken(_mapper.Map<JwtTokenModel>(oldToken));
-            JwtTokenViewModel newToken = _mapper.Map<JwtTokenViewModel>(newTokenModel);
-
+            JwtToken newToken = _tokenService.CreateNewToken(oldToken);
             HttpContext.Response.Cookies.Append("Refresh", newToken.RefreshToken, new CookieOptions()
             {
                 HttpOnly = true
@@ -98,7 +100,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// </summary>
         /// <param name="request">HTTP-запрос.</param>
         /// <returns>Устаревший токен.</returns>
-        private static JwtTokenViewModel TryGetOldJwtToken(HttpRequest request)
+        private static JwtToken TryGetOldJwtToken(HttpRequest request)
         {
             string oldAccessToken = request.Headers["Authorization"].ToString().Split(" ")[0];
 
@@ -110,7 +112,7 @@ namespace CarProjectServer.API.Controllers.Authentication
 
             string oldRefreshToken = oldRefreshCookie.Split(";")[0];
 
-            return new JwtTokenViewModel
+            return new JwtToken
             {
                 AccessToken = oldAccessToken,
                 RefreshToken = oldRefreshToken

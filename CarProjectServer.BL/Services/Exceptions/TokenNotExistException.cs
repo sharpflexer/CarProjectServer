@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace CarProjectServer.BL.Exceptions
+namespace CarProjectServer.BL.Services.Exceptions
 {
     /// <summary>
     /// Исключение, означающее что сервер не смог обнаружить необходимый токен для аутентификации.

@@ -1,10 +1,9 @@
-﻿using CarProjectServer.DAL.Areas.Identity.Models;
-using CarProjectServer.DAL.Models;
+﻿using CarProjectServer.API.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace CarProjectServer.DAL.Context
+namespace CarProjectServer.API.Areas.Identity
 {
     /// <summary>
     /// Контекст для взаимодействия с БД.

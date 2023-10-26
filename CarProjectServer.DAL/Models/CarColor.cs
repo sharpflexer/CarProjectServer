@@ -1,4 +1,4 @@
-﻿namespace CarProjectServer.DAL.Models
+﻿namespace CarProjectServer.API.Models
 {
     /// <summary>
     /// Цвет автомобиля.

@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace CarProjectServer.BL.Options
+namespace CarProjectServer.BL.Services.Options
 {
     /// <summary>
     /// Настройки аутентификации JWT токена.
@@ -11,12 +11,12 @@ namespace CarProjectServer.BL.Options
         /// <summary>
         /// Издатель токена.
         /// </summary>
-        public const string Issuer = "CarProjectServer";
+        public const string Issuer = "http://localhost:5000";
 
         /// <summary>
         /// Потребитель токена.
         /// </summary>
-        public const string Audience = "CarProjectClient";
+        public const string Audience = "http://localhost:5001";
 
         /// <summary>
         /// Ключ для создания токена.

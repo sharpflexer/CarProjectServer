@@ -1,4 +1,4 @@
-namespace CarProjectServer.BL.Models
+namespace CarProjectServer.API.Models
 {
     /// <summary>
     /// Ошибка.

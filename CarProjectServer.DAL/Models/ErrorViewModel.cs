@@ -1,9 +1,9 @@
-namespace CarProjectServer.DAL.Models
+namespace CarProjectServer.API.Models
 {
     /// <summary>
     /// Ошибка.
     /// </summary>
-    public class Error
+    public class ErrorViewModel
     {
         /// <summary>
         /// Идентификатор запроса.

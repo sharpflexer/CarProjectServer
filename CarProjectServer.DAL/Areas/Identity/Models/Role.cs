@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace CarProjectServer.DAL.Areas.Identity.Models
+namespace CarProjectServer.API.Areas.Identity
 {
     /// <summary>
     /// Роль пользователя.
