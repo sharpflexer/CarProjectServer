@@ -1,4 +1,4 @@
-﻿using CarProjectServer.API.Areas.Identity;
+﻿using CarProjectServer.BL.Models;
 
 namespace CarProjectServer.BL.Services.Interfaces
 {
@@ -13,7 +13,7 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// <param name="login">Логин.</param>
         /// <param name="password">Пароль.</param>
         /// <returns>Аутентифицированный пользователь.</returns>
-        Task<User> AuthenticateUser(string login, string password);
+        Task<UserModel> AuthenticateUser(string login, string password);
 
         /// <summary>
         /// Удаляет куки.

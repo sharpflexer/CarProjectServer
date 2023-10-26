@@ -1,11 +1,11 @@
-﻿using CarProjectServer.BL.Services.Options;
-using CarProjectServer.API.Areas.Identity;
+﻿using CarProjectServer.BL.Models;
+using CarProjectServer.BL.Options;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
-namespace CarProjectServer.BL.Services.Extensions;
+namespace CarProjectServer.BL.Extensions;
 
 /// <summary>
 /// Класс с расширениями для JWT токена.
@@ -17,7 +17,7 @@ public static class JwtBearerExtensions
     /// </summary>
     /// <param name="user">Аккаунт пользователя.</param>
     /// <returns>Свойства пользователя.</returns>
-    public static List<Claim> CreateClaims(this User user)
+    public static List<Claim> CreateClaims(this UserModel user)
     {
 
         List<Claim> claims = new()
@@ -40,7 +40,6 @@ public static class JwtBearerExtensions
     /// <returns>JWT-токен.</returns>
     public static JwtSecurityToken CreateJwtToken(this IEnumerable<Claim> claims)
     {
-
         JwtSecurityToken token = new(
             AuthOptions.Issuer,
             AuthOptions.Audience,
@@ -49,6 +48,8 @@ public static class JwtBearerExtensions
             signingCredentials: AuthOptions.CreateSigningCredentials()
         );
         return token;
-
     }
 }
+
+
+

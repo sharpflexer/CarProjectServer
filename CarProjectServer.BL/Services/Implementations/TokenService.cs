@@ -1,7 +1,6 @@
-﻿using CarProjectServer.BL.Services.Extensions;
+﻿using CarProjectServer.BL.Extensions;
+using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
-using CarProjectServer.API.Areas.Identity;
-using CarProjectServer.API.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 
@@ -16,6 +15,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// Сервис для отправки запросов в БД.
         /// </summary>
         private readonly IRequestService _requestService;
+        private readonly IAuthenticateService _authenticateService;
 
         /// <summary>
         /// Инициализирует IRequestService
@@ -31,7 +31,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         /// <param name="user">Пользователь для которого создаётся токен.</param>
         /// <returns>Access Token.</returns>
-        public string CreateToken(User user)
+        public string CreateToken(UserModel user)
         {
             JwtSecurityToken token = user
                 .CreateClaims()
@@ -58,9 +58,9 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         /// <param name="oldToken">Устаревший токен.</param>
         /// <returns>Новый токен.</returns>
-        public JwtToken CreateNewToken(JwtToken oldToken)
+        public JwtTokenModel CreateNewToken(JwtTokenModel oldToken)
         {
-            User user = _requestService.GetUserByToken(oldToken.RefreshToken);
+            UserModel user = _requestService.GetUserByToken(oldToken.RefreshToken);
 
             string newAccessToken = "Bearer " + CreateToken(user);
             string newRefreshToken = CreateRefreshToken();
@@ -68,10 +68,23 @@ namespace CarProjectServer.BL.Services.Implementations
             user.RefreshToken = newRefreshToken;
             _ = _requestService.UpdateUser(user);
 
-            return new JwtToken
+            return new JwtTokenModel
             {
                 AccessToken = newAccessToken,
                 RefreshToken = newRefreshToken
+            };
+        }
+
+        public async Task<JwtTokenModel> GetJwtTokenAsync(string username, string password)
+        {
+            UserModel user = await _authenticateService.AuthenticateUser(username, password);
+            string accessToken = CreateToken(user);
+            string refreshToken = CreateRefreshToken();
+
+            return new JwtTokenModel 
+            { 
+                AccessToken = accessToken, 
+                RefreshToken = refreshToken 
             };
         }
     }
