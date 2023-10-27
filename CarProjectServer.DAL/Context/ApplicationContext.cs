@@ -1,4 +1,4 @@
-﻿using CarProjectServer.DAL.Areas.Identity.Models;
+﻿using CarProjectServer.DAL.Entities.Identity;
 using CarProjectServer.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -24,7 +24,7 @@ namespace CarProjectServer.DAL.Context
         /// <summary>
         /// Таблица моделей автомобилей.
         /// </summary>
-        public DbSet<CarModel> Models => Set<CarModel>();
+        public DbSet<CarModelType> Models => Set<CarModelType>();
 
         /// <summary>
         /// Таблица расцветок автомобилей.
@@ -47,13 +47,12 @@ namespace CarProjectServer.DAL.Context
         /// и, в случае создания, заполняет данными.
         /// </summary>
         /// <param name="options">Настройки контекста.</param>
-        public ApplicationContext(DbContextOptions<ApplicationContext> options)
-        : base(options)
+        public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
-            if (Database.EnsureCreated())
-            {
-                FillDatabase();
-            }
+            //if (Database.EnsureCreated())
+            //{
+            //    FillDatabase();
+            //}
         }
 
         /// <summary>
@@ -106,7 +105,7 @@ namespace CarProjectServer.DAL.Context
                 new CarColor { Name = "White" });
             SaveChanges();
             Models.AddRange(
-                new CarModel()
+                new CarModelType()
                 {
                     Name = "A3",
                     Colors = new List<CarColor>() {
@@ -115,7 +114,7 @@ namespace CarProjectServer.DAL.Context
                         Colors.ToList().ElementAt(5)
                     }
                 },
-                new CarModel()
+                new CarModelType()
                 {
                     Name = "A5",
                     Colors = new List<CarColor>() {
@@ -124,7 +123,7 @@ namespace CarProjectServer.DAL.Context
                         Colors.ToList().ElementAt(5)
                     }
                 },
-                new CarModel()
+                new CarModelType()
                 {
                     Name = "A6",
                     Colors = new List<CarColor>() {
@@ -133,7 +132,7 @@ namespace CarProjectServer.DAL.Context
                         Colors.ToList().ElementAt(5)
                     }
                 },
-                new CarModel()
+                new CarModelType()
                 {
                     Name = "X3",
                     Colors = new List<CarColor>() {
@@ -142,7 +141,7 @@ namespace CarProjectServer.DAL.Context
                         Colors.ToList().ElementAt(5)
                     }
                 },
-                new CarModel()
+                new CarModelType()
                 {
                     Name = "X5",
                     Colors = new List<CarColor>() {
@@ -151,7 +150,7 @@ namespace CarProjectServer.DAL.Context
                         Colors.ToList().ElementAt(5)
                     }
                 },
-                new CarModel()
+                new CarModelType()
                 {
                     Name = "X6",
                     Colors = new List<CarColor>() {
@@ -160,7 +159,7 @@ namespace CarProjectServer.DAL.Context
                         Colors.ToList().ElementAt(5)
                     }
                 },
-                new CarModel()
+                new CarModelType()
                 {
                     Name = "GLE",
                     Colors = new List<CarColor>() {
@@ -169,7 +168,7 @@ namespace CarProjectServer.DAL.Context
                         Colors.ToList().ElementAt(2)
                     }
                 },
-                new CarModel()
+                new CarModelType()
                 {
                     Name = "GLB",
                     Colors = new List<CarColor>() {
@@ -178,7 +177,7 @@ namespace CarProjectServer.DAL.Context
                         Colors.ToList().ElementAt(5)
                     }
                 },
-                new CarModel()
+                new CarModelType()
                 {
                     Name = "GLC",
                     Colors = new List<CarColor>() {

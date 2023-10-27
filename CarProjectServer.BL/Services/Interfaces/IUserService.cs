@@ -1,0 +1,68 @@
+﻿using CarProjectServer.BL.Models;
+using Microsoft.AspNetCore.Http;
+
+namespace CarProjectServer.BL.Services.Interfaces
+{
+    /// <summary>
+    /// Интерфейс сервиса для взаимодействия с пользователями в БД.
+    /// </summary>
+    public interface IUserService
+    {
+
+        /// <summary>
+        /// Получает роль пользователя по умолчанию(при регистрации).
+        /// </summary>
+        /// <returns>Роль по умолчанию</returns>
+        public Task<RoleModel> GetDefaultRole();
+
+        /// <summary>
+        /// Добавляет Refresh Token в таблицу User.
+        /// </summary>
+        /// <param name="user">Аккаунт пользователя.</param>
+        /// <param name="refreshToken">Токен для обновления access token.</param>
+        public void AddRefreshToken(UserModel user);
+
+        /// <summary>
+        /// Добавляет пользователя в БД при регистрации.
+        /// </summary>
+        /// <param name="user">Аккаунт нового пользователя.</param>
+        Task AddUserAsync(UserModel user);
+
+        /// <summary>
+        /// Получает список всех пользователей из БД.
+        /// </summary>
+        /// <returns>Список пользователей.</returns>
+        Task<IEnumerable<UserModel>> GetUsers();
+
+        /// <summary>
+        /// Ищет пользователя по RefreshToken.
+        /// </summary>
+        /// <param name="refreshToken">Токен обновления.</param>
+        /// <returns>Найденный пользователь.</returns>
+        UserModel GetUserByToken(string refreshToken);
+
+        /// <summary>
+        /// Обновляет пользователя в таблице.
+        /// </summary>
+        /// <param name="user">Пользователь для обновления.</param>
+        Task UpdateUser(UserModel user);
+
+        /// <summary>
+        /// Удаляет пользователя из таблицы.
+        /// </summary>
+        /// <param name="form">Данные пользователя.</param>
+        Task DeleteUsersAsync(IFormCollection form);
+
+        /// <summary>
+        /// Обновляет пользователя в таблице.
+        /// </summary>
+        /// <param name="form">Данные пользователя.</param>
+        Task UpdateUsersAsync(IFormCollection form);
+
+        /// <summary>
+        /// Получает список всех возможных ролей пользователей.
+        /// </summary>
+        /// <returns>Список всех ролей.</returns>
+        Task<IEnumerable<RoleModel>> GetRolesAsync();
+    }
+}

@@ -12,18 +12,27 @@ namespace CarProjectServer.BL.Services.Implementations
     public class TokenService : ITokenService
     {
         /// <summary>
-        /// Сервис для отправки запросов в БД.
+        /// Сервис для взаимодействия с автомобилями в БД.
         /// </summary>
-        private readonly IRequestService _requestService;
+        private readonly ICarService _carService;
+
+        /// <summary>
+        /// Сервис для взаимодействия с пользователями в БД.
+        /// </summary>
+        private readonly IUserService _userService;
+
+        /// <summary>
+        /// Сервис для аутентификации пользователей.
+        /// </summary>
         private readonly IAuthenticateService _authenticateService;
 
         /// <summary>
         /// Инициализирует IRequestService
         /// </summary>
         /// <param name="requestService">Сервис для отправки запросов в БД.</param>
-        public TokenService(IRequestService requestService)
+        public TokenService(ICarService requestService)
         {
-            _requestService = requestService;
+            _carService = requestService;
         }
 
         /// <summary>
@@ -47,9 +56,10 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <returns>Refresh Token.</returns>
         public string CreateRefreshToken()
         {
-            byte[] randomNumber = new byte[32];
+            var randomNumber = new byte[32];
             using RandomNumberGenerator rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
+
             return Convert.ToBase64String(randomNumber);
         }
 
@@ -60,13 +70,13 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <returns>Новый токен.</returns>
         public JwtTokenModel CreateNewToken(JwtTokenModel oldToken)
         {
-            UserModel user = _requestService.GetUserByToken(oldToken.RefreshToken);
+            var user = _userService.GetUserByToken(oldToken.RefreshToken);
 
-            string newAccessToken = "Bearer " + CreateToken(user);
-            string newRefreshToken = CreateRefreshToken();
+            var newAccessToken = "Bearer " + CreateToken(user);
+            var newRefreshToken = CreateRefreshToken();
 
             user.RefreshToken = newRefreshToken;
-            _ = _requestService.UpdateUser(user);
+            _ = _userService.UpdateUser(user);
 
             return new JwtTokenModel
             {
@@ -77,9 +87,9 @@ namespace CarProjectServer.BL.Services.Implementations
 
         public async Task<JwtTokenModel> GetJwtTokenAsync(string username, string password)
         {
-            UserModel user = await _authenticateService.AuthenticateUser(username, password);
-            string accessToken = CreateToken(user);
-            string refreshToken = CreateRefreshToken();
+            var user = await _authenticateService.AuthenticateUser(username, password);
+            var accessToken = CreateToken(user);
+            var refreshToken = CreateRefreshToken();
 
             return new JwtTokenModel 
             { 

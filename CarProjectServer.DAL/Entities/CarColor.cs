@@ -1,9 +1,9 @@
-﻿namespace CarProjectServer.BL.Models
+﻿namespace CarProjectServer.DAL.Models
 {
     /// <summary>
     /// Цвет автомобиля.
     /// </summary>
-    public class CarColorModel
+    public class CarColor
     {
         /// <summary>
         /// Идентификатор цвета.
@@ -16,8 +16,8 @@
         public string Name { get; set; }
 
         /// <summary>
-        /// Список моделей данного цвета.
+        /// Список моделей данного цвета. (Связь: многие-ко-многим)
         /// </summary>
-        public ICollection<CarModelTypeModel> Models { get; set; }
+        public ICollection<CarModelType> Models { get; set; }
     }
 }

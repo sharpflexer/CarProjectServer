@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarProjectServer.API", "CarProjectServer\CarProjectServer.API.csproj", "{EB15A92E-F0D8-43F9-BCCA-439D11CDA70F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarProjectServer.API", "CarProjectServer.API\CarProjectServer.API.csproj", "{EB15A92E-F0D8-43F9-BCCA-439D11CDA70F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarProjectServer.DAL", "CarProjectServer.DAL\CarProjectServer.DAL.csproj", "{489959EA-5772-48D0-AAAE-5075318AF69B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarProjectServer.DAL", "CarProjectServer.DAL\CarProjectServer.DAL.csproj", "{489959EA-5772-48D0-AAAE-5075318AF69B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarProjectServer.BL", "CarProjectServer.BL\CarProjectServer.BL.csproj", "{F3EC1599-5167-4A8F-9BCA-4394DF5EFDBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarProjectServer.BL", "CarProjectServer.BL\CarProjectServer.BL.csproj", "{F3EC1599-5167-4A8F-9BCA-4394DF5EFDBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

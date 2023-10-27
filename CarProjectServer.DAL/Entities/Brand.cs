@@ -1,9 +1,9 @@
-﻿namespace CarProjectServer.BL.Models
+﻿namespace CarProjectServer.DAL.Models
 {
     /// <summary>
     /// Марка автомобиля.
     /// </summary>
-    public class BrandModel
+    public class Brand
     {
         /// <summary>
         /// Идентификатор марки.
@@ -18,6 +18,6 @@
         /// <summary>
         /// Модели данной марки.
         /// </summary>
-        public ICollection<CarModelTypeModel> Models { get; set; }
+        public ICollection<CarModelType> Models { get; set; }
     }
 }

@@ -24,6 +24,7 @@ namespace CarProjectServer.BL.Options
         private const string key = "carsupersecret_secretkey!123";
 
         /// <summary>
+        /// Получает ключ безопасности
         /// </summary>
         /// <returns>Ключ безопасности, который применяется для генерации токена.</returns>
         public static SymmetricSecurityKey GetSymmetricSecurityKey() =>

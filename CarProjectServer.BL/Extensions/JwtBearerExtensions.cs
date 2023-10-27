@@ -19,7 +19,6 @@ public static class JwtBearerExtensions
     /// <returns>Свойства пользователя.</returns>
     public static List<Claim> CreateClaims(this UserModel user)
     {
-
         List<Claim> claims = new()
         {
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
@@ -30,6 +29,7 @@ public static class JwtBearerExtensions
             new Claim("CanDelete", user.Role.CanDelete.ToString()),
             new Claim("CanManageUsers", user.Role.CanManageUsers.ToString())
         };
+
         return claims;
     }
 
@@ -47,6 +47,7 @@ public static class JwtBearerExtensions
             expires: DateTime.Now.AddMinutes(99),
             signingCredentials: AuthOptions.CreateSigningCredentials()
         );
+
         return token;
     }
 }
