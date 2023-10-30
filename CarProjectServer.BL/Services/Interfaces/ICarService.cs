@@ -11,25 +11,25 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// <summary>
         /// Отправляет запрос на добавление нового автомобиля в БД через ApplicationContext.
         /// </summary>
-        /// <param name="form">Форма с данными списков IDs, Brands, Models и Colors.</param>
-        public Task CreateAsync(IFormCollection form);
+        /// <param name="carModel">Автомобиль для добавления.</param>
+        public Task CreateAsync(CarModel carModel);
 
         /// <summary>
         /// Получает список всех автомобилей из БД.
         /// </summary>
         /// <returns>Список автомобилей.</returns>
-        public Task<List<CarModel>> Read();
+        public Task<IEnumerable<CarModel>> ReadAsync();
 
         /// <summary>
         /// Обновляет данные автомобиля.
         /// </summary>
-        /// <param name="form">Форма с данными списков IDs, Brands, Models и Colors.</param>
-        public Task UpdateAsync(IFormCollection form);
+        /// <param name="carModel">Автомобиль для обновления.</param>
+        public Task UpdateAsync(CarModel carModel);
 
         /// <summary>
         /// Удаляет автомобиль из БД.
         /// </summary>
-        /// <param name="form">Форма с данными списков IDs, Brands, Models и Colors.</param>
-        public Task DeleteAsync(IFormCollection form);
+        /// <param name="carModel">Автомобиль для удаления.</param>
+        public Task DeleteAsync(CarModel carModel);
     }
 }

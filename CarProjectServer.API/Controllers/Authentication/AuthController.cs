@@ -5,6 +5,8 @@ using CarProjectServer.BL.Exceptions;
 using CarProjectServer.API.Models;
 using CarProjectServer.BL.Models;
 using AutoMapper;
+using CarProjectServer.BL.Services.Implementations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CarProjectServer.API.Controllers.Authentication
 {
@@ -21,6 +23,11 @@ namespace CarProjectServer.API.Controllers.Authentication
         private readonly ITokenService _tokenService;
 
         /// <summary>
+        /// Сервис для аутентификации пользователей
+        /// </summary>
+        private readonly IAuthenticateService _authenticateService;
+
+        /// <summary>
         /// Маппер для маппинга моделей между слоями
         /// </summary>
         private readonly IMapper _mapper;
@@ -30,15 +37,22 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// </summary>
         /// <param name="tokenService">Сервис для работы с JWT токенами.</param>
         /// <param name="authenticateService">Сервис для аутентификации пользователей.</param>
-        /// <param name="requestService">Сервис для отправки запросов в БД.</param>
         public AuthController(ITokenService tokenService)
         {
             _tokenService = tokenService;
         }
 
+        /// <summary>
+        /// Проверяет данные пользователя для входа.
+        /// </summary>
+        /// <param name="username">Имя пользователя.</param>
+        /// <param name="password">Пароль.</param>
+        /// <returns>
+        /// Результат валидации пользователя.
+        /// </returns>
         // POST api/auth/token
         [HttpPost]
-        public async Task<IActionResult> Token(string username, string password)
+        public async Task<ActionResult<string>> Token(string username, string password)
         {
             var jwtTokenModel = await _tokenService.GetJwtTokenAsync(username, password);
 
@@ -49,12 +63,20 @@ namespace CarProjectServer.API.Controllers.Authentication
                 HttpOnly = true
             });
 
-            return Ok(jwtTokenViewModel.AccessToken);
+            return jwtTokenViewModel.AccessToken;
         }
 
+        /// <summary>
+        /// Проверяет данные пользователя для входа.
+        /// </summary>
+        /// <param name="username">Имя пользователя.</param>
+        /// <param name="password">Пароль.</param>
+        /// <returns>
+        /// Access-токен
+        /// </returns>
         // GET api/auth/refresh
         [HttpGet]
-        public IActionResult Refresh()
+        public async Task<ActionResult<string>> Refresh()
         {
             JwtTokenViewModel oldToken;
 
@@ -83,6 +105,23 @@ namespace CarProjectServer.API.Controllers.Authentication
             });
 
             return Ok(newToken.AccessToken);
+        }
+
+        /// <summary>
+        /// Инициализирует контроллер сервисом запросов в БД.
+        /// </summary>
+        /// <returns>200 OK</returns>
+        // GET api/auth/logout
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult> LogOut()
+        {
+            HttpContext.Response.Cookies.Delete("Refresh");
+            HttpContext.Response.Headers.Remove("Authentication");
+            string? refreshCookie = HttpContext.Request.Cookies["Refresh"];
+            _authenticateService.Revoke(refreshCookie);
+
+            return Ok();
         }
 
         /// <summary>

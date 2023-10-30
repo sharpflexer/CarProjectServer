@@ -37,15 +37,15 @@ namespace CarProjectServer.BL.Services.Implementations
             return _mapper.Map<RoleModel>(role);
         }
 
-
         /// <summary>
         /// Добавляет Refresh Token в таблицу User.
         /// </summary>
         /// <param name="userModel">Аккаунт пользователя.</param>
         /// <param name="refreshToken">Токен для обновления access token.</param>
-        public void AddRefreshToken(UserModel userModel)
+        public void AddRefreshToken(UserModel userModel, string refreshToken)
         {
             var user = _mapper.Map<User>(userModel);
+            user.RefreshToken = refreshToken;
             _context.Users.Update(user);
             _context.SaveChanges();
         }
@@ -73,6 +73,17 @@ namespace CarProjectServer.BL.Services.Implementations
         }
 
         /// <summary>
+        /// Удаляет пользователя в таблице.
+        /// </summary>
+        /// <param name="user">Пользователь для удаления.</param>
+        public async Task DeleteUser(UserModel userModel)
+        {
+            var user = _mapper.Map<User>(userModel);
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
         /// Получает список всех пользователей из БД.
         /// </summary>
         /// <returns>Список пользователей.</returns>
@@ -83,42 +94,6 @@ namespace CarProjectServer.BL.Services.Implementations
                 .ToListAsync();
 
             return _mapper.Map<IEnumerable<UserModel>>(users);
-        }
-
-        /// <summary>
-        /// Удаляет пользователя из таблицы.
-        /// </summary>
-        /// <param name="form">Данные пользователя.</param>
-        public async Task DeleteUsersAsync(IFormCollection form)
-        {
-            var user = new User()
-            {
-                Id = int.Parse(form["ID"]),
-                Email = form["Email"],
-                Login = form["Login"],
-                Password = form["Password"],
-                Role = _context.Roles.Single(color => color.Id == int.Parse(form["Roles"]))
-            };
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-        }
-
-        /// <summary>
-        /// Обновляет пользователя в таблице.
-        /// </summary>
-        /// <param name="form">Данные пользователя.</param>
-        public async Task UpdateUsersAsync(IFormCollection form)
-        {
-            var user = new User()
-            {
-                Id = int.Parse(form["ID"]),
-                Email = form["Email"],
-                Login = form["Login"],
-                Password = form["Password"],
-                Role = _context.Roles.Single(color => color.Id == int.Parse(form["Roles"]))
-            };
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
         }
 
         /// <summary>

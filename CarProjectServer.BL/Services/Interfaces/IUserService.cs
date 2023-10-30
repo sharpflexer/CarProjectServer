@@ -20,7 +20,7 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// </summary>
         /// <param name="user">Аккаунт пользователя.</param>
         /// <param name="refreshToken">Токен для обновления access token.</param>
-        public void AddRefreshToken(UserModel user);
+        public void AddRefreshToken(UserModel user, string refreshToken);
 
         /// <summary>
         /// Добавляет пользователя в БД при регистрации.
@@ -48,16 +48,10 @@ namespace CarProjectServer.BL.Services.Interfaces
         Task UpdateUser(UserModel user);
 
         /// <summary>
-        /// Удаляет пользователя из таблицы.
+        /// Удаляет пользователя в таблице.
         /// </summary>
-        /// <param name="form">Данные пользователя.</param>
-        Task DeleteUsersAsync(IFormCollection form);
-
-        /// <summary>
-        /// Обновляет пользователя в таблице.
-        /// </summary>
-        /// <param name="form">Данные пользователя.</param>
-        Task UpdateUsersAsync(IFormCollection form);
+        /// <param name="user">Пользователь для удаления.</param>
+        Task DeleteUser(UserModel userModel);
 
         /// <summary>
         /// Получает список всех возможных ролей пользователей.
