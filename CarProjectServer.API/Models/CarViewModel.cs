@@ -1,9 +1,9 @@
-﻿namespace CarProjectServer.BL.Models
+﻿namespace CarProjectServer.API.Models
 {
     /// <summary>
     /// Автомобиль.
     /// </summary>
-    public class CarModel
+    public class CarViewModel
     {
         /// <summary>
         /// Идентификатор автомобиля.
@@ -13,17 +13,17 @@
         /// <summary>
         /// Марка автомобиля.
         /// </summary>
-        public BrandModel Brand { get; set; }
+        public BrandViewModel Brand { get; set; }
 
         /// <summary>
         /// Модель автомобиля.
         /// </summary>
-        public CarModelTypeModel Model { get; set; }
+        public CarModelViewModel Model { get; set; }
 
         /// <summary>
         /// Цвет автомобиля.
         /// </summary>
-        public CarColorModel Color { get; set; }
+        public CarColorViewModel Color { get; set; }
 
         /// <summary>
         /// Цена автомобиля.

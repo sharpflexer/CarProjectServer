@@ -1,7 +1,7 @@
 ﻿using CarProjectServer.BL.Services.Interfaces;
-using CarProjectServer.API.Areas.Identity;
 using MimeKit;
 using MailKit.Net.Smtp;
+using CarProjectServer.DAL.Entities.Identity;
 
 namespace CarProjectServer.BL.Services.Implementations
 {

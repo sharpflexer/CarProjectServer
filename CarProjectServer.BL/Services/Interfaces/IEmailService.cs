@@ -1,4 +1,4 @@
-﻿using CarProjectServer.API.Areas.Identity;
+﻿using CarProjectServer.DAL.Entities.Identity;
 
 namespace CarProjectServer.BL.Services.Interfaces
 {

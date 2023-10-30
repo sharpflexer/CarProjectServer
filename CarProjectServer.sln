@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarProjectServer.API", "CarProjectServer\CarProjectServer.API.csproj", "{EB15A92E-F0D8-43F9-BCCA-439D11CDA70F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarProjectServer.DAL", "CarProjectServer.DAL\CarProjectServer.DAL.csproj", "{489959EA-5772-48D0-AAAE-5075318AF69B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarProjectServer.DAL", "CarProjectServer.DAL\CarProjectServer.DAL.csproj", "{489959EA-5772-48D0-AAAE-5075318AF69B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarProjectServer.BL", "CarProjectServer.BL\CarProjectServer.BL.csproj", "{F3EC1599-5167-4A8F-9BCA-4394DF5EFDBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarProjectServer.BL", "CarProjectServer.BL\CarProjectServer.BL.csproj", "{F3EC1599-5167-4A8F-9BCA-4394DF5EFDBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarProjectServer.API", "CarProjectServer.API\CarProjectServer.API.csproj", "{4CEA7189-1DD4-47F9-A159-2703BF66C06E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EB15A92E-F0D8-43F9-BCCA-439D11CDA70F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EB15A92E-F0D8-43F9-BCCA-439D11CDA70F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EB15A92E-F0D8-43F9-BCCA-439D11CDA70F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EB15A92E-F0D8-43F9-BCCA-439D11CDA70F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{489959EA-5772-48D0-AAAE-5075318AF69B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{489959EA-5772-48D0-AAAE-5075318AF69B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{489959EA-5772-48D0-AAAE-5075318AF69B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -27,6 +23,10 @@ Global
 		{F3EC1599-5167-4A8F-9BCA-4394DF5EFDBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3EC1599-5167-4A8F-9BCA-4394DF5EFDBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3EC1599-5167-4A8F-9BCA-4394DF5EFDBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CEA7189-1DD4-47F9-A159-2703BF66C06E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CEA7189-1DD4-47F9-A159-2703BF66C06E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CEA7189-1DD4-47F9-A159-2703BF66C06E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CEA7189-1DD4-47F9-A159-2703BF66C06E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

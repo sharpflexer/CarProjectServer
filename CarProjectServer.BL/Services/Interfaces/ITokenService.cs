@@ -1,5 +1,4 @@
-﻿using CarProjectServer.API.Areas.Identity;
-using CarProjectServer.API.Models;
+﻿using CarProjectServer.BL.Models;
 
 namespace CarProjectServer.BL.Services.Interfaces
 {
@@ -13,7 +12,7 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// </summary>
         /// <param name="user">Пользователь для которого создаётся токен.</param>
         /// <returns>Access Token.</returns>
-        public string CreateToken(User user);
+        public string CreateToken(UserModel user);
 
         /// <summary>
         /// Создаёт Refresh Token.
@@ -26,8 +25,7 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// </summary>
         /// <param name="oldToken">Устаревший токен.</param>
         /// <returns>Новый токен.</returns>
-        JwtToken CreateNewToken(JwtToken oldToken);
-        string GetAccessToken(string username, string password);
-        string GetRefreshToken(string username, string password);
+        JwtTokenModel CreateNewToken(JwtTokenModel oldToken);
+        Task<JwtTokenModel> GetJwtTokenAsync(string username, string password);
     }
 }

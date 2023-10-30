@@ -1,5 +1,5 @@
-﻿using CarProjectServer.BL.Services.Interfaces;
-using CarProjectServer.API.Areas.Identity;
+﻿using CarProjectServer.BL.Models;
+using CarProjectServer.BL.Services.Interfaces;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -9,17 +9,17 @@ namespace CarProjectServer.BL.Services.Implementations
     public class AuthenticateService : IAuthenticateService
     {
         /// <summary>
-        /// Сервис для отправки запросов в БД.
+        /// Сервис для работы с пользователями в БД.
         /// </summary>
-        private readonly IRequestService _requestService;
+        private readonly IUserService _userService;
 
         /// <summary>
         /// Инициализирует сервис requestService.
         /// </summary>
         /// <param name="requestService">Сервис для отправки запросов в БД.</param>
-        public AuthenticateService(IRequestService requestService)
+        public AuthenticateService(IUserService userService)
         {
-            _requestService = requestService;
+            _userService = userService;
         }
 
         /// <summary>
@@ -28,11 +28,11 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <param name="login">Логин.</param>
         /// <param name="password">Пароль.</param>
         /// <returns>Аутентифицированный пользователь.</returns>
-        public async Task<User> AuthenticateUser(string login, string password)
+        public async Task<UserModel> AuthenticateUser(string login, string password)
         {
-            IEnumerable<User> users = await _requestService.GetUsers();
-            User? currentUser = users.FirstOrDefault(authUser => authUser.Login == login &&
-            authUser.Password == password);
+            var users = await _userService.GetUsers();
+            var currentUser = users.FirstOrDefault(authUser => authUser.Login == login &&
+                authUser.Password == password);
 
             return currentUser;
         }
@@ -43,10 +43,10 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <param name="cookieToRevoke">Строка куки, которое нужно очистить.</param>
         public void Revoke(string cookieToRevoke)
         {
-            User user = _requestService.GetUserByToken(cookieToRevoke);
+            var user = _userService.GetUserByToken(cookieToRevoke);
             user.RefreshToken = null;
 
-            _requestService.UpdateUser(user);
+            _userService.UpdateUser(user);
         }
     }
 }
