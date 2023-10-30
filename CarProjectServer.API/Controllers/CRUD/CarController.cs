@@ -55,7 +55,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CarViewModel>>> Read()
         {
-            IEnumerable<CarModel> carModels = await _carService.ReadAsync();
+            var carModels = await _carService.ReadAsync();
             var auto = _mapper.Map<IEnumerable<CarViewModel>>(carModels);
 
             return Ok(auto);

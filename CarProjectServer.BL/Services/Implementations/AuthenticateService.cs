@@ -30,7 +30,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <returns>Аутентифицированный пользователь.</returns>
         public async Task<UserModel> AuthenticateUser(string login, string password)
         {
-            IEnumerable<UserModel> users = await _userService.GetUsers();
+            var users = await _userService.GetUsers();
             var currentUser = users.FirstOrDefault(authUser => authUser.Login == login &&
                 authUser.Password == password);
 

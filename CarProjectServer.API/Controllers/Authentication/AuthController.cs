@@ -37,6 +37,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// </summary>
         /// <param name="tokenService">Сервис для работы с JWT токенами.</param>
         /// <param name="authenticateService">Сервис для аутентификации пользователей.</param>
+        /// <param name="mapper">Маппер для маппинга моделей между слоями.</param>
         public AuthController(ITokenService tokenService, IAuthenticateService authenticateService, IMapper mapper)
         {
             _tokenService = tokenService;
@@ -58,7 +59,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         {
             var jwtTokenModel = await _tokenService.GetJwtTokenAsync(username, password);
 
-            JwtTokenViewModel jwtTokenViewModel = _mapper.Map<JwtTokenViewModel>(jwtTokenModel);
+            var jwtTokenViewModel = _mapper.Map<JwtTokenViewModel>(jwtTokenModel);
 
             HttpContext.Response.Cookies.Append("Refresh", jwtTokenViewModel.RefreshToken, new CookieOptions()
             {
@@ -98,9 +99,9 @@ namespace CarProjectServer.API.Controllers.Authentication
                 return BadRequest("Invalid client request");
             }
 
-            JwtTokenModel oldTokenModel = _mapper.Map<JwtTokenModel>(oldToken);
+            var oldTokenModel = _mapper.Map<JwtTokenModel>(oldToken);
             var newTokenModel = _tokenService.CreateNewToken(oldTokenModel);
-            JwtTokenViewModel newToken = _mapper.Map<JwtTokenViewModel>(newTokenModel);
+            var newToken = _mapper.Map<JwtTokenViewModel>(newTokenModel);
 
             HttpContext.Response.Cookies.Append("Refresh", newToken.RefreshToken, new CookieOptions()
             {
@@ -121,7 +122,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         {
             HttpContext.Response.Cookies.Delete("Refresh");
             HttpContext.Response.Headers.Remove("Authentication");
-            string? refreshCookie = HttpContext.Request.Cookies["Refresh"];
+            var refreshCookie = HttpContext.Request.Cookies["Refresh"];
             _authenticateService.Revoke(refreshCookie);
 
             return Ok();
@@ -134,15 +135,15 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// <returns>Устаревший токен.</returns>
         private JwtTokenViewModel TryGetOldJwtToken(HttpRequest request)
         {
-            string oldAccessToken = request.Headers["Authorization"].ToString().Split(" ")[0];
+            var oldAccessToken = request.Headers["Authorization"].ToString().Split(" ")[0];
 
-            string? oldRefreshCookie = request.Cookies["Refresh"];
+            var oldRefreshCookie = request.Cookies["Refresh"];
             if (oldRefreshCookie.IsNullOrEmpty())
             {
                 throw new TokenNotExistException("Cookies do not contain Refresh Token");
             }
 
-            string oldRefreshToken = oldRefreshCookie.Split(";")[0];
+            var oldRefreshToken = oldRefreshCookie.Split(";")[0];
 
             return new JwtTokenViewModel
             {

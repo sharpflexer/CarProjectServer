@@ -42,7 +42,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <returns>Access Token.</returns>
         public string CreateToken(UserModel user)
         {
-            JwtSecurityToken token = user
+            var token = user
                 .CreateClaims()
                 .CreateJwtToken();
             JwtSecurityTokenHandler tokenHandler = new();
