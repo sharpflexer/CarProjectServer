@@ -19,7 +19,7 @@ namespace CarProjectServer.BL.Services.Implementations
         private readonly ApplicationContext _context;
 
         /// <summary>
-        /// Маппер для маппинга моделей
+        /// Маппер для маппинга моделей.
         /// </summary>
         private readonly IMapper _mapper;
 

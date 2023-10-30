@@ -38,7 +38,7 @@ namespace CarProjectMVC.Controllers.Authorization
         /// Добавляет зарегистрированного пользователя в БД.
         /// </summary>
         /// <param name="user">Зарегистрированный пользователь.</param>
-        /// <returns>200 OK/400 Bad Request</returns>
+        /// <returns>200 OK/400 Bad Request.</returns>
         // POST api/register/post
         [HttpPost]
         public async Task<ActionResult> Post(UserViewModel user)

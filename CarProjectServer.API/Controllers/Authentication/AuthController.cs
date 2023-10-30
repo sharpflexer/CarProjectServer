@@ -23,12 +23,12 @@ namespace CarProjectServer.API.Controllers.Authentication
         private readonly ITokenService _tokenService;
 
         /// <summary>
-        /// Сервис для аутентификации пользователей
+        /// Сервис для аутентификации пользователей.
         /// </summary>
         private readonly IAuthenticateService _authenticateService;
 
         /// <summary>
-        /// Маппер для маппинга моделей между слоями
+        /// Маппер для маппинга моделей между слоями.
         /// </summary>
         private readonly IMapper _mapper;
 
@@ -113,7 +113,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// <summary>
         /// Инициализирует контроллер сервисом запросов в БД.
         /// </summary>
-        /// <returns>200 OK</returns>
+        /// <returns>200 OK.</returns>
         // GET api/auth/logout
         [Authorize]
         [HttpGet]

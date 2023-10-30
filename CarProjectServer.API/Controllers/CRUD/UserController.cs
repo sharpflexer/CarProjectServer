@@ -22,7 +22,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         private readonly IUserService _userService;
 
         /// <summary>
-        /// Маппер для маппинга моделей
+        /// Маппер для маппинга моделей.
         /// </summary>
         private readonly IMapper _mapper;
 
@@ -40,7 +40,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// <summary>
         /// Получает список пользователей из БД.
         /// </summary>
-        /// <returns>Список пользователей</returns>
+        /// <returns>Список пользователей.</returns>
         // GET api/users/read
         public async Task<ActionResult<IEnumerable<UserViewModel>>> Read()
         {
@@ -54,7 +54,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// Отправляет запрос на обновление пользователя 
         /// в базу данных через IRequestService.CreateAsync().
         /// </summary>
-        /// <returns>200 OK</returns>
+        /// <returns>200 OK.</returns>
         // GET api/users/update
         [HttpPost]
         public async Task<ActionResult> Update(UserViewModel userViewModel)
@@ -69,7 +69,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// Отправляет запрос на добавление автомобиля
         /// в базу данных через IRequestService.CreateAsync().
         /// </summary>
-        /// <returns>200 OK</returns>
+        /// <returns>200 OK.</returns>
         // GET api/users/delete
         [HttpPost]
         public async Task<ActionResult> Delete(UserViewModel userViewModel)

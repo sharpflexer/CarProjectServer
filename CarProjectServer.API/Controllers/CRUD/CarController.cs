@@ -24,7 +24,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         private readonly IMapper _mapper;
 
         /// <summary>
-        /// Инициализирует контроллер сервисом автомобилей
+        /// Инициализирует контроллер сервисом автомобилей.
         /// </summary>
         /// <param name="carService"></param>
         public CarController(ICarService carService, IMapper mapper)
@@ -65,7 +65,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// Обновляет авто в БД.
         /// </summary>
         /// <param name="carViewModel">Авто для обновления.</param>
-        /// <returns>200 OK</returns>
+        /// <returns>200 OK.</returns>
         // PUT api/car/update
         [HttpPut]
         public async Task<IActionResult> Update(CarViewModel carViewModel)
@@ -80,7 +80,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// Удаляет авто из БД.
         /// </summary>
         /// <param name="carViewModel">Авто для удаления.</param>
-        /// <returns>200 OK</returns>
+        /// <returns>200 OK.</returns>
         // DELETE api/car/delete
         [HttpDelete]
         public async Task<ActionResult> Delete(CarViewModel carViewModel)

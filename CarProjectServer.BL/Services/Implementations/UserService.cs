@@ -20,9 +20,20 @@ namespace CarProjectServer.BL.Services.Implementations
         private readonly ApplicationContext _context;
 
         /// <summary>
-        /// Маппер для маппинга моделей
+        /// Маппер для маппинга моделей.
         /// </summary>
         private readonly IMapper _mapper;
+
+        /// <summary>
+        /// Инициализирует сервис контекстом БД и маппером.
+        /// </summary>
+        /// <param name="context">Контекст для взаимодействия с БД.</param>
+        /// <param name="mapper">Маппер для маппинга моделей.</param>
+        public UserService(ApplicationContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
 
         /// <summary>
         /// Получает роль пользователя по умолчанию(при регистрации).
