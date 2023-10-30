@@ -55,7 +55,8 @@ namespace CarProjectServer.API.Controllers.CRUD
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CarViewModel>>> Read()
         {
-            var auto = _mapper.Map<IEnumerable<CarViewModel>>(await _carService.ReadAsync());
+            IEnumerable<CarModel> carModels = await _carService.ReadAsync();
+            var auto = _mapper.Map<IEnumerable<CarViewModel>>(carModels);
 
             return Ok(auto);
         }
@@ -99,7 +100,10 @@ namespace CarProjectServer.API.Controllers.CRUD
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public ActionResult<ErrorViewModel> Error()
         {
-            return Ok(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return Ok(new ErrorViewModel 
+            { 
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier 
+            });
         }
     }
 }

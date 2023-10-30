@@ -14,7 +14,6 @@ namespace CarProjectMVC.Controllers.Authorization
     [ApiController]
     public class RegisterController : Controller
     {
-
         /// <summary>
         /// Маппер для маппинга моделей между слоями
         /// </summary>
@@ -39,15 +38,22 @@ namespace CarProjectMVC.Controllers.Authorization
         /// Добавляет зарегистрированного пользователя в БД.
         /// </summary>
         /// <param name="user">Зарегистрированный пользователь.</param>
-        /// <returns>200 OK.</returns>
+        /// <returns>200 OK/400 Bad Request</returns>
         // POST api/register/post
         [HttpPost]
         public async Task<ActionResult> Post(UserViewModel user)
         {
-            var roleModel = _userService.GetDefaultRole();
-            user.Role = _mapper.Map<RoleViewModel>(roleModel);
-            var userModel = _mapper.Map<UserModel>(user);
-            await _userService.AddUserAsync(userModel);
+            try
+            {
+                var roleModel = _userService.GetDefaultRole();
+                user.Role = _mapper.Map<RoleViewModel>(roleModel);
+                var userModel = _mapper.Map<UserModel>(user);
+                await _userService.AddUserAsync(userModel);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return Ok();
         }

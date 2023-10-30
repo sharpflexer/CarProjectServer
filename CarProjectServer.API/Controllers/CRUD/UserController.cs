@@ -17,7 +17,7 @@ namespace CarProjectServer.API.Controllers.CRUD
     public class UserController : Controller
     {
         /// <summary>
-        /// Сервис для работы с пользователями в БД.
+        /// Сервис для взаимодействия с пользователями в БД.
         /// </summary>
         private readonly IUserService _userService;
 
@@ -27,15 +27,20 @@ namespace CarProjectServer.API.Controllers.CRUD
         private readonly IMapper _mapper;
 
         /// <summary>
-        /// Инициализирует контроллер сервисом для отправки запросов в БД.
+        /// Инициализирует контроллер сервисом пользователей. 
         /// </summary>
-        /// <param name="requestService">Сервис для отправки запросов в БД.</param>
+        /// <param name="userService">Сервис для взаимодействия с пользователями в БД.</param>
+        /// <param name="mapper">Маппер для маппинга моделей.</param>
         public UserController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Получает список пользователей из БД.
+        /// </summary>
+        /// <returns>Список пользователей</returns>
         // GET api/users/read
         public async Task<ActionResult<IEnumerable<UserViewModel>>> Read()
         {
@@ -45,6 +50,11 @@ namespace CarProjectServer.API.Controllers.CRUD
             return Ok(userViews);
         }
 
+        /// <summary>
+        /// Отправляет запрос на обновление пользователя 
+        /// в базу данных через IRequestService.CreateAsync().
+        /// </summary>
+        /// <returns>200 OK</returns>
         // GET api/users/update
         [HttpPost]
         public async Task<ActionResult> Update(UserViewModel userViewModel)
@@ -55,6 +65,11 @@ namespace CarProjectServer.API.Controllers.CRUD
             return Ok();
         }
 
+        /// <summary>
+        /// Отправляет запрос на добавление автомобиля
+        /// в базу данных через IRequestService.CreateAsync().
+        /// </summary>
+        /// <returns>200 OK</returns>
         // GET api/users/delete
         [HttpPost]
         public async Task<ActionResult> Delete(UserViewModel userViewModel)

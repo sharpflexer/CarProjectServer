@@ -37,9 +37,11 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// </summary>
         /// <param name="tokenService">Сервис для работы с JWT токенами.</param>
         /// <param name="authenticateService">Сервис для аутентификации пользователей.</param>
-        public AuthController(ITokenService tokenService)
+        public AuthController(ITokenService tokenService, IAuthenticateService authenticateService, IMapper mapper)
         {
             _tokenService = tokenService;
+            _authenticateService = authenticateService;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -96,7 +98,8 @@ namespace CarProjectServer.API.Controllers.Authentication
                 return BadRequest("Invalid client request");
             }
 
-            var newTokenModel = _tokenService.CreateNewToken(_mapper.Map<JwtTokenModel>(oldToken));
+            JwtTokenModel oldTokenModel = _mapper.Map<JwtTokenModel>(oldToken);
+            var newTokenModel = _tokenService.CreateNewToken(oldTokenModel);
             JwtTokenViewModel newToken = _mapper.Map<JwtTokenViewModel>(newTokenModel);
 
             HttpContext.Response.Cookies.Append("Refresh", newToken.RefreshToken, new CookieOptions()
