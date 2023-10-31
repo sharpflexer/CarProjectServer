@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
 using CarProjectServer.DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using NLog;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -23,6 +25,9 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         private readonly IMapper _mapper;
 
+        //TODO: Добавить саммари к логгерам в сервисах
+        private readonly ILogger _logger;
+
         /// <summary>
         /// Инициализирует ApplicationContext.
         /// </summary>
@@ -39,9 +44,17 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <param name="form">Форма с данными списков IDs, Brands, Models и Colors.</param>
         public async Task CreateAsync(CarModel carModel)
         {
-            var auto = _mapper.Map<Car>(carModel);
-            _context.Cars.Add(auto);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var auto = _mapper.Map<Car>(carModel);
+                _context.Cars.Add(auto);
+                await _context.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex.Message);
+                throw new ApiException("Ошибка добавления авто в БД");
+            }
         }
 
         /// <summary>
@@ -50,9 +63,17 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <param name="form">Форма с данными списков IDs, Brands, Models и Colors.</param>
         public async Task UpdateAsync(CarModel carModel)
         {
-            var auto = _mapper.Map<Car>(carModel);
-            _context.Cars.Update(auto);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var auto = _mapper.Map<Car>(carModel);
+                _context.Cars.Update(auto);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                throw new ApiException("Ошибка обновления авто в БД");
+            }
         }
 
         /// <summary>
@@ -61,9 +82,17 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <param name="form">Форма с данными списков IDs, Brands, Models и Colors.</param>
         public async Task DeleteAsync(CarModel carModel)
         {
-            var auto = _mapper.Map<Car>(carModel);
-            _context.Cars.Remove(auto);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var auto = _mapper.Map<Car>(carModel);
+                _context.Cars.Remove(auto);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                throw new ApiException("Ошибка удаления авто из БД");
+            }
         }
 
         /// <summary>
@@ -72,13 +101,21 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <returns>Список автомобилей.</returns>
         public async Task<IEnumerable<CarModel>> ReadAsync()
         {
-            var cars = await _context.Cars
-               .Include(car => car.Brand)
-               .Include(car => car.Model)
-               .Include(car => car.Color)
-               .AsNoTracking().OrderBy(car => car.Id).ToListAsync();
+            try
+            {
+                var cars = await _context.Cars
+                   .Include(car => car.Brand)
+                   .Include(car => car.Model)
+                   .Include(car => car.Color)
+                   .AsNoTracking().OrderBy(car => car.Id).ToListAsync();
 
-            return _mapper.Map<List<CarModel>>(cars);
+                return _mapper.Map<List<CarModel>>(cars);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                throw new ApiException("Ошибка чтения авто из БД");
+            }
         }
     }
 }

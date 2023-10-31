@@ -2,6 +2,8 @@
 using MimeKit;
 using MailKit.Net.Smtp;
 using CarProjectServer.DAL.Entities.Identity;
+using CarProjectServer.BL.Exceptions;
+using NLog;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -10,6 +12,12 @@ namespace CarProjectServer.BL.Services.Implementations
     /// </summary>
     public class EmailService : IEmailService
     {
+        private readonly ILogger _logger;
+
+        public EmailService(ILogger logger)
+        {
+            _logger = logger;
+        }
         /// <summary>
         /// Отправляет письмо для подтверждения регистрации.
         /// </summary>
@@ -18,21 +26,29 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <param name="message">Сообщение.</param>
         public async Task SendEmailAsync(User user, string subject, string message)
         {
-            using MimeMessage emailMessage = new();
-
-            emailMessage.From.Add(new MailboxAddress("Car WebApplication", "car.webapplication@mail.ru"));
-            emailMessage.To.Add(new MailboxAddress(user.Login, user.Email));
-            emailMessage.Subject = subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            try
             {
-                Text = message
-            };
+                using MimeMessage emailMessage = new();
 
-            using SmtpClient client = new();
-            await client.ConnectAsync("smtp.mail.ru", 25, false);
-            await client.AuthenticateAsync("car.webapplication@mail.ru", "nifariankek322!");
-            await client.SendAsync(emailMessage);
-            await client.DisconnectAsync(true);
+                emailMessage.From.Add(new MailboxAddress("Car WebApplication", "car.webapplication@mail.ru"));
+                emailMessage.To.Add(new MailboxAddress(user.Login, user.Email));
+                emailMessage.Subject = subject;
+                emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = message
+                };
+
+                using SmtpClient client = new();
+                await client.ConnectAsync("smtp.mail.ru", 25, false);
+                await client.AuthenticateAsync("car.webapplication@mail.ru", "nifariankek322!");
+                await client.SendAsync(emailMessage);
+                await client.DisconnectAsync(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                throw new ApiException("Ошибка отправления Email");
+            }
         }
     }
 }

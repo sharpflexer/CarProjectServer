@@ -8,9 +8,9 @@ using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -41,6 +41,7 @@ builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
+
 
 app.UseCarExceptionMiddleware();
 if (app.Environment.IsDevelopment())

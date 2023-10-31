@@ -1,6 +1,7 @@
 ﻿using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
+using NLog;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -9,6 +10,7 @@ namespace CarProjectServer.BL.Services.Implementations
     /// </summary>
     public class AuthenticateService : IAuthenticateService
     {
+        private readonly ILogger _logger;
         /// <summary>
         /// Сервис для работы с пользователями в БД.
         /// </summary>
@@ -18,9 +20,10 @@ namespace CarProjectServer.BL.Services.Implementations
         /// Инициализирует сервис requestService.
         /// </summary>
         /// <param name="requestService">Сервис для отправки запросов в БД.</param>
-        public AuthenticateService(IUserService userService)
+        public AuthenticateService(IUserService userService, ILogger logger)
         {
             _userService = userService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -41,7 +44,8 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch(Exception ex)
             {
-                throw new ApiException();
+                _logger.Error(ex.Message);
+                throw new ApiException("Ошибка аутентификации");
             }
         }
 
@@ -51,10 +55,18 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <param name="cookieToRevoke">Строка куки, которое нужно очистить.</param>
         public void Revoke(string cookieToRevoke)
         {
-            var user = _userService.GetUserByToken(cookieToRevoke);
-            user.RefreshToken = null;
+            try
+            {
+                var user = _userService.GetUserByToken(cookieToRevoke);
+                user.RefreshToken = null;
 
-            _userService.UpdateUser(user);
+                _userService.UpdateUser(user);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                throw new ApiException("Ошибка удаления куки");
+            }
         }
     }
 }
