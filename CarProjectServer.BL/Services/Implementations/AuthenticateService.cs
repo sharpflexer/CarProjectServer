@@ -1,4 +1,5 @@
-﻿using CarProjectServer.BL.Models;
+﻿using CarProjectServer.BL.Exceptions;
+using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
 
 namespace CarProjectServer.BL.Services.Implementations
@@ -30,11 +31,18 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <returns>Аутентифицированный пользователь.</returns>
         public async Task<UserModel> AuthenticateUser(string login, string password)
         {
-            var users = await _userService.GetUsers();
-            var currentUser = users.FirstOrDefault(authUser => authUser.Login == login &&
-                authUser.Password == password);
+            try
+            {
+                var users = await _userService.GetUsers();
+                var currentUser = users.FirstOrDefault(authUser => authUser.Login == login &&
+                    authUser.Password == password);
 
-            return currentUser;
+                return currentUser;
+            }
+            catch(Exception ex)
+            {
+                throw new ApiException();
+            }
         }
 
         /// <summary>

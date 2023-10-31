@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net;
 
 namespace CarProjectServer.API.Controllers.CRUD
 {
@@ -89,21 +90,6 @@ namespace CarProjectServer.API.Controllers.CRUD
             await _carService.DeleteAsync(auto);
 
             return Ok();
-        }
-
-        /// <summary>
-        /// Показывает ошибку.
-        /// </summary>
-        /// <returns>Страница с ошибкой.</returns>
-        // GET api/car/error
-        [HttpGet]
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public ActionResult<ErrorViewModel> Error()
-        {
-            return Ok(new ErrorViewModel 
-            { 
-                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier 
-            });
         }
     }
 }

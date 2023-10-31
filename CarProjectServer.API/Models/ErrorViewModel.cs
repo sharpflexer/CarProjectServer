@@ -6,13 +6,13 @@ namespace CarProjectServer.API.Models
     public class ErrorViewModel
     {
         /// <summary>
-        /// Идентификатор запроса.
+        /// Код ошибки.
         /// </summary>
-        public string? RequestId { get; set; }
+        public required string StatusCode { get; set; }
 
         /// <summary>
-        /// Статус отображения идентификатора запроса.
+        /// Сообщение об ошибке.
         /// </summary>
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+        public required string Message { get; set; }
     }
 }
