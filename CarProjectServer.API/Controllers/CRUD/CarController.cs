@@ -37,8 +37,8 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// Отправляет запрос на добавление автомобиля 
         /// в базу данных через IRequestService.CreateAsync().
         /// </summary>
-        // GET api/car/create
-        [HttpPost]
+        // POST api/car/create
+        [HttpPost("create")]
         public async Task<ActionResult> Create(CarViewModel carViewModel)
         {
             var auto = _mapper.Map<CarModel>(carViewModel);
@@ -52,7 +52,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// </summary>
         /// <returns>Список авто из БД.</returns>
         // GET api/car/read
-        [HttpGet]
+        [HttpGet("read")]
         public async Task<ActionResult<IEnumerable<CarViewModel>>> Read()
         {
             var carModels = await _carService.ReadAsync();
@@ -67,7 +67,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// <param name="carViewModel">Авто для обновления.</param>
         /// <returns>200 OK.</returns>
         // PUT api/car/update
-        [HttpPut]
+        [HttpPut("update")]
         public async Task<IActionResult> Update(CarViewModel carViewModel)
         {
             var auto = _mapper.Map<CarModel>(carViewModel);
@@ -82,7 +82,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// <param name="carViewModel">Авто для удаления.</param>
         /// <returns>200 OK.</returns>
         // DELETE api/car/delete
-        [HttpDelete]
+        [HttpDelete("delete")]
         public async Task<ActionResult> Delete(CarViewModel carViewModel)
         {
             var auto = _mapper.Map<CarModel>(carViewModel);

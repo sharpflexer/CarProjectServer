@@ -7,6 +7,7 @@ using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

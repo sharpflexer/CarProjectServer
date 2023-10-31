@@ -54,7 +54,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// Результат валидации пользователя.
         /// </returns>
         // POST api/auth/token
-        [HttpPost]
+        [HttpPost("token")]
         public async Task<ActionResult<string>> Token(string username, string password)
         {
             var jwtTokenModel = await _tokenService.GetJwtTokenAsync(username, password);
@@ -79,6 +79,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// </returns>
         // GET api/auth/refresh
         [HttpGet]
+        [HttpGet("refresh")]
         public async Task<ActionResult<string>> Refresh()
         {
             JwtTokenViewModel oldToken;
@@ -117,7 +118,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// <returns>200 OK.</returns>
         // GET api/auth/logout
         [Authorize]
-        [HttpGet]
+        [HttpGet("logout")]
         public async Task<ActionResult> LogOut()
         {
             HttpContext.Response.Cookies.Delete("Refresh");

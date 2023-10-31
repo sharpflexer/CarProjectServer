@@ -42,6 +42,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// </summary>
         /// <returns>Список пользователей.</returns>
         // GET api/users/read
+        [HttpGet("read")]
         public async Task<ActionResult<IEnumerable<UserViewModel>>> Read()
         {
             var users = await _userService.GetUsers();
@@ -55,8 +56,8 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// в базу данных через IRequestService.CreateAsync().
         /// </summary>
         /// <returns>200 OK.</returns>
-        // GET api/users/update
-        [HttpPost]
+        // PUT api/users/update
+        [HttpPut("update")]
         public async Task<ActionResult> Update(UserViewModel userViewModel)
         {
             var user = _mapper.Map<UserModel>(userViewModel);
@@ -70,8 +71,8 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// в базу данных через IRequestService.CreateAsync().
         /// </summary>
         /// <returns>200 OK.</returns>
-        // GET api/users/delete
-        [HttpPost]
+        // DELETE api/users/delete
+        [HttpDelete("delete")]
         public async Task<ActionResult> Delete(UserViewModel userViewModel)
         {
             var user = _mapper.Map<UserModel>(userViewModel);
