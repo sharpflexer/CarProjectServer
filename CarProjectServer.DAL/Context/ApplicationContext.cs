@@ -49,10 +49,10 @@ namespace CarProjectServer.DAL.Context
         /// <param name="options">Настройки контекста.</param>
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
-            //if (Database.EnsureCreated())
-            //{
-            //    FillDatabase();
-            //}
+            if (Database.EnsureCreated())
+            {
+                FillDatabase();
+            }
         }
 
         /// <summary>
