@@ -26,6 +26,10 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Логгер для логирования в файлы ошибок.
+        /// Настраивается в NLog.config.
+        /// </summary>
         private readonly ILogger _logger;
 
         /// <summary>
@@ -33,6 +37,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         /// <param name="context">Контекст для взаимодействия с БД.</param>
         /// <param name="mapper">Маппер для маппинга моделей.</param>
+        /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
         public UserService(ApplicationContext context, IMapper mapper, ILogger<UserService> logger)
         {
             _context = context;

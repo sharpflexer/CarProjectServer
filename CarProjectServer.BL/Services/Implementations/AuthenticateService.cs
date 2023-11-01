@@ -17,14 +17,15 @@ namespace CarProjectServer.BL.Services.Implementations
 
         /// <summary>
         /// Логгер для логирования в файлы ошибок.
-        /// Настраивается в NLog.config
+        /// Настраивается в NLog.config.
         /// </summary>
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Инициализирует сервис requestService.
+        /// Инициализирует сервис сервисом для взаимодействия с пользователями в БД.
         /// </summary>
-        /// <param name="requestService">Сервис для отправки запросов в БД.</param>
+        /// <param name="userService">Сервис для отправки запросов в БД.</param>
+        /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
         public AuthenticateService(IUserService userService, ILogger<AuthenticateService> logger)
         {
             _userService = userService;

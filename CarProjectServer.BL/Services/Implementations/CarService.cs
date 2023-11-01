@@ -31,9 +31,11 @@ namespace CarProjectServer.BL.Services.Implementations
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Инициализирует ApplicationContext.
+        /// Инициализирует сервис контекстом БД, маппером и логгером.
         /// </summary>
         /// <param name="context">Контекст для взаимодействия с БД.</param>
+        /// <param name="mapper">Маппер для маппинга моделей.</param>
+        /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
         public CarService(ApplicationContext context, IMapper mapper, ILogger<CarService> logger)
         {
             _context = context;

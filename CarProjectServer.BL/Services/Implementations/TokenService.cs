@@ -23,12 +23,18 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         private readonly IAuthenticateService _authenticateService;
 
+        /// <summary>
+        /// Логгер для логирования в файлы ошибок.
+        /// Настраивается в NLog.config.
+        /// </summary>
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Инициализирует IRequestService
+        /// Инициализирует сервис сервисом пользователей, аутентификации и логгером.
         /// </summary>
-        /// <param name="requestService">Сервис для отправки запросов в БД.</param>
+        /// <param name="userService">Сервис для взаимодействия с пользователями в БД.</param>
+        /// <param name="authenticateService">Сервис для аутентификации пользователей</param>
+        /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
         public TokenService(IUserService userService, IAuthenticateService authenticateService, ILogger<TokenService> logger)
         {
             _userService = userService;

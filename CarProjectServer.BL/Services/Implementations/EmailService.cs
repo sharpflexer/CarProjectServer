@@ -21,7 +21,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <summary>
         /// Инициализирует сервис логгером.
         /// </summary>
-        /// <param name="logger"></param>
+        /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
         public EmailService(ILogger<EmailService> logger)
         {
             _logger = logger;
