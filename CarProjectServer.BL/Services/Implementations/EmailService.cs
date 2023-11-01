@@ -12,8 +12,16 @@ namespace CarProjectServer.BL.Services.Implementations
     /// </summary>
     public class EmailService : IEmailService
     {
+        /// <summary>
+        /// Логгер для логирования в файлы ошибок.
+        /// Настраивается в NLog.config.
+        /// </summary>
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Инициализирует сервис логгером.
+        /// </summary>
+        /// <param name="logger"></param>
         public EmailService(ILogger<EmailService> logger)
         {
             _logger = logger;
@@ -28,19 +36,8 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             try
             {
-                using MimeMessage emailMessage = new();
-
-                emailMessage.From.Add(new MailboxAddress("Car WebApplication", "car.webapplication@mail.ru"));
-                emailMessage.To.Add(new MailboxAddress(user.Login, user.Email));
-                emailMessage.Subject = subject;
-                emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-                {
-                    Text = message
-                };
-
-                using SmtpClient client = new();
-                await client.ConnectAsync("smtp.mail.ru", 25, false);
-                await client.AuthenticateAsync("car.webapplication@mail.ru", "nifariankek322!");
+                MimeMessage emailMessage = CreateMessage(user, subject, message);
+                SmtpClient client = await CreateClient();
                 await client.SendAsync(emailMessage);
                 await client.DisconnectAsync(true);
             }
@@ -49,6 +46,40 @@ namespace CarProjectServer.BL.Services.Implementations
                 _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка отправления Email");
             }
+        }
+
+        /// <summary>
+        /// Создаёт клиент для рассылки email-сообщений.
+        /// </summary>
+        /// <returns>SMTP-Клиент.</returns>
+        private async Task<SmtpClient> CreateClient()
+        {
+            SmtpClient client = new();
+            await client.ConnectAsync("smtp.mail.ru", 25, false);
+            await client.AuthenticateAsync("car.webapplication@mail.ru", "nifariankek322!");
+            return client;
+        }
+
+        /// <summary>
+        /// Содаёт сообщение для отправки пользователю на email.
+        /// </summary>
+        /// <param name="user">Пользователь.</param>
+        /// <param name="subject">Тема письма.</param>
+        /// <param name="message">Текст письма</param>
+        /// <returns></returns>
+        private MimeMessage CreateMessage(User user, string subject, string message)
+        {
+            MimeMessage emailMessage = new();
+
+            emailMessage.From.Add(new MailboxAddress("Car WebApplication", "car.webapplication@mail.ru"));
+            emailMessage.To.Add(new MailboxAddress(user.Login, user.Email));
+            emailMessage.Subject = subject;
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = message
+            };
+
+            return emailMessage;
         }
     }
 }

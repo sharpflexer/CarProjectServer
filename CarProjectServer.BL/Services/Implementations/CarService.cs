@@ -24,7 +24,10 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         private readonly IMapper _mapper;
 
-        //TODO: Добавить саммари к логгерам в сервисах
+        /// <summary>
+        /// Логгер для логирования в файлы ошибок.
+        /// Настраивается в NLog.config.
+        /// </summary>
         private readonly ILogger _logger;
 
         /// <summary>

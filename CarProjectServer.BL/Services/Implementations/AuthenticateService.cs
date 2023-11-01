@@ -10,11 +10,16 @@ namespace CarProjectServer.BL.Services.Implementations
     /// </summary>
     public class AuthenticateService : IAuthenticateService
     {
-        private readonly ILogger _logger;
         /// <summary>
         /// Сервис для работы с пользователями в БД.
         /// </summary>
         private readonly IUserService _userService;
+
+        /// <summary>
+        /// Логгер для логирования в файлы ошибок.
+        /// Настраивается в NLog.config
+        /// </summary>
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Инициализирует сервис requestService.
