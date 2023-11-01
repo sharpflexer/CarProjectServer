@@ -47,8 +47,8 @@ builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseCarExceptionMiddleware();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
