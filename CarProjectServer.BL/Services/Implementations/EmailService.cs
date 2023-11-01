@@ -3,7 +3,7 @@ using MimeKit;
 using MailKit.Net.Smtp;
 using CarProjectServer.DAL.Entities.Identity;
 using CarProjectServer.BL.Exceptions;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -14,7 +14,7 @@ namespace CarProjectServer.BL.Services.Implementations
     {
         private readonly ILogger _logger;
 
-        public EmailService(ILogger logger)
+        public EmailService(ILogger<EmailService> logger)
         {
             _logger = logger;
         }
@@ -46,7 +46,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка отправления Email");
             }
         }

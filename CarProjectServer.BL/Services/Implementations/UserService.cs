@@ -7,7 +7,7 @@ using CarProjectServer.DAL.Entities.Identity;
 using CarProjectServer.DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -33,10 +33,11 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         /// <param name="context">Контекст для взаимодействия с БД.</param>
         /// <param name="mapper">Маппер для маппинга моделей.</param>
-        public UserService(ApplicationContext context, IMapper mapper)
+        public UserService(ApplicationContext context, IMapper mapper, ILogger<UserService> logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
         /// <summary>
@@ -55,7 +56,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка получения роли по умолчанию");
             }
         }
@@ -76,7 +77,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка добавления Refresh Token в БД");
             }
         }
@@ -95,7 +96,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка обновления пользователя в БД");
             }
         }
@@ -114,7 +115,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка добавления пользователя в БД");
             }
         }
@@ -133,7 +134,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка удаления пользователя из БД");
             }
         }
@@ -154,7 +155,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка получения списка пользователей");
             }
         }
@@ -174,7 +175,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка получения списка ролей");
             }
         }
@@ -197,7 +198,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка поиска пользователя по Refresh Token");
             }
         }

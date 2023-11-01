@@ -4,9 +4,8 @@ using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
 using CarProjectServer.DAL.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -32,10 +31,11 @@ namespace CarProjectServer.BL.Services.Implementations
         /// Инициализирует ApplicationContext.
         /// </summary>
         /// <param name="context">Контекст для взаимодействия с БД.</param>
-        public CarService(ApplicationContext context, IMapper mapper)
+        public CarService(ApplicationContext context, IMapper mapper, ILogger<CarService> logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch(Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка добавления авто в БД");
             }
         }
@@ -71,7 +71,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка обновления авто в БД");
             }
         }
@@ -90,7 +90,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка удаления авто из БД");
             }
         }
@@ -113,7 +113,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка чтения авто из БД");
             }
         }

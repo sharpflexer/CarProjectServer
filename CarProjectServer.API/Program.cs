@@ -13,6 +13,10 @@ using NLog.Web;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -30,7 +34,9 @@ builder.Services.AddIdentity<UserViewModel, RoleViewModel>(options => options.Si
 
 builder.Services.AddAutoMapper(
     typeof(ApiCarProfile),
-    typeof(BlCarProfile)
+    typeof(ApiUserProfile),
+    typeof(BlCarProfile),
+    typeof(BlUserProfile)
     );
 builder.Services.AddScoped<IMapper, Mapper>();
 
@@ -41,7 +47,6 @@ builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
-
 
 app.UseCarExceptionMiddleware();
 if (app.Environment.IsDevelopment())

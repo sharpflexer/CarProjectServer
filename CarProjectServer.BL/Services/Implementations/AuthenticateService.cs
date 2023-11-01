@@ -1,7 +1,7 @@
 ﻿using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -20,7 +20,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// Инициализирует сервис requestService.
         /// </summary>
         /// <param name="requestService">Сервис для отправки запросов в БД.</param>
-        public AuthenticateService(IUserService userService, ILogger logger)
+        public AuthenticateService(IUserService userService, ILogger<AuthenticateService> logger)
         {
             _userService = userService;
             _logger = logger;
@@ -44,7 +44,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch(Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка аутентификации");
             }
         }
@@ -64,7 +64,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка удаления куки");
             }
         }

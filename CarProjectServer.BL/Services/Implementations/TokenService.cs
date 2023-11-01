@@ -2,7 +2,7 @@
 using CarProjectServer.BL.Extensions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
-using NLog;
+using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 
@@ -29,7 +29,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// Инициализирует IRequestService
         /// </summary>
         /// <param name="requestService">Сервис для отправки запросов в БД.</param>
-        public TokenService(IUserService userService, IAuthenticateService authenticateService, ILogger logger)
+        public TokenService(IUserService userService, IAuthenticateService authenticateService, ILogger<TokenService> logger)
         {
             _userService = userService;
             _authenticateService = authenticateService;
@@ -54,7 +54,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка создания Access Token");
             }
         }
@@ -75,7 +75,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка создания Refresh Token");
             }
         }
@@ -105,7 +105,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch(Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка обновления Refresh Token");
             }
         }
@@ -126,7 +126,7 @@ namespace CarProjectServer.BL.Services.Implementations
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка создания JWT");
             }
         }
