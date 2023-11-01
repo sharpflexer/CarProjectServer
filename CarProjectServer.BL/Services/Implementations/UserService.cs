@@ -62,7 +62,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка получения роли по умолчанию");
+                throw new ApiException("Ошибка регистрации");
             }
         }
 
@@ -83,7 +83,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка добавления Refresh Token в БД");
+                throw new ApiException("Ошибка аутентификации");
             }
         }
 
@@ -102,7 +102,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка обновления пользователя в БД");
+                throw new ApiException("Невозможно обновить пользователя");
             }
         }
 
@@ -121,7 +121,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка добавления пользователя в БД");
+                throw new ApiException("Невозможно добавить пользователя");
             }
         }
 
@@ -140,7 +140,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка удаления пользователя из БД");
+                throw new ApiException("Невозможно удалить пользователя");
             }
         }
 
@@ -161,7 +161,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка получения списка пользователей");
+                throw new ApiException("Список пользователей недоступен");
             }
         }
 
@@ -181,7 +181,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка получения списка ролей");
+                throw new ApiException("Список ролей недоступен");
             }
         }
 
@@ -204,7 +204,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка поиска пользователя по Refresh Token");
+                throw new ApiException("Пользователь не найден");
             }
         }
     }

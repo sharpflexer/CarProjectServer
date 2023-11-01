@@ -58,7 +58,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch(Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка добавления авто в БД");
+                throw new ApiException("Невозможно добавить пользователя");
             }
         }
 
@@ -77,7 +77,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка обновления авто в БД");
+                throw new ApiException("Невозможно изменить пользователя");
             }
         }
 
@@ -96,7 +96,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка удаления авто из БД");
+                throw new ApiException("Невозможно удалить пользователя");
             }
         }
 
@@ -119,7 +119,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка чтения авто из БД");
+                throw new ApiException("Список автомобилей недоступен");
             }
         }
     }

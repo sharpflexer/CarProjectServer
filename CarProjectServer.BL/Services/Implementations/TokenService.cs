@@ -61,7 +61,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка создания Access Token");
+                throw new ApiException("Ошибка аутентификации");
             }
         }
 
@@ -82,7 +82,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка создания Refresh Token");
+                throw new ApiException("Ошибка аутентификации");
             }
         }
 
@@ -112,7 +112,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch(Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка обновления Refresh Token");
+                throw new ApiException("Ошибка аутентификации");
             }
         }
 
@@ -133,7 +133,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка создания JWT");
+                throw new ApiException("Ошибка аутентификации");
             }
         }
     }

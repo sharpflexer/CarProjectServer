@@ -51,7 +51,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch(Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка аутентификации");
+                throw new ApiException("Неверный логин и/или пароль");
             }
         }
 
@@ -71,7 +71,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка удаления куки");
+                throw new ApiException("Не удалось выйти из аккаунта");
             }
         }
     }

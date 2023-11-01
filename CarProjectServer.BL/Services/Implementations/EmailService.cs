@@ -44,7 +44,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка отправления Email");
+                throw new ApiException("Некорректный Email");
             }
         }
 
