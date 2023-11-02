@@ -109,7 +109,11 @@ namespace CarProjectServer.BL.Services.Implementations
                     RefreshToken = newRefreshToken
                 };
             }
-            catch(Exception ex)
+            catch (ApiException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 throw new ApiException("Ошибка аутентификации");
@@ -129,6 +133,10 @@ namespace CarProjectServer.BL.Services.Implementations
                     AccessToken = accessToken,
                     RefreshToken = refreshToken
                 };
+            }
+            catch (ApiException ex)
+            {
+                throw;
             }
             catch (Exception ex)
             {

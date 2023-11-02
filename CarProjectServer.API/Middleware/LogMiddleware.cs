@@ -52,14 +52,17 @@ namespace CarProjectServer.API.Middleware
                 foreach (var key in httpContext.Request.Headers.Keys)
                     requestLog.AppendLine(key + "=" + httpContext.Request.Headers[key]);
 
-                StreamReader reader = new StreamReader(httpContext.Request.Body);
-                var resultBody = new char[1000];
-                await reader.ReadAsync(resultBody, 0, 1000);
-                var bodyString = new string(resultBody);
-                var formattedBody = bodyString.Replace("\n", "").Replace("\x020", "");
+                using (StreamReader reader = new StreamReader(httpContext.Request.Body))
+                {
+                    var resultBody = new char[1000];
+                    await reader.ReadAsync(resultBody, 0, 1000);
+                    var bodyString = new string(resultBody);
+                    var formattedBody = bodyString.Replace(Environment.NewLine, "")
+                                                  .Replace("\x020", "");
 
-                requestLog.AppendLine("BODY: ");
-                requestLog.Append(formattedBody);
+                    requestLog.AppendLine("BODY: ");
+                    requestLog.Append(formattedBody);
+                }
 
                 _logger.LogInformation(requestLog.ToString());
             }

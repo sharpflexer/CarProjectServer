@@ -55,7 +55,7 @@ namespace CarProjectServer.BL.Services.Implementations
                 _context.Cars.Add(auto);
                 await _context.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
                 throw new ApiException("Невозможно добавить пользователя");

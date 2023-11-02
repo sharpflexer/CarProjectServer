@@ -48,6 +48,10 @@ namespace CarProjectServer.BL.Services.Implementations
 
                 return currentUser;
             }
+            catch(ApiException ex)
+            {
+                throw;
+            }
             catch(Exception ex)
             {
                 _logger.LogError(ex.Message);
@@ -67,6 +71,10 @@ namespace CarProjectServer.BL.Services.Implementations
                 user.RefreshToken = null;
 
                 _userService.UpdateUser(user);
+            }
+            catch (ApiException ex)
+            {
+                throw;
             }
             catch (Exception ex)
             {

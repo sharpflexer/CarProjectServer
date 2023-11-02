@@ -86,7 +86,7 @@ namespace CarProjectServer.API.Controllers.Authentication
             catch (Exception ex) 
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException();
+                throw new ApiException("Ошибка аутентификации");
             }
         }
 

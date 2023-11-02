@@ -3,6 +3,7 @@ using CarProjectServer.BL.Exceptions;
 using Microsoft.Extensions.Logging;
 using NLog.LayoutRenderers;
 using System.Net;
+using static MailKit.Net.Imap.ImapEvent;
 
 namespace CarProjectServer.API.Middleware
 {
@@ -44,30 +45,26 @@ namespace CarProjectServer.API.Middleware
             }
             catch (ApiException ex)
             {
-                httpContext.Response.ContentType = "application/json";
-                httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                var error = new ErrorViewModel
-                {
-                    StatusCode = httpContext.Response.StatusCode.ToString(),
-                    Message = ex.Message,
-                };
-
-                await httpContext.Response.WriteAsJsonAsync(error);
+                await AddExceptionToResponse(httpContext, ex.Message);
             }
             catch (Exception ex)
             {
-                httpContext.Response.ContentType = "application/json";
-                httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
                 _logger.LogError(ex.Message);
-                var error = new ErrorViewModel
-                {
-                    StatusCode = httpContext.Response.StatusCode.ToString(),
-                    Message = "Непредвиденная ошибка взаимодействия с сервером",
-                };
-
-                await httpContext.Response.WriteAsJsonAsync(error);
+                await AddExceptionToResponse(httpContext, "Непредвиденная ошибка взаимодействия с сервером");
             }         
+        }
+
+        private static async Task AddExceptionToResponse(HttpContext httpContext, string message)
+        {
+            httpContext.Response.ContentType = "application/json";
+            httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            var error = new ErrorViewModel
+            {
+                StatusCode = httpContext.Response.StatusCode.ToString(),
+                Message = message,
+            };
+
+            await httpContext.Response.WriteAsJsonAsync(error);
         }
     }
 }
