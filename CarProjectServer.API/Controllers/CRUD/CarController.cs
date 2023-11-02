@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CarProjectServer.API.Models;
+using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -25,13 +26,22 @@ namespace CarProjectServer.API.Controllers.CRUD
         private readonly IMapper _mapper;
 
         /// <summary>
+        /// Логгер для логирования в файлы ошибок.
+        /// Настраивается в NLog.config.
+        /// </summary>
+        private readonly ILogger _logger;
+
+        /// <summary>
         /// Инициализирует контроллер сервисом автомобилей.
         /// </summary>
-        /// <param name="carService"></param>
-        public CarController(ICarService carService, IMapper mapper)
+        /// <param name="carService">Сервис для взаимодействия с БД автомобилей.</param>
+        /// <param name="mapper">Маппер для маппинга моделей между слоями.</param>
+        /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
+        public CarController(ICarService carService, IMapper mapper, ILogger<CarController> logger)
         {
             _carService = carService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         /// <summary>
@@ -42,10 +52,22 @@ namespace CarProjectServer.API.Controllers.CRUD
         [HttpPost("create")]
         public async Task<ActionResult> Create(CarViewModel carViewModel)
         {
-            var auto = _mapper.Map<CarModel>(carViewModel);
-            await _carService.CreateAsync(auto);
+            try
+            {
+                var auto = _mapper.Map<CarModel>(carViewModel);
+                await _carService.CreateAsync(auto);
 
-            return Ok();
+                return Ok();
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
+            }
         }
 
         /// <summary>
@@ -63,9 +85,14 @@ namespace CarProjectServer.API.Controllers.CRUD
 
                 return Ok(auto);
             }
+            catch (ApiException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
-                throw ex;
+                _logger.LogError(ex.Message);
+                throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
             }
         }
 
@@ -78,10 +105,22 @@ namespace CarProjectServer.API.Controllers.CRUD
         [HttpPut("update")]
         public async Task<IActionResult> Update(CarViewModel carViewModel)
         {
-            var auto = _mapper.Map<CarModel>(carViewModel);
-            await _carService.UpdateAsync(auto);
+            try
+            {
+                var auto = _mapper.Map<CarModel>(carViewModel);
+                await _carService.UpdateAsync(auto);
 
-            return Ok();
+                return Ok();
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
+            }
         }
 
         /// <summary>
@@ -93,10 +132,22 @@ namespace CarProjectServer.API.Controllers.CRUD
         [HttpDelete("delete")]
         public async Task<ActionResult> Delete(CarViewModel carViewModel)
         {
-            var auto = _mapper.Map<CarModel>(carViewModel);
-            await _carService.DeleteAsync(auto);
+            try
+            {
+                var auto = _mapper.Map<CarModel>(carViewModel);
+                await _carService.DeleteAsync(auto);
 
-            return Ok();
+                return Ok();
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
+            }
         }
     }
 }

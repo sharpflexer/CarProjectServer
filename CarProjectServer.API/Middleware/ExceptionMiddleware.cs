@@ -1,5 +1,7 @@
 ﻿using CarProjectServer.API.Models;
 using CarProjectServer.BL.Exceptions;
+using Microsoft.Extensions.Logging;
+using NLog.LayoutRenderers;
 using System.Net;
 
 namespace CarProjectServer.API.Middleware
@@ -15,12 +17,19 @@ namespace CarProjectServer.API.Middleware
         private readonly RequestDelegate _next;
 
         /// <summary>
-        /// Инициализирует middleware запросом.
+        /// Логгер для логирования в файлы ошибок.
+        /// Настраивается в NLog.config.
+        /// </summary>
+        private readonly ILogger _logger;
+
+        /// <summary>
+        /// Инициализирует middleware запросом и логгером.
         /// </summary>
         /// <param name="next"></param>
-        public ExceptionMiddleware(RequestDelegate next)
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         /// <summary>
@@ -35,10 +44,6 @@ namespace CarProjectServer.API.Middleware
             }
             catch (ApiException ex)
             {
-                
-            }
-            catch (Exception ex)
-            {
                 httpContext.Response.ContentType = "application/json";
                 httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 var error = new ErrorViewModel
@@ -48,23 +53,21 @@ namespace CarProjectServer.API.Middleware
                 };
 
                 await httpContext.Response.WriteAsJsonAsync(error);
-            }         
-        }
-    }
+            }
+            catch (Exception ex)
+            {
+                httpContext.Response.ContentType = "application/json";
+                httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-    /// <summary>
-    /// Расширения для ExceptionMiddleware
-    /// </summary>
-    public static class ExceptionMiddlewareExtensions
-    {
-        /// <summary>
-        /// Метод расширения для Application Builder.
-        /// </summary>
-        /// <param name="builder">Конфигуратор пайплана.</param>
-        /// <returns>Конфигуратор с добавленным ExceptionMiddleware.</returns>
-        public static IApplicationBuilder UseExceptionMiddleware(this IApplicationBuilder builder)
-        {
-            return builder.UseMiddleware<ExceptionMiddleware>();
+                _logger.LogError(ex.Message);
+                var error = new ErrorViewModel
+                {
+                    StatusCode = httpContext.Response.StatusCode.ToString(),
+                    Message = "Непредвиденная ошибка взаимодействия с сервером",
+                };
+
+                await httpContext.Response.WriteAsJsonAsync(error);
+            }         
         }
     }
 }

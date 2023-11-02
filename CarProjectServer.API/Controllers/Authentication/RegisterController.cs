@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using CarProjectServer.API.Controllers.CRUD;
 using CarProjectServer.API.Models;
+using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Implementations;
 using CarProjectServer.BL.Services.Interfaces;
@@ -15,7 +17,7 @@ namespace CarProjectMVC.Controllers.Authorization
     public class RegisterController : Controller
     {
         /// <summary>
-        /// Маппер для маппинга моделей между слоями
+        /// Маппер для маппинга моделей между слоями.
         /// </summary>
         private readonly IMapper _mapper;
 
@@ -25,13 +27,22 @@ namespace CarProjectMVC.Controllers.Authorization
         private readonly IUserService _userService;
 
         /// <summary>
-        /// Инициализирует контроллер сервисом запросов в БД.
+        /// Логгер для логирования в файлы ошибок.
+        /// Настраивается в NLog.config.
         /// </summary>
-        /// <param name="requestService">Сервис для отправки запросов в БД.</param>
-        public RegisterController(IMapper mapper, IUserService userService)
+        private readonly ILogger _logger;
+
+        /// <summary>
+        /// Инициализирует контроллер сервисом пользователей.
+        /// </summary>
+        /// <param name="mapper">Маппер для маппинга моделей между слоями.</param>
+        /// <param name="userService">Сервис для взаимодействия с пользователями в БД.</param>
+        /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
+        public RegisterController(IMapper mapper, IUserService userService, ILogger<RegisterController> logger)
         {
             _mapper = mapper;
             _userService = userService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -49,13 +60,18 @@ namespace CarProjectMVC.Controllers.Authorization
                 user.Role = _mapper.Map<RoleViewModel>(roleModel);
                 var userModel = _mapper.Map<UserModel>(user);
                 await _userService.AddUserAsync(userModel);
+
+                return Ok();
+            }
+            catch (ApiException ex)
+            {
+                throw;
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                _logger.LogError(ex.Message);
+                throw new ApiException("Ошибка регистрации");
             }
-
-            return Ok();
         }
     }
 }
