@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Middleware\LogBodyMiddleware.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="NLog.config" />
   </ItemGroup>
 

@@ -50,7 +50,6 @@ var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<LogMiddleware>();
-app.UseMiddleware<LogBodyMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
