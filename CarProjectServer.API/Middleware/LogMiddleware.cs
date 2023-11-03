@@ -58,7 +58,8 @@ namespace CarProjectServer.API.Middleware
                     await reader.ReadAsync(resultBody, 0, 1000);
                     var bodyString = new string(resultBody);
                     var formattedBody = bodyString.Replace(Environment.NewLine, string.Empty)
-                                                  .Replace("\x020", string.Empty);
+                                                  .Replace("\x020", string.Empty)
+                                                  .Replace("\0", string.Empty);
 
                     requestLog.AppendLine("BODY: ");
                     requestLog.Append(formattedBody);
