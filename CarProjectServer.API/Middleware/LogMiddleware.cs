@@ -1,11 +1,5 @@
-﻿using CarProjectServer.API.Models;
-using CarProjectServer.BL.Exceptions;
-using Microsoft.Extensions.Logging;
-using Org.BouncyCastle.Asn1.Ocsp;
-using System.Net;
+﻿using Microsoft.AspNetCore.Http;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace CarProjectServer.API.Middleware
 {
@@ -41,6 +35,7 @@ namespace CarProjectServer.API.Middleware
         /// <param name="httpContext">Контекст запроса.</param>
         public async Task Invoke(HttpContext httpContext)
         {
+            httpContext.Request.EnableBuffering();
             var endpoint = httpContext.GetEndpoint()?.DisplayName;
             if (endpoint != null && endpoint.Contains("API"))
             {
@@ -54,21 +49,28 @@ namespace CarProjectServer.API.Middleware
 
                 using (StreamReader reader = new StreamReader(httpContext.Request.Body))
                 {
-                    var resultBody = new char[1000];
-                    await reader.ReadAsync(resultBody, 0, 1000);
-                    var bodyString = new string(resultBody);
-                    var formattedBody = bodyString.Replace(Environment.NewLine, string.Empty)
-                                                  .Replace("\x020", string.Empty)
-                                                  .Replace("\0", string.Empty);
-
-                    requestLog.AppendLine("BODY: ");
-                    requestLog.Append(formattedBody);
+                    await ReadBody(httpContext, reader, requestLog);
                 }
 
                 _logger.LogInformation(requestLog.ToString());
             }
 
             await _next(httpContext);
+        }
+
+        private async Task ReadBody(HttpContext httpContext, StreamReader reader, StringBuilder requestLog)
+        {
+            var resultBody = new char[1000];
+            await reader.ReadAsync(resultBody, 0, 1000);
+            var bodyString = new string(resultBody);
+            var formattedBody = bodyString.Replace(Environment.NewLine, string.Empty)
+                                          .Replace("\x020", string.Empty)
+                                          .Replace("\0", string.Empty);
+
+            requestLog.AppendLine("BODY: ");
+            requestLog.Append(formattedBody);
+
+            httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
         }
     }
 }
