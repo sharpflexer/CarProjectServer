@@ -37,25 +37,33 @@ namespace CarProjectServer.API.Middleware
         {
             httpContext.Request.EnableBuffering();
             var endpoint = httpContext.GetEndpoint()?.DisplayName;
-            if (endpoint != null && endpoint.Contains("API"))
+            StreamReader reader = new StreamReader(httpContext.Request.Body);
+
+            try
             {
-                StringBuilder requestLog = new StringBuilder();
-                requestLog.AppendLine(endpoint);
-                requestLog.AppendLine("METHOD: " + httpContext.Request.Method);
-                requestLog.AppendLine("HEADERS: ");
-
-                foreach (var key in httpContext.Request.Headers.Keys)
-                    requestLog.AppendLine(key + "=" + httpContext.Request.Headers[key]);
-
-                using (StreamReader reader = new StreamReader(httpContext.Request.Body))
+                if (endpoint != null && endpoint.Contains("API"))
                 {
+                    StringBuilder requestLog = new StringBuilder();
+                    requestLog.AppendLine(endpoint);
+                    requestLog.AppendLine("METHOD: " + httpContext.Request.Method);
+                    requestLog.AppendLine("HEADERS: ");
+
+                    foreach (var key in httpContext.Request.Headers.Keys)
+                    {
+                        requestLog.AppendLine(key + "=" + httpContext.Request.Headers[key]);
+                    }
+
                     await ReadBody(httpContext, reader, requestLog);
+
+                    _logger.LogInformation(requestLog.ToString());
                 }
 
-                _logger.LogInformation(requestLog.ToString());
+                await _next(httpContext);
             }
-
-            await _next(httpContext);
+            finally
+            {
+                reader.Close();
+            }
         }
 
         private async Task ReadBody(HttpContext httpContext, StreamReader reader, StringBuilder requestLog)

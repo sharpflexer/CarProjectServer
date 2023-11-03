@@ -47,8 +47,10 @@ builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
+
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<LogMiddleware>();
+app.UseMiddleware<LogBodyMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
