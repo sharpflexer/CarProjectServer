@@ -41,7 +41,7 @@ namespace CarProjectServer.API.Middleware
 
             try
             {
-                if (endpoint != null && endpoint.Contains("API"))
+                if (endpoint != null && endpoint.Contains("API") && !endpoint.Contains("Read"))
                 {
                     StringBuilder requestLog = new StringBuilder();
                     requestLog.AppendLine(endpoint);
