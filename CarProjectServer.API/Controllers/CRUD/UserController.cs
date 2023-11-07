@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CarProjectServer.API.Models;
+using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Entities.Identity;
@@ -27,14 +28,22 @@ namespace CarProjectServer.API.Controllers.CRUD
         private readonly IMapper _mapper;
 
         /// <summary>
+        /// Логгер для логирования в файлы ошибок.
+        /// Настраивается в NLog.config.
+        /// </summary>
+        private readonly ILogger _logger;
+
+        /// <summary>
         /// Инициализирует контроллер сервисом пользователей. 
         /// </summary>
         /// <param name="userService">Сервис для взаимодействия с пользователями в БД.</param>
         /// <param name="mapper">Маппер для маппинга моделей.</param>
-        public UserController(IUserService userService, IMapper mapper)
+        /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
+        public UserController(IUserService userService, IMapper mapper, ILogger<UserController> logger)
         {
             _userService = userService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         /// <summary>
@@ -45,10 +54,22 @@ namespace CarProjectServer.API.Controllers.CRUD
         [HttpGet("read")]
         public async Task<ActionResult<IEnumerable<UserViewModel>>> Read()
         {
-            var users = await _userService.GetUsers();
-            var userViews = _mapper.Map<IEnumerable<UserViewModel>>(users);
+            try
+            {
+                var users = await _userService.GetUsers();
+                var userViews = _mapper.Map<IEnumerable<UserViewModel>>(users);
 
-            return Ok(userViews);
+                return Ok(userViews);
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
+            }
         }
 
         /// <summary>
@@ -60,10 +81,22 @@ namespace CarProjectServer.API.Controllers.CRUD
         [HttpPut("update")]
         public async Task<ActionResult> Update(UserViewModel userViewModel)
         {
-            var user = _mapper.Map<UserModel>(userViewModel);
-            await _userService.UpdateUser(user);
+            try
+            {
+                var user = _mapper.Map<UserModel>(userViewModel);
+                await _userService.UpdateUser(user);
 
-            return Ok();
+                return Ok();
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
+            }
         }
 
         /// <summary>
@@ -75,10 +108,22 @@ namespace CarProjectServer.API.Controllers.CRUD
         [HttpDelete("delete")]
         public async Task<ActionResult> Delete(UserViewModel userViewModel)
         {
-            var user = _mapper.Map<UserModel>(userViewModel);
-            await _userService.DeleteUser(user);
+            try
+            {
+                var user = _mapper.Map<UserModel>(userViewModel);
+                await _userService.DeleteUser(user);
 
-            return Ok();
+                return Ok();
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
+            }
         }
     }
 }

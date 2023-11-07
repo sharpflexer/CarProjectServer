@@ -7,6 +7,7 @@ using CarProjectServer.BL.Models;
 using AutoMapper;
 using CarProjectServer.BL.Services.Implementations;
 using Microsoft.AspNetCore.Authorization;
+using CarProjectMVC.Controllers.Authorization;
 
 namespace CarProjectServer.API.Controllers.Authentication
 {
@@ -33,16 +34,24 @@ namespace CarProjectServer.API.Controllers.Authentication
         private readonly IMapper _mapper;
 
         /// <summary>
+        /// Логгер для логирования в файлы ошибок.
+        /// Настраивается в NLog.config.
+        /// </summary>
+        private readonly ILogger _logger;
+
+        /// <summary>
         /// Инициализирует контроллер сервисами токенов, аутентификации и запросов в БД.
         /// </summary>
         /// <param name="tokenService">Сервис для работы с JWT токенами.</param>
         /// <param name="authenticateService">Сервис для аутентификации пользователей.</param>
         /// <param name="mapper">Маппер для маппинга моделей между слоями.</param>
-        public AuthController(ITokenService tokenService, IAuthenticateService authenticateService, IMapper mapper)
+        /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
+        public AuthController(ITokenService tokenService, IAuthenticateService authenticateService, IMapper mapper, ILogger<AuthController> logger)
         {
             _tokenService = tokenService;
             _authenticateService = authenticateService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         /// <summary>
@@ -57,16 +66,28 @@ namespace CarProjectServer.API.Controllers.Authentication
         [HttpPost("token")]
         public async Task<ActionResult<string>> Token(string username, string password)
         {
-            var jwtTokenModel = await _tokenService.GetJwtTokenAsync(username, password);
-
-            var jwtTokenViewModel = _mapper.Map<JwtTokenViewModel>(jwtTokenModel);
-
-            HttpContext.Response.Cookies.Append("Refresh", jwtTokenViewModel.RefreshToken, new CookieOptions()
+            try
             {
-                HttpOnly = true
-            });
+                var jwtTokenModel = await _tokenService.GetJwtTokenAsync(username, password);
 
-            return jwtTokenViewModel.AccessToken;
+                var jwtTokenViewModel = _mapper.Map<JwtTokenViewModel>(jwtTokenModel);
+
+                HttpContext.Response.Cookies.Append("Refresh", jwtTokenViewModel.RefreshToken, new CookieOptions()
+                {
+                    HttpOnly = true
+                });
+
+                return jwtTokenViewModel.AccessToken;
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError(ex.Message);
+                throw new ApiException("Ошибка аутентификации");
+            }
         }
 
         /// <summary>
@@ -87,29 +108,28 @@ namespace CarProjectServer.API.Controllers.Authentication
             try
             {
                 oldToken = TryGetOldJwtToken(HttpContext.Request);
+
+
+                var oldTokenModel = _mapper.Map<JwtTokenModel>(oldToken);
+                var newTokenModel = _tokenService.CreateNewToken(oldTokenModel);
+                var newToken = _mapper.Map<JwtTokenViewModel>(newTokenModel);
+
+                HttpContext.Response.Cookies.Append("Refresh", newToken.RefreshToken, new CookieOptions()
+                {
+                    HttpOnly = true
+                });
+
+                return Ok(newToken.AccessToken);
             }
-            catch (TokenNotExistException e)
+            catch (ApiException) 
             {
-                HttpContext.Response.Headers.Append("TOKEN-NOT-EXIST", "true");
-
-                return BadRequest(e.Message);
+                throw;
             }
-
-            if (oldToken.RefreshToken is null)
+            catch (Exception ex)
             {
-                return BadRequest("Invalid client request");
+                _logger.LogError(ex.Message);
+                throw new ApiException("Ошибка аутентификации");
             }
-
-            var oldTokenModel = _mapper.Map<JwtTokenModel>(oldToken);
-            var newTokenModel = _tokenService.CreateNewToken(oldTokenModel);
-            var newToken = _mapper.Map<JwtTokenViewModel>(newTokenModel);
-
-            HttpContext.Response.Cookies.Append("Refresh", newToken.RefreshToken, new CookieOptions()
-            {
-                HttpOnly = true
-            });
-
-            return Ok(newToken.AccessToken);
         }
 
         /// <summary>
@@ -121,12 +141,24 @@ namespace CarProjectServer.API.Controllers.Authentication
         [HttpGet("logout")]
         public async Task<ActionResult> LogOut()
         {
-            HttpContext.Response.Cookies.Delete("Refresh");
-            HttpContext.Response.Headers.Remove("Authentication");
-            var refreshCookie = HttpContext.Request.Cookies["Refresh"];
-            _authenticateService.Revoke(refreshCookie);
+            try
+            {
+                HttpContext.Response.Cookies.Delete("Refresh");
+                HttpContext.Response.Headers.Remove("Authentication");
+                var refreshCookie = HttpContext.Request.Cookies["Refresh"];
+                _authenticateService.Revoke(refreshCookie);
 
-            return Ok();
+                return Ok();
+            }
+            catch(ApiException ex)
+            {
+                throw ex;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new ApiException("Ошибка аутентификации");
+            }
         }
 
         /// <summary>

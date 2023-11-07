@@ -1,5 +1,7 @@
-﻿using CarProjectServer.BL.Models;
+﻿using CarProjectServer.BL.Exceptions;
+using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -14,12 +16,20 @@ namespace CarProjectServer.BL.Services.Implementations
         private readonly IUserService _userService;
 
         /// <summary>
-        /// Инициализирует сервис requestService.
+        /// Логгер для логирования в файлы ошибок.
+        /// Настраивается в NLog.config.
         /// </summary>
-        /// <param name="requestService">Сервис для отправки запросов в БД.</param>
-        public AuthenticateService(IUserService userService)
+        private readonly ILogger _logger;
+
+        /// <summary>
+        /// Инициализирует сервис сервисом для взаимодействия с пользователями в БД.
+        /// </summary>
+        /// <param name="userService">Сервис для отправки запросов в БД.</param>
+        /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
+        public AuthenticateService(IUserService userService, ILogger<AuthenticateService> logger)
         {
             _userService = userService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -30,11 +40,23 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <returns>Аутентифицированный пользователь.</returns>
         public async Task<UserModel> AuthenticateUser(string login, string password)
         {
-            var users = await _userService.GetUsers();
-            var currentUser = users.FirstOrDefault(authUser => authUser.Login == login &&
-                authUser.Password == password);
+            try
+            {
+                var users = await _userService.GetUsers();
+                var currentUser = users.FirstOrDefault(authUser => authUser.Login == login &&
+                    authUser.Password == password);
 
-            return currentUser;
+                return currentUser;
+            }
+            catch(ApiException ex)
+            {
+                throw;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new ApiException("Неверный логин и/или пароль");
+            }
         }
 
         /// <summary>
@@ -43,10 +65,22 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <param name="cookieToRevoke">Строка куки, которое нужно очистить.</param>
         public void Revoke(string cookieToRevoke)
         {
-            var user = _userService.GetUserByToken(cookieToRevoke);
-            user.RefreshToken = null;
+            try
+            {
+                var user = _userService.GetUserByToken(cookieToRevoke);
+                user.RefreshToken = null;
 
-            _userService.UpdateUser(user);
+                _userService.UpdateUser(user);
+            }
+            catch (ApiException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw new ApiException("Не удалось выйти из аккаунта");
+            }
         }
     }
 }

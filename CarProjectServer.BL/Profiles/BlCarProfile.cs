@@ -13,8 +13,8 @@ namespace CarProjectServer.BL.Profiles
         {
             CreateMap<BrandModel, Brand>().ReverseMap();
             CreateMap<CarColorModel, CarColor>().ReverseMap();
-            CreateMap<CarModelTypeModel, DAL.Models.CarModelType>().ReverseMap();
-            CreateMap<Models.CarModel, Car>().ReverseMap();
+            CreateMap<CarModelTypeModel, CarModelType>().ReverseMap();
+            CreateMap<CarModel, Car>().ReverseMap();
         }
     }
 }
