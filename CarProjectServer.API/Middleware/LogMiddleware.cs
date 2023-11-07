@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CarProjectServer.API.Filters;
+using Microsoft.AspNetCore.Http;
 using System.Text;
 
 namespace CarProjectServer.API.Middleware
@@ -37,11 +38,15 @@ namespace CarProjectServer.API.Middleware
         {
             httpContext.Request.EnableBuffering();
             var endpoint = httpContext.GetEndpoint()?.DisplayName;
+            var notLogged = httpContext.GetEndpoint()?
+                .Metadata
+                .Any(m => m is AcceptFilterAsync);
+
             StreamReader reader = new StreamReader(httpContext.Request.Body);
 
             try
             {
-                if (endpoint != null && endpoint.Contains("API") && !endpoint.Contains("Read"))
+                if (endpoint != null && notLogged != null && notLogged == true)
                 {
                     StringBuilder requestLog = new StringBuilder();
                     requestLog.AppendLine(endpoint);
