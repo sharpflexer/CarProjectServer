@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CarProjectServer.API.Filters;
 using CarProjectServer.API.Models;
 using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
@@ -11,6 +12,9 @@ using System.Net;
 
 namespace CarProjectServer.API.Controllers.CRUD
 {
+    /// <summary>
+    /// Контроллер для просмотра и изменения пользователей.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class CarController : ControllerBase
@@ -75,6 +79,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// </summary>
         /// <returns>Список авто из БД.</returns>
         // GET api/car/read
+        [AcceptFilterAsync]
         [HttpGet("read")]
         public async Task<ActionResult<IEnumerable<CarViewModel>>> Read()
         {
@@ -89,9 +94,8 @@ namespace CarProjectServer.API.Controllers.CRUD
             {
                 throw;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex.Message);
                 throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
             }
         }
