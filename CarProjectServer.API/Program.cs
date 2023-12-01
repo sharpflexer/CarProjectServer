@@ -46,6 +46,62 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+
+            ValidIssuer = AuthOptions.Issuer,
+            ValidAudience = AuthOptions.Audience,
+            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = false,
+            ClockSkew = TimeSpan.Zero
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                {
+                    context.Response.Headers.Add("IS-TOKEN-EXPIRED", "true");
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+
+    });
+
+builder.Services.AddAuthorization(opts =>
+{
+    opts.AddPolicy("Create", policy =>
+    {
+        policy.RequireClaim("CanCreate", "True");
+    });
+    opts.AddPolicy("Read", policy =>
+    {
+        policy.RequireClaim("CanRead", "True");
+    });
+    opts.AddPolicy("Update", policy =>
+    {
+        policy.RequireClaim("CanUpdate", "True");
+    });
+    opts.AddPolicy("Delete", policy =>
+    {
+        policy.RequireClaim("CanDelete", "True");
+    });
+    opts.AddPolicy("Users", policy =>
+    {
+        policy.RequireClaim("CanManageUsers", "True");
+    });
+});
+
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
@@ -58,6 +114,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

@@ -61,7 +61,7 @@ namespace CarProjectServer.BL.Services.Implementations
         }
 
         /// <summary>
-        /// Содаёт сообщение для отправки пользователю на email.
+        /// Создаёт сообщение для отправки пользователю на email.
         /// </summary>
         /// <param name="user">Пользователь.</param>
         /// <param name="subject">Тема письма.</param>

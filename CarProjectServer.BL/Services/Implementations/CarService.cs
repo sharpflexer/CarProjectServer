@@ -112,7 +112,9 @@ namespace CarProjectServer.BL.Services.Implementations
                    .Include(car => car.Brand)
                    .Include(car => car.Model)
                    .Include(car => car.Color)
-                   .AsNoTracking().OrderBy(car => car.Id).ToListAsync();
+                   .AsNoTracking()
+                   .OrderBy(car => car.Id)
+                   .ToListAsync();
 
                 return _mapper.Map<List<CarModel>>(cars);
             }

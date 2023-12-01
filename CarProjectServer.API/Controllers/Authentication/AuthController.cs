@@ -62,9 +62,9 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// <returns>
         /// Результат валидации пользователя.
         /// </returns>
-        // POST api/auth/token
-        [HttpPost("token")]
-        public async Task<ActionResult<string>> Token(string username, string password)
+        // POST api/auth/login
+        [HttpPost("login")]
+        public async Task<ActionResult<string>> Login(string username, string password)
         {
             try
             {

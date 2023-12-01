@@ -15,6 +15,7 @@ namespace CarProjectServer.API.Controllers.CRUD
     /// <summary>
     /// Контроллер для просмотра и изменения пользователей.
     /// </summary>
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CarController : ControllerBase
@@ -53,6 +54,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// в базу данных через IRequestService.CreateAsync().
         /// </summary>
         // POST api/car/create
+        [Authorize(Policy = "Create")]
         [HttpPost("create")]
         public async Task<ActionResult> Create(CarViewModel carViewModel)
         {
@@ -79,6 +81,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// </summary>
         /// <returns>Список авто из БД.</returns>
         // GET api/car/read
+        [Authorize(Policy = "Read")]
         [AcceptFilterAsync]
         [HttpGet("read")]
         public async Task<ActionResult<IEnumerable<CarViewModel>>> Read()
@@ -106,6 +109,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// <param name="carViewModel">Авто для обновления.</param>
         /// <returns>200 OK.</returns>
         // PUT api/car/update
+        [Authorize(Policy = "Update")]
         [HttpPut("update")]
         public async Task<IActionResult> Update(CarViewModel carViewModel)
         {
@@ -133,6 +137,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// <param name="carViewModel">Авто для удаления.</param>
         /// <returns>200 OK.</returns>
         // DELETE api/car/delete
+        [Authorize(Policy = "Delete")]
         [HttpDelete("delete")]
         public async Task<ActionResult> Delete(CarViewModel carViewModel)
         {
