@@ -1,8 +1,13 @@
 ﻿using CarProjectServer.API.Models;
 using CarProjectServer.BL.Exceptions;
+using CarProjectServer.BL.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using NLog.LayoutRenderers;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
+using System.Text;
 using static MailKit.Net.Imap.ImapEvent;
 
 namespace CarProjectServer.API.Middleware
@@ -50,8 +55,9 @@ namespace CarProjectServer.API.Middleware
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 await AddExceptionToResponse(httpContext, "Непредвиденная ошибка взаимодействия с сервером");
-            }         
+            }
         }
 
         private static async Task AddExceptionToResponse(HttpContext httpContext, string message)

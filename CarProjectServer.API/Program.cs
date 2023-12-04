@@ -2,15 +2,34 @@ using AutoMapper;
 using CarProjectServer.API.Middleware;
 using CarProjectServer.API.Models;
 using CarProjectServer.API.Profiles;
+using CarProjectServer.BL.Options;
 using CarProjectServer.BL.Profiles;
 using CarProjectServer.BL.Services.Implementations;
 using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
+using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
+var clientOrigin = "clientOrigin";
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: clientOrigin,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:3000")
+                          .WithMethods("GET", "POST", "PUT", "DELETE")
+                          .WithHeaders("Content-Type", "Authorization");
+                      });
+});
 
 builder.Services.AddControllers();
 
@@ -19,6 +38,7 @@ builder.Host.UseNLog();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 string connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationContext>(options =>
@@ -27,7 +47,7 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
     options.EnableSensitiveDataLogging();
 });
 
-builder.Services.AddIdentity<UserViewModel, RoleViewModel>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentity<UserViewModel, RoleViewModel>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationContext>()
     .AddUserManager<UserManager<UserViewModel>>()
     .AddSignInManager<SignInManager<UserViewModel>>();
@@ -38,15 +58,23 @@ builder.Services.AddAutoMapper(
     typeof(BlCarProfile),
     typeof(BlUserProfile)
     );
-builder.Services.AddScoped<IMapper, Mapper>();
 
+
+
+builder.Services.AddScoped<IMapper, Mapper>();
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(
+x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}
+    )
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -59,7 +87,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
-            ValidateIssuerSigningKey = false,
+            ValidateIssuerSigningKey = true,
             ClockSkew = TimeSpan.Zero
         };
         options.Events = new JwtBearerEvents
@@ -101,7 +129,6 @@ builder.Services.AddAuthorization(opts =>
     });
 });
 
-
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
@@ -114,9 +141,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors(clientOrigin);
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();

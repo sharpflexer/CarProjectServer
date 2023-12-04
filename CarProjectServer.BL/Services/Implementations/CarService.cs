@@ -77,6 +77,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Невозможно изменить пользователя");
             }
         }
@@ -96,6 +97,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Невозможно удалить пользователя");
             }
         }
@@ -121,6 +123,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Список автомобилей недоступен");
             }
         }

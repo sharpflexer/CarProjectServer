@@ -1,5 +1,6 @@
 ﻿using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Options;
+using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -22,7 +23,7 @@ public static class JwtBearerExtensions
         List<Claim> claims = new()
         {
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString(CultureInfo.InvariantCulture)),
+            new(JwtRegisteredClaimNames.Iat, EpochTime.GetIntDate(DateTime.Now.ToUniversalTime()).ToString()),
             new Claim("CanCreate", user.Role.CanCreate.ToString()),
             new Claim("CanRead", user.Role.CanRead.ToString()),
             new Claim("CanUpdate", user.Role.CanUpdate.ToString()),

@@ -21,7 +21,7 @@ namespace CarProjectServer.BL.Options
         /// <summary>
         /// Ключ для создания токена.
         /// </summary>
-        private const string key = "carsupersecret_secretkey!123";
+        private const string key = "carsupersecret_secretkey!123_VERY_BIG_KEY_FOR_SASHA_256";
 
         /// <summary>
         /// Получает ключ безопасности

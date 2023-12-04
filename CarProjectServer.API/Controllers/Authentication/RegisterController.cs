@@ -14,7 +14,7 @@ namespace CarProjectMVC.Controllers.Authorization
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class RegisterController : Controller
+    public class RegisterController : ControllerBase
     {
         /// <summary>
         /// Маппер для маппинга моделей между слоями.
@@ -56,7 +56,7 @@ namespace CarProjectMVC.Controllers.Authorization
         {
             try
             {
-                var roleModel = _userService.GetDefaultRole();
+                var roleModel = await _userService.GetDefaultRole();
                 user.Role = _mapper.Map<RoleViewModel>(roleModel);
                 var userModel = _mapper.Map<UserModel>(user);
                 await _userService.AddUserAsync(userModel);

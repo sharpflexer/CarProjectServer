@@ -12,10 +12,10 @@ namespace CarProjectServer.API.Controllers.CRUD
     /// <summary>
     /// Контроллер для просмотра и изменения пользователей.
     /// </summary>
-    [Authorize(Policy = "Users")]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : Controller
+    public class UserController : ControllerBase
     {
         /// <summary>
         /// Сервис для взаимодействия с пользователями в БД.
@@ -50,7 +50,8 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// Получает список пользователей из БД.
         /// </summary>
         /// <returns>Список пользователей.</returns>
-        // GET api/users/read
+        // GET api/user/read
+        [Authorize("Users")]
         [HttpGet("read")]
         public async Task<ActionResult<IEnumerable<UserViewModel>>> Read()
         {
@@ -77,7 +78,8 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// в базу данных через IRequestService.CreateAsync().
         /// </summary>
         /// <returns>200 OK.</returns>
-        // PUT api/users/update
+        // PUT api/user/update
+        [Authorize("Users")]
         [HttpPut("update")]
         public async Task<ActionResult> Update(UserViewModel userViewModel)
         {
@@ -104,7 +106,8 @@ namespace CarProjectServer.API.Controllers.CRUD
         /// в базу данных через IRequestService.CreateAsync().
         /// </summary>
         /// <returns>200 OK.</returns>
-        // DELETE api/users/delete
+        // DELETE api/user/delete
+        [Authorize("Users")]
         [HttpDelete("delete")]
         public async Task<ActionResult> Delete(UserViewModel userViewModel)
         {
