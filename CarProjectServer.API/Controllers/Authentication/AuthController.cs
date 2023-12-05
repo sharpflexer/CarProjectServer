@@ -92,6 +92,7 @@ namespace CarProjectServer.API.Controllers.Authentication
             catch (Exception ex) 
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Ошибка аутентификации");
             }
         }
@@ -133,6 +134,7 @@ namespace CarProjectServer.API.Controllers.Authentication
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Ошибка аутентификации");
             }
         }
@@ -160,6 +162,7 @@ namespace CarProjectServer.API.Controllers.Authentication
             catch(Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Ошибка аутентификации");
             }
         }

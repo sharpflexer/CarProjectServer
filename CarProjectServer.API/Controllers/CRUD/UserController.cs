@@ -69,6 +69,7 @@ namespace CarProjectServer.API.Controllers.CRUD
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
             }
         }
@@ -97,6 +98,7 @@ namespace CarProjectServer.API.Controllers.CRUD
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
             }
         }
@@ -125,6 +127,7 @@ namespace CarProjectServer.API.Controllers.CRUD
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
             }
         }

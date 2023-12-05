@@ -57,7 +57,7 @@ namespace CarProjectMVC.Controllers.Authorization
             try
             {
                 var userModel = _mapper.Map<UserModel>(user);
-
+                
                 var roleModel = await _userService.GetDefaultRole();
                 userModel.Role = roleModel;
 
@@ -72,6 +72,7 @@ namespace CarProjectMVC.Controllers.Authorization
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Ошибка регистрации");
             }
         }
