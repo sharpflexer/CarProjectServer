@@ -7,16 +7,13 @@ using CarProjectServer.BL.Profiles;
 using CarProjectServer.BL.Services.Implementations;
 using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
+using CarProjectServer.DAL.Entities.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Logging;
+
 using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
-using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 var clientOrigin = "clientOrigin";
 var builder = WebApplication.CreateBuilder(args);
@@ -27,7 +24,7 @@ builder.Services.AddCors(options =>
                       {
                           policy.WithOrigins("http://localhost:3000")
                           .WithMethods("GET", "POST", "PUT", "DELETE")
-                          .WithHeaders("Content-Type", "Authorization");
+                          .AllowAnyHeader();
                       });
 });
 
@@ -47,10 +44,8 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
     options.EnableSensitiveDataLogging();
 });
 
-builder.Services.AddIdentity<UserViewModel, RoleViewModel>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<ApplicationContext>()
-    .AddUserManager<UserManager<UserViewModel>>()
-    .AddSignInManager<SignInManager<UserViewModel>>();
+builder.Services.AddIdentity<User, Role>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddEntityFrameworkStores<ApplicationContext>();
 
 builder.Services.AddAutoMapper(
     typeof(ApiCarProfile),
@@ -58,8 +53,6 @@ builder.Services.AddAutoMapper(
     typeof(BlCarProfile),
     typeof(BlUserProfile)
     );
-
-
 
 builder.Services.AddScoped<IMapper, Mapper>();
 builder.Services.AddScoped<ICarService, CarService>();

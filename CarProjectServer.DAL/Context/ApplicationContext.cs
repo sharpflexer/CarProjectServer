@@ -211,6 +211,27 @@ namespace CarProjectServer.DAL.Context
                 }
             );
             SaveChanges();
+            Cars.AddRange(
+                new Car()
+                {
+                    Brand = Brands.ToList()[0],
+                    Model = Models.ToList()[0],
+                    Color = Colors.ToList()[1]
+                },
+                new Car()
+                {
+                    Brand = Brands.ToList()[1],
+                    Model = Models.ToList()[3],
+                    Color = Colors.ToList()[3]
+                },
+                new Car()
+                {
+                    Brand = Brands.ToList()[2],
+                    Model = Models.ToList()[6],
+                    Color = Colors.ToList()[6]
+                }
+            );
+
             Roles.AddRange(
                 new Role()
                 {

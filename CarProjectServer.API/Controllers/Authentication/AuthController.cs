@@ -7,10 +7,10 @@ using AutoMapper;
 using CarProjectServer.BL.Services.Implementations;
 using Microsoft.AspNetCore.Authorization;
 using CarProjectMVC.Controllers.Authorization;
-using CarProjectServer.API.Controllers.Authentication.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using CarProjectServer.DAL.Entities.Identity;
+using CarProjectServer.API.ViewModels;
 
 namespace CarProjectServer.API.Controllers.Authentication
 {
@@ -52,10 +52,8 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// <param name="authenticateService">Сервис для аутентификации пользователей.</param>
         /// <param name="mapper">Маппер для маппинга моделей между слоями.</param>
         /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
-        public AuthController(UserManager<UserViewModel> userManager, SignInManager<UserViewModel> signInManager, ITokenService tokenService, IAuthenticateService authenticateService, IMapper mapper, ILogger<AuthController> logger)
+        public AuthController(ITokenService tokenService, IAuthenticateService authenticateService, IMapper mapper, ILogger<AuthController> logger)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
             _tokenService = tokenService;
             _authenticateService = authenticateService;
             _mapper = mapper;
@@ -72,7 +70,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// </returns>
         // POST api/auth/login
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(Credentials credentials)
+        public async Task<ActionResult<string>> Login(CredentialsViewModel credentials)
         {
             try
             {

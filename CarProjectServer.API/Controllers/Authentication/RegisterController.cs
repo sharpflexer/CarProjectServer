@@ -46,9 +46,9 @@ namespace CarProjectMVC.Controllers.Authorization
         }
 
         /// <summary>
-        /// Добавляет зарегистрированного пользователя в БД.
+        /// Регистрация пользователя в БД.
         /// </summary>
-        /// <param name="user">Зарегистрированный пользователь.</param>
+        /// <param name="user">Аккаунт регистрирующегося пользователь.</param>
         /// <returns>200 OK/400 Bad Request.</returns>
         // POST api/register/post
         [HttpPost]
@@ -56,9 +56,11 @@ namespace CarProjectMVC.Controllers.Authorization
         {
             try
             {
-                var roleModel = await _userService.GetDefaultRole();
-                user.Role = _mapper.Map<RoleViewModel>(roleModel);
                 var userModel = _mapper.Map<UserModel>(user);
+
+                var roleModel = await _userService.GetDefaultRole();
+                userModel.Role = roleModel;
+
                 await _userService.AddUserAsync(userModel);
 
                 return Ok();

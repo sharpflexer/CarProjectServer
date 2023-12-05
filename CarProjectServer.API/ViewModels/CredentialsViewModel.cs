@@ -1,9 +1,9 @@
-﻿namespace CarProjectServer.API.Controllers.Authentication.Models
+﻿namespace CarProjectServer.API.ViewModels
 {
     /// <summary>
     /// Данные для авторизации.
     /// </summary>
-    public class Credentials
+    public class CredentialsViewModel
     {
         /// <summary>
         /// Логин, имя пользователя.

@@ -89,7 +89,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         {
             try
             {
-                var carModels = await _carService.ReadAsync();
+                IEnumerable<CarModel> carModels = await _carService.ReadAsync();
                 var auto = _mapper.Map<IEnumerable<CarViewModel>>(carModels);
 
                 return Ok(auto);

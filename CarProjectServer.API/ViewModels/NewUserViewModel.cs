@@ -1,14 +1,11 @@
-﻿using AutoMapper;
-using CarProjectServer.API.ViewModels;
-using CarProjectServer.BL.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace CarProjectServer.API.Models
 {
     /// <summary>
     /// Пользователь.
     /// </summary>
-    public class UserViewModel : IdentityUser<int>
+    public class NewUserViewModel
     {
         /// <summary>
         /// Email пользователя, указанный при регистрации.
@@ -24,11 +21,6 @@ namespace CarProjectServer.API.Models
         /// Пароль для входа.
         /// </summary>
         public required string Password { get; set; }
-
-        /// <summary>
-        /// Роль пользователя
-        /// </summary> 
-        public RoleViewModel Role { get; set; }
 
         /// <summary>
         /// Токен для обновления Access Token.

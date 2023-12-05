@@ -96,8 +96,15 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             try
             {
-                var user = _mapper.Map<User>(userModel);
+                var user = _context.Users.FirstOrDefault(u => u.Id == userModel.Id);
+                user.Email = userModel.Email;
+                user.Login = userModel.Login;
+                user.Password = userModel.Password;
+                user.PhoneNumber = userModel.PhoneNumber;
+                user.RefreshToken = userModel.RefreshToken;
+                user.Role = _context.Roles.FirstOrDefault(r => r.Id == userModel.Role.Id);
                 _context.Users.Update(user);
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -135,7 +142,7 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             try
             {
-                var user = _mapper.Map<User>(userModel);
+                var user = _context.Users.FirstOrDefault(u => u.Id == userModel.Id);
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
             }
