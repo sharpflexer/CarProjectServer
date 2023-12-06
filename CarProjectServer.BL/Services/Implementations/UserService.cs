@@ -98,7 +98,7 @@ namespace CarProjectServer.BL.Services.Implementations
                 var fields = _mapper.Map<User>(userModel);
                 var role = _context.Roles.FirstOrDefault(r => r.Id == userModel.Role.Id);
 
-                fields.CopyFields(user, role);
+                fields.CopyProperties(user, role);
 
                 await _context.SaveChangesAsync();
             }

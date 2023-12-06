@@ -38,7 +38,7 @@ namespace CarProjectServer.DAL.Entities.Identity
         /// </summary>
         /// <param name="user">Пользователь, в которого копируются свойства</param>
         /// <param name="role">Роль, которая копируется в пользователя</param>
-        public void CopyFields(User user, Role role)
+        public void CopyProperties(User user, Role role)
         {
             user.Email = Email;
             user.Login = Login;
