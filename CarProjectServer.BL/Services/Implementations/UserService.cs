@@ -75,7 +75,6 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             try
             {
-                // var user = _mapper.Map<User>(userModel);
                 var user = _context.Users.FirstOrDefault(u => u.Id == userModel.Id);
                 user.RefreshToken = refreshToken;
                 _context.Users.Update(user);
@@ -99,7 +98,7 @@ namespace CarProjectServer.BL.Services.Implementations
                 var fields = _mapper.Map<User>(userModel);
                 var role = _context.Roles.FirstOrDefault(r => r.Id == userModel.Role.Id);
 
-                var updatedUser = fields.CopyFields(ref user, ref role);
+                fields.CopyFields(user, role);
 
                 await _context.SaveChangesAsync();
             }

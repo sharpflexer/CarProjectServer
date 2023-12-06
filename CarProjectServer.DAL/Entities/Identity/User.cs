@@ -33,7 +33,12 @@ namespace CarProjectServer.DAL.Entities.Identity
         /// </summary>
         public string? RefreshToken { get; set; }
 
-        public User CopyFields(ref User user, ref Role role)
+        /// <summary>
+        /// Копирует свойства данного пользователя в user.
+        /// </summary>
+        /// <param name="user">Пользователь, в которого копируются свойства</param>
+        /// <param name="role">Роль, которая копируется в пользователя</param>
+        public void CopyFields(User user, Role role)
         {
             user.Email = Email;
             user.Login = Login;
@@ -41,8 +46,6 @@ namespace CarProjectServer.DAL.Entities.Identity
             user.PhoneNumber = PhoneNumber;
             user.RefreshToken = RefreshToken;
             user.Role = role;
-
-            return user;
         }
     }
 }
