@@ -43,12 +43,12 @@ namespace CarProjectServer.BL.Services.Implementations
             try
             {
                 var users = await _userService.GetUsers();
-                var currentUser = users.FirstOrDefault(authUser => authUser.Login == login &&
-                    authUser.Password == password);
+                var currentUser = users.FirstOrDefault(authUser => authUser.Login == login 
+                    && authUser.Password == password);
 
                 return currentUser;
             }
-            catch(ApiException ex)
+            catch(ApiException)
             {
                 throw;
             }
@@ -72,7 +72,7 @@ namespace CarProjectServer.BL.Services.Implementations
 
                 _userService.UpdateUser(user);
             }
-            catch (ApiException ex)
+            catch (ApiException)
             {
                 throw;
             }

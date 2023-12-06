@@ -75,7 +75,7 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             try
             {
-                var user = _mapper.Map<User>(userModel);
+                var user = _context.Users.FirstOrDefault(u => u.Id == userModel.Id);
                 user.RefreshToken = refreshToken;
                 _context.Users.Update(user);
                 _context.SaveChanges();
@@ -87,16 +87,19 @@ namespace CarProjectServer.BL.Services.Implementations
             }
         }
 
-        /// <summary>
         /// Обновляет пользователя в таблице.
         /// </summary>
         /// <param name="user">Пользователь для обновления.</param>
+        /// <summary>
         public async Task UpdateUser(UserModel userModel)
         {
             try
-            {
-                var user = _mapper.Map<User>(userModel);
-                _context.Users.Update(user);
+            {   var user = _context.Users.FirstOrDefault(u => u.Id == userModel.Id);
+                var fields = _mapper.Map<User>(userModel);
+                var role = _context.Roles.FirstOrDefault(r => r.Id == userModel.Role.Id);
+
+                fields.CopyProperties(user, role);
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -115,6 +118,7 @@ namespace CarProjectServer.BL.Services.Implementations
             try
             {
                 var user = _mapper.Map<User>(userModel);
+                user.Role = _context.Roles.FirstOrDefault(r => r.Id == user.Role.Id);
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
             }
@@ -133,7 +137,7 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             try
             {
-                var user = _mapper.Map<User>(userModel);
+                var user = _context.Users.FirstOrDefault(u => u.Id == userModel.Id);
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
             }

@@ -1,5 +1,4 @@
 ﻿using CarProjectServer.BL.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using CarProjectServer.BL.Exceptions;
 using CarProjectServer.API.Models;
@@ -8,16 +7,23 @@ using AutoMapper;
 using CarProjectServer.BL.Services.Implementations;
 using Microsoft.AspNetCore.Authorization;
 using CarProjectMVC.Controllers.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using CarProjectServer.DAL.Entities.Identity;
+using CarProjectServer.API.ViewModels;
 
 namespace CarProjectServer.API.Controllers.Authentication
 {
     /// <summary>
     /// Контроллер для получения и обновления токенов.
     /// </summary>
-    [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : Controller
+    [Route("api/[controller]")]
+    public class AuthController : ControllerBase
     {
+        private readonly UserManager<UserViewModel> _userManager;
+        private readonly SignInManager<UserViewModel> _signInManager;
+
         /// <summary>
         /// Сервис для работы с JWT токенами.
         /// </summary>
@@ -64,11 +70,11 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// </returns>
         // POST api/auth/login
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(string username, string password)
+        public async Task<ActionResult<string>> Login(CredentialsViewModel credentials)
         {
             try
             {
-                var jwtTokenModel = await _tokenService.GetJwtTokenAsync(username, password);
+                var jwtTokenModel = await _tokenService.GetJwtTokenAsync(credentials.Username, credentials.Password);
 
                 var jwtTokenViewModel = _mapper.Map<JwtTokenViewModel>(jwtTokenModel);
 
@@ -86,6 +92,7 @@ namespace CarProjectServer.API.Controllers.Authentication
             catch (Exception ex) 
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Ошибка аутентификации");
             }
         }
@@ -109,9 +116,8 @@ namespace CarProjectServer.API.Controllers.Authentication
             {
                 oldToken = TryGetOldJwtToken(HttpContext.Request);
 
-
                 var oldTokenModel = _mapper.Map<JwtTokenModel>(oldToken);
-                var newTokenModel = _tokenService.CreateNewToken(oldTokenModel);
+                var newTokenModel = await _tokenService.CreateNewTokenAsync(oldTokenModel);
                 var newToken = _mapper.Map<JwtTokenViewModel>(newTokenModel);
 
                 HttpContext.Response.Cookies.Append("Refresh", newToken.RefreshToken, new CookieOptions()
@@ -128,6 +134,7 @@ namespace CarProjectServer.API.Controllers.Authentication
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Ошибка аутентификации");
             }
         }
@@ -137,14 +144,12 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// </summary>
         /// <returns>200 OK.</returns>
         // GET api/auth/logout
-        [Authorize]
         [HttpGet("logout")]
         public async Task<ActionResult> LogOut()
         {
             try
             {
                 HttpContext.Response.Cookies.Delete("Refresh");
-                HttpContext.Response.Headers.Remove("Authentication");
                 var refreshCookie = HttpContext.Request.Cookies["Refresh"];
                 _authenticateService.Revoke(refreshCookie);
 
@@ -157,6 +162,7 @@ namespace CarProjectServer.API.Controllers.Authentication
             catch(Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Ошибка аутентификации");
             }
         }

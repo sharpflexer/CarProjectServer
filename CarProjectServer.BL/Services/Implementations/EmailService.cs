@@ -57,6 +57,7 @@ namespace CarProjectServer.BL.Services.Implementations
             SmtpClient client = new();
             await client.ConnectAsync("smtp.mail.ru", 25, false);
             await client.AuthenticateAsync("car.webapplication@mail.ru", "nifariankek322!");
+
             return client;
         }
 

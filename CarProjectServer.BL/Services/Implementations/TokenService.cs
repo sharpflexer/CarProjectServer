@@ -51,8 +51,7 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             try
             {
-                var token = user
-                    .CreateClaims()
+                var token = user.CreateClaims()
                     .CreateJwtToken();
                 JwtSecurityTokenHandler tokenHandler = new();
 
@@ -91,7 +90,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         /// <param name="oldToken">Устаревший токен.</param>
         /// <returns>Новый токен.</returns>
-        public JwtTokenModel CreateNewToken(JwtTokenModel oldToken)
+        public async Task<JwtTokenModel> CreateNewTokenAsync(JwtTokenModel oldToken)
         {
             try
             {
@@ -100,8 +99,7 @@ namespace CarProjectServer.BL.Services.Implementations
                 var newAccessToken = "Bearer " + CreateToken(user);
                 var newRefreshToken = CreateRefreshToken();
 
-                user.RefreshToken = newRefreshToken;
-                _ = _userService.UpdateUser(user);
+                _userService.AddRefreshToken(user, newRefreshToken);
 
                 return new JwtTokenModel
                 {
@@ -127,6 +125,8 @@ namespace CarProjectServer.BL.Services.Implementations
                 var user = await _authenticateService.AuthenticateUser(username, password);
                 var accessToken = CreateToken(user);
                 var refreshToken = CreateRefreshToken();
+
+                _userService.AddRefreshToken(user, refreshToken);
 
                 return new JwtTokenModel
                 {

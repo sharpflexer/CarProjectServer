@@ -1,14 +1,11 @@
-﻿using CarProjectServer.DAL.Context;
-using CarProjectServer.DAL.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace CarProjectServer.BL.Models
+namespace CarProjectServer.API.Models
 {
     /// <summary>
     /// Пользователь.
     /// </summary>
-    public class UserModel : IdentityUser<int>
+    public class NewUserViewModel
     {
         /// <summary>
         /// Email пользователя, указанный при регистрации.
@@ -24,11 +21,6 @@ namespace CarProjectServer.BL.Models
         /// Пароль для входа.
         /// </summary>
         public required string Password { get; set; }
-
-        /// <summary>
-        /// Роль пользователя, дает права на различные действия с таблицей.
-        /// </summary> 
-        public RoleModel Role { get; set; }
 
         /// <summary>
         /// Токен для обновления Access Token.

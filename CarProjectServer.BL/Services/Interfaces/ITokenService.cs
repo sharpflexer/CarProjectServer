@@ -25,7 +25,7 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// </summary>
         /// <param name="oldToken">Устаревший токен.</param>
         /// <returns>Новый токен.</returns>
-        JwtTokenModel CreateNewToken(JwtTokenModel oldToken);
+        Task<JwtTokenModel> CreateNewTokenAsync(JwtTokenModel oldToken);
         Task<JwtTokenModel> GetJwtTokenAsync(string username, string password);
     }
 }

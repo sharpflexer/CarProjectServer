@@ -52,13 +52,17 @@ namespace CarProjectServer.BL.Services.Implementations
             try
             {
                 var auto = _mapper.Map<Car>(carModel);
+                auto.Brand = _context.Brands.FirstOrDefault(b => b.Id == carModel.Brand.Id);
+                auto.Model = _context.Models.FirstOrDefault(m => m.Id == carModel.Model.Id);
+                auto.Color = _context.Colors.FirstOrDefault(c => c.Id == carModel.Color.Id);
+                auto.Price = carModel.Price;
                 _context.Cars.Add(auto);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                throw new ApiException("Невозможно добавить пользователя");
+                throw new ApiException("Невозможно добавить автомобиль");
             }
         }
 
@@ -70,13 +74,19 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             try
             {
-                var auto = _mapper.Map<Car>(carModel);
+                var auto = _context.Cars.FirstOrDefault(car => car.Id == carModel.Id);
+                auto.Brand = _context.Brands.FirstOrDefault(b => b.Id == carModel.Brand.Id);
+                auto.Model = _context.Models.FirstOrDefault(m => m.Id == carModel.Model.Id);
+                auto.Color = _context.Colors.FirstOrDefault(c => c.Id == carModel.Color.Id);
                 _context.Cars.Update(auto);
+                auto.Price = carModel.Price;
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Невозможно изменить пользователя");
             }
         }
@@ -89,13 +99,14 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             try
             {
-                var auto = _mapper.Map<Car>(carModel);
+                var auto = _context.Cars.FirstOrDefault(car => car.Id == carModel.Id);
                 _context.Cars.Remove(auto);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Невозможно удалить пользователя");
             }
         }
@@ -121,6 +132,7 @@ namespace CarProjectServer.BL.Services.Implementations
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Список автомобилей недоступен");
             }
         }

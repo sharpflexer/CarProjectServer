@@ -4,6 +4,7 @@ using CarProjectServer.API.Models;
 using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -72,6 +73,7 @@ namespace CarProjectServer.API.Controllers.CRUD
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
             }
         }
@@ -88,7 +90,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         {
             try
             {
-                var carModels = await _carService.ReadAsync();
+                IEnumerable<CarModel> carModels = await _carService.ReadAsync();
                 var auto = _mapper.Map<IEnumerable<CarViewModel>>(carModels);
 
                 return Ok(auto);
@@ -127,6 +129,7 @@ namespace CarProjectServer.API.Controllers.CRUD
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
             }
         }
@@ -155,6 +158,7 @@ namespace CarProjectServer.API.Controllers.CRUD
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
                 throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
             }
         }

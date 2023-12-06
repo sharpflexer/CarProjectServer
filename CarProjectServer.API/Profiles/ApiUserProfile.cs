@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using CarProjectServer.API.Models;
+using CarProjectServer.API.ViewModels;
 using CarProjectServer.BL.Models;
+using CarProjectServer.BL.Services.Implementations;
+using CarProjectServer.BL.Services.Interfaces;
 
 namespace CarProjectServer.API.Profiles
 {
@@ -9,12 +12,12 @@ namespace CarProjectServer.API.Profiles
     /// </summary>
     public class ApiUserProfile : Profile
     {
-        public ApiUserProfile() 
+        public ApiUserProfile()
         {
             CreateMap<ErrorViewModel, ErrorModel>().ReverseMap();
             CreateMap<JwtTokenViewModel, JwtTokenModel>().ReverseMap();
-            CreateMap<RoleViewModel, RoleModel>().ReverseMap();
-            CreateMap<UserViewModel, UserModel>().ReverseMap();
+            CreateMap<UserModel, UserViewModel>().ReverseMap();
+            CreateMap<RoleModel, RoleViewModel>().ReverseMap();
         }
     }
 }

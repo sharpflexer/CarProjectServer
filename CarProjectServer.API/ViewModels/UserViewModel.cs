@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using CarProjectServer.API.ViewModels;
+using CarProjectServer.BL.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace CarProjectServer.API.Models
 {
@@ -23,7 +26,7 @@ namespace CarProjectServer.API.Models
         public required string Password { get; set; }
 
         /// <summary>
-        /// Роль пользователя, дает права на различные действия с таблицей.
+        /// Роль пользователя
         /// </summary> 
         public RoleViewModel Role { get; set; }
 

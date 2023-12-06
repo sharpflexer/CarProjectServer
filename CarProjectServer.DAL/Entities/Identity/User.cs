@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using CarProjectServer.DAL.Context;
+using Microsoft.AspNetCore.Identity;
 
 namespace CarProjectServer.DAL.Entities.Identity
 {
@@ -31,5 +32,20 @@ namespace CarProjectServer.DAL.Entities.Identity
         /// Токен для обновления Access Token.
         /// </summary>
         public string? RefreshToken { get; set; }
+
+        /// <summary>
+        /// Копирует свойства данного пользователя в user.
+        /// </summary>
+        /// <param name="user">Пользователь, в которого копируются свойства</param>
+        /// <param name="role">Роль, которая копируется в пользователя</param>
+        public void CopyProperties(User user, Role role)
+        {
+            user.Email = Email;
+            user.Login = Login;
+            user.Password = Password;
+            user.PhoneNumber = PhoneNumber;
+            user.RefreshToken = RefreshToken;
+            user.Role = role;
+        }
     }
 }
