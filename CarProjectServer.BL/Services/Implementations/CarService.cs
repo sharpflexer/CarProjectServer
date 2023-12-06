@@ -52,9 +52,9 @@ namespace CarProjectServer.BL.Services.Implementations
             try
             {
                 var auto = _mapper.Map<Car>(carModel);
-                auto.Brand = _context.Brands.ToList().FirstOrDefault(b => b.Id == carModel.Brand.Id);
-                auto.Model = _context.Models.ToList().FirstOrDefault(m => m.Id == carModel.Model.Id);
-                auto.Color = _context.Colors.ToList().FirstOrDefault(c => c.Id == carModel.Color.Id);
+                auto.Brand = _context.Brands.FirstOrDefault(b => b.Id == carModel.Brand.Id);
+                auto.Model = _context.Models.FirstOrDefault(m => m.Id == carModel.Model.Id);
+                auto.Color = _context.Colors.FirstOrDefault(c => c.Id == carModel.Color.Id);
                 auto.Price = carModel.Price;
                 _context.Cars.Add(auto);
                 await _context.SaveChangesAsync();
@@ -74,14 +74,10 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             try
             {
-                var auto = _context.Cars.ToList()
-                    .FirstOrDefault(car => car.Id == carModel.Id);
-                auto.Brand = _context.Brands.ToList()
-                    .FirstOrDefault(b => b.Id == carModel.Brand.Id);
-                auto.Model = _context.Models.ToList()
-                    .FirstOrDefault(m => m.Id == carModel.Model.Id);
-                auto.Color = _context.Colors.ToList()
-                    .FirstOrDefault(c => c.Id == carModel.Color.Id);
+                var auto = _context.Cars.FirstOrDefault(car => car.Id == carModel.Id);
+                auto.Brand = _context.Brands.FirstOrDefault(b => b.Id == carModel.Brand.Id);
+                auto.Model = _context.Models.FirstOrDefault(m => m.Id == carModel.Model.Id);
+                auto.Color = _context.Colors.FirstOrDefault(c => c.Id == carModel.Color.Id);
                 _context.Cars.Update(auto);
                 auto.Price = carModel.Price;
 
@@ -103,8 +99,7 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             try
             {
-                var auto = _context.Cars.ToList()
-                    .FirstOrDefault(car => car.Id == carModel.Id);
+                var auto = _context.Cars.FirstOrDefault(car => car.Id == carModel.Id);
                 _context.Cars.Remove(auto);
                 await _context.SaveChangesAsync();
             }

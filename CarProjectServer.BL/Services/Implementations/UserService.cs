@@ -88,23 +88,15 @@ namespace CarProjectServer.BL.Services.Implementations
             }
         }
 
-        /// <summary>
         /// Обновляет пользователя в таблице.
         /// </summary>
         /// <param name="user">Пользователь для обновления.</param>
+        /// <summary>
         public async Task UpdateUser(UserModel userModel)
         {
             try
-            {
-                var user = _context.Users.FirstOrDefault(u => u.Id == userModel.Id);
-                user.Email = userModel.Email;
-                user.Login = userModel.Login;
-                user.Password = userModel.Password;
-                user.PhoneNumber = userModel.PhoneNumber;
-                user.RefreshToken = userModel.RefreshToken;
-                user.Role = _context.Roles.FirstOrDefault(r => r.Id == userModel.Role.Id);
-                _context.Users.Update(user);
-
+            {               
+                var user = userModel.Map(_context);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
