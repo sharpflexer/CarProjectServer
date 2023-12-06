@@ -95,8 +95,12 @@ namespace CarProjectServer.BL.Services.Implementations
         public async Task UpdateUser(UserModel userModel)
         {
             try
-            {               
-                var user = userModel.Map(_context);
+            {   var user = _context.Users.FirstOrDefault(u => u.Id == userModel.Id);
+                var fields = _mapper.Map<User>(userModel);
+                var role = _context.Roles.FirstOrDefault(r => r.Id == userModel.Role.Id);
+
+                var updatedUser = fields.CopyFields(ref user, ref role);
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)

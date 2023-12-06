@@ -34,18 +34,5 @@ namespace CarProjectServer.BL.Models
         /// Токен для обновления Access Token.
         /// </summary>
         public string? RefreshToken { get; set; }
-
-        public User Map(ApplicationContext context) 
-        {
-            var user = context.Users.FirstOrDefault(u => u.Id == Id);
-            user.Email = Email;
-            user.Login = Login;
-            user.Password = Password;
-            user.PhoneNumber = PhoneNumber;
-            user.RefreshToken = RefreshToken;
-            user.Role = context.Roles.FirstOrDefault(r => r.Id == Role.Id);
-
-            return user;
-        }
     }
 }

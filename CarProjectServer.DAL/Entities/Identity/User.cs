@@ -32,5 +32,17 @@ namespace CarProjectServer.DAL.Entities.Identity
         /// Токен для обновления Access Token.
         /// </summary>
         public string? RefreshToken { get; set; }
+
+        public User CopyFields(ref User user, ref Role role)
+        {
+            user.Email = Email;
+            user.Login = Login;
+            user.Password = Password;
+            user.PhoneNumber = PhoneNumber;
+            user.RefreshToken = RefreshToken;
+            user.Role = role;
+
+            return user;
+        }
     }
 }
