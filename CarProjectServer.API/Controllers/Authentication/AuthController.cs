@@ -80,7 +80,9 @@ namespace CarProjectServer.API.Controllers.Authentication
 
                 HttpContext.Response.Cookies.Append("Refresh", jwtTokenViewModel.RefreshToken, new CookieOptions()
                 {
-                    HttpOnly = true
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.Lax,
+                    Secure = true
                 });
 
                 return jwtTokenViewModel.AccessToken;
@@ -98,10 +100,8 @@ namespace CarProjectServer.API.Controllers.Authentication
         }
 
         /// <summary>
-        /// Проверяет данные пользователя для входа.
+        /// Обновляет Access и Refresh токены
         /// </summary>
-        /// <param name="username">Имя пользователя.</param>
-        /// <param name="password">Пароль.</param>
         /// <returns>
         /// Access-токен
         /// </returns>
@@ -122,7 +122,10 @@ namespace CarProjectServer.API.Controllers.Authentication
 
                 HttpContext.Response.Cookies.Append("Refresh", newToken.RefreshToken, new CookieOptions()
                 {
-                    HttpOnly = true
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.Lax,
+                    Secure = true
+
                 });
 
                 return Ok(newToken.AccessToken);
