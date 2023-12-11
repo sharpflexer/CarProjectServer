@@ -211,6 +211,32 @@ namespace CarProjectServer.BL.Services.Implementations
                 throw new ApiException("Пользователь не найден");
             }
         }
+
+        /// <summary>
+        /// Получает наименование роли по имени пользователя.
+        /// </summary>
+        /// <param name="username">Имя пользователя.</param>
+        /// <returns>Наименование роли.</returns>
+        public async Task<string> GetRoleNameAsync(string username)
+        {
+            try
+            {               
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == username);
+
+                if(user == null)
+                {
+                    throw new ApiException("Пользователь не найден");
+                }
+                
+                return user.Role.Name;
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                throw new ApiException("Внутренняя ошибка сервера");
+            }
+        }
     }
 }
 

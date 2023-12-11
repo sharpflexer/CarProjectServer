@@ -46,6 +46,11 @@ namespace CarProjectServer.API.Controllers.Authentication
         private readonly ILogger _logger;
 
         /// <summary>
+        /// Сервис для работы с БД пользоватей.
+        /// </summary>
+        private readonly IUserService _userService;
+
+        /// <summary>
         /// Инициализирует контроллер сервисами токенов, аутентификации и запросов в БД.
         /// </summary>
         /// <param name="tokenService">Сервис для работы с JWT токенами.</param>
@@ -70,12 +75,11 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// </returns>
         // POST api/auth/login
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(CredentialsViewModel credentials)
+        public async Task<ActionResult<LoginResponseViewModel>> Login(CredentialsViewModel credentials)
         {
             try
             {
                 var jwtTokenModel = await _tokenService.GetJwtTokenAsync(credentials.Username, credentials.Password);
-
                 var jwtTokenViewModel = _mapper.Map<JwtTokenViewModel>(jwtTokenModel);
 
                 HttpContext.Response.Cookies.Append("Refresh", jwtTokenViewModel.RefreshToken, new CookieOptions()
@@ -85,7 +89,13 @@ namespace CarProjectServer.API.Controllers.Authentication
                     Secure = true
                 });
 
-                return jwtTokenViewModel.AccessToken;
+                string roleName = await _userService.GetRoleNameAsync(credentials.Username);
+
+                return new LoginResponseViewModel 
+                { 
+                    AccessToken =  jwtTokenViewModel.AccessToken, 
+                    RoleName = roleName 
+                };
             }
             catch (ApiException)
             {

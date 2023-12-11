@@ -118,6 +118,13 @@ namespace CarProjectServer.BL.Services.Implementations
             }
         }
 
+        /// <summary>
+        /// Получает JWT-токен.
+        /// </summary>
+        /// <param name="username">Имя пользователя.</param>
+        /// <param name="password">Пароль.</param>
+        /// <returns>JWT-токен</returns>
+        /// <exception cref="ApiException">Внутренняя ошибка сервера.</exception>
         public async Task<JwtTokenModel> GetJwtTokenAsync(string username, string password)
         {
             try
