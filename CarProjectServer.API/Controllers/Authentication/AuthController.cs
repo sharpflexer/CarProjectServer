@@ -57,12 +57,13 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// <param name="authenticateService">Сервис для аутентификации пользователей.</param>
         /// <param name="mapper">Маппер для маппинга моделей между слоями.</param>
         /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
-        public AuthController(ITokenService tokenService, IAuthenticateService authenticateService, IMapper mapper, ILogger<AuthController> logger)
+        public AuthController(ITokenService tokenService, IAuthenticateService authenticateService, IMapper mapper, ILogger<AuthController> logger, IUserService userService)
         {
             _tokenService = tokenService;
             _authenticateService = authenticateService;
             _mapper = mapper;
             _logger = logger;
+            _userService = userService;
         }
 
         /// <summary>
