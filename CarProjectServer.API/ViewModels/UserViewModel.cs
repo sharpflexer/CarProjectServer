@@ -28,7 +28,7 @@ namespace CarProjectServer.API.Models
         /// <summary>
         /// Роль пользователя
         /// </summary> 
-        public RoleViewModel Role { get; set; }
+        public RoleViewModel? Role { get; set; }
 
         /// <summary>
         /// Токен для обновления Access Token.

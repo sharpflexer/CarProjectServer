@@ -26,6 +26,14 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// <param name="oldToken">Устаревший токен.</param>
         /// <returns>Новый токен.</returns>
         Task<JwtTokenModel> CreateNewTokenAsync(JwtTokenModel oldToken);
+
+        /// <summary>
+        /// Получает JWT-токен.
+        /// </summary>
+        /// <param name="username">Имя пользователя.</param>
+        /// <param name="password">Пароль.</param>
+        /// <returns>JWT-токен</returns>
+        /// <exception cref="ApiException">Внутренняя ошибка сервера.</exception>
         Task<JwtTokenModel> GetJwtTokenAsync(string username, string password);
     }
 }

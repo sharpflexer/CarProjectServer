@@ -58,5 +58,12 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// </summary>
         /// <returns>Список всех ролей.</returns>
         Task<IEnumerable<RoleModel>> GetRolesAsync();
+
+        /// <summary>
+        /// Получает наименование роли по имени пользователя.
+        /// </summary>
+        /// <param name="username">Имя пользователя.</param>
+        /// <returns>Наименование роли.</returns>
+        Task<string> GetRoleNameAsync(string username);
     }
 }

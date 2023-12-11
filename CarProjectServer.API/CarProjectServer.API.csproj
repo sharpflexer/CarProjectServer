@@ -40,8 +40,4 @@
     <ProjectReference Include="..\CarProjectServer.BL\CarProjectServer.BL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\Authentication\Models\" />
-  </ItemGroup>
-
 </Project>
