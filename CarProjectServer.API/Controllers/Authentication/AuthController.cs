@@ -86,8 +86,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                 HttpContext.Response.Cookies.Append("Refresh", jwtTokenViewModel.RefreshToken, new CookieOptions()
                 {
                     HttpOnly = true,
-                    SameSite = SameSiteMode.Lax,
-                    Secure = true
+                    SameSite = SameSiteMode.Lax
                 });
 
                 string roleName = await _userService.GetRoleNameAsync(credentials.Username);
@@ -135,7 +134,6 @@ namespace CarProjectServer.API.Controllers.Authentication
                 {
                     HttpOnly = true,
                     SameSite = SameSiteMode.Lax,
-                    Secure = true
 
                 });
 
