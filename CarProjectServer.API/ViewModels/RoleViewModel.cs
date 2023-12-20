@@ -2,8 +2,13 @@
 
 namespace CarProjectServer.API.ViewModels
 {
-    public class RoleViewModel : IdentityRole<int>
+    public class RoleViewModel
     {
+        /// <summary>
+        /// Идентификатор роли.
+        /// </summary>
+        public int Id { get; set; } 
+
         /// <summary>
         /// Название роли.
         /// </summary>

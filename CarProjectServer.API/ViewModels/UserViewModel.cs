@@ -8,8 +8,13 @@ namespace CarProjectServer.API.Models
     /// <summary>
     /// Пользователь.
     /// </summary>
-    public class UserViewModel : IdentityUser<int>
+    public class UserViewModel
     {
+        /// <summary>
+        /// Идентификатор пользователя.
+        /// </summary>
+        public required int Id { get; set; }
+
         /// <summary>
         /// Email пользователя, указанный при регистрации.
         /// </summary>
@@ -26,7 +31,7 @@ namespace CarProjectServer.API.Models
         public required string Password { get; set; }
 
         /// <summary>
-        /// Роль пользователя
+        /// Роль пользователя.
         /// </summary> 
         public RoleViewModel? Role { get; set; }
 
