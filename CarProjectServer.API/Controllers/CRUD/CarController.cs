@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CarProjectServer.API.Filters;
 using CarProjectServer.API.Models;
+using CarProjectServer.API.ViewModels;
 using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
@@ -74,6 +75,33 @@ namespace CarProjectServer.API.Controllers.CRUD
             {
                 _logger.LogError(ex.Message);
 
+                throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
+            }
+        }
+
+        /// <summary>
+        /// Получает список свойств авто из БД.
+        /// </summary>
+        /// <returns>Список свойств авто из БД.</returns>
+        // GET api/car/read_properties
+        [Authorize(Policy = "ReadProperties")]
+        [AcceptFilterAsync]
+        [HttpGet("read_properties")]
+        public async Task<ActionResult<CarPropertiesViewModel>> ReadProperties()
+        {
+            try
+            {
+                var carPropertiesModel = await _carService.ReadPropertiesAsync();
+                var carPropertiesView = _mapper.Map<CarPropertiesViewModel>(carPropertiesModel);
+
+                return Ok(carPropertiesView);
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+            catch (Exception)
+            {
                 throw new ApiException("Непредвиденная ошибка взаимодействия с сервером.");
             }
         }

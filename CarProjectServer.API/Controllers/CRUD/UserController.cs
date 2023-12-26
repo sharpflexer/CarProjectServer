@@ -74,6 +74,7 @@ namespace CarProjectServer.API.Controllers.CRUD
             }
         }
 
+
         /// <summary>
         /// Отправляет запрос на обновление пользователя 
         /// в базу данных через IRequestService.CreateAsync().
@@ -82,7 +83,7 @@ namespace CarProjectServer.API.Controllers.CRUD
         // PUT api/user/update
         [Authorize("Users")]
         [HttpPut("update")]
-        public async Task<ActionResult> Update(UserViewModel userViewModel)
+        public async Task<ActionResult> Update([FromBody] UserViewModel userViewModel)
         {
             try
             {

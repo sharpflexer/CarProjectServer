@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CarProjectServer.API.ViewModels;
 using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
@@ -6,6 +7,8 @@ using CarProjectServer.DAL.Context;
 using CarProjectServer.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -135,6 +138,37 @@ namespace CarProjectServer.BL.Services.Implementations
 
                 throw new ApiException("Список автомобилей недоступен");
             }
+        }
+
+        /// <summary>
+        /// Получает свойства автомобиля: марки, модели и цвета.
+        /// </summary>
+        /// <returns>Свойства автомобиля</returns>
+        public async Task<CarPropertiesModel> ReadPropertiesAsync()
+        {
+            return new CarPropertiesModel
+            {
+                brands = _mapper.Map<List<BrandModel>>(await _context
+                .Brands
+                .Include(c => c.Models)
+                .ThenInclude(m => m)
+                .AsNoTracking()
+                .ToListAsync()),
+
+                models = _mapper.Map<List<CarModelTypeModel>>(await _context
+                .Models
+                .Include(m => m.Colors)
+                .ThenInclude(c => c)
+                .AsNoTracking()
+                .ToListAsync()),
+
+                colors = _mapper.Map<List<CarColorModel>>(await _context
+                .Colors
+                .Include(c => c.Models)
+                .ThenInclude(m => m)
+                .AsNoTracking()
+                .ToListAsync())
+            };
         }
     }
 }

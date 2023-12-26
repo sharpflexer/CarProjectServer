@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CarProjectServer.API.Models;
+using CarProjectServer.API.ViewModels;
 using CarProjectServer.BL.Models;
 
 namespace CarProjectServer.API.Profiles
@@ -15,6 +16,7 @@ namespace CarProjectServer.API.Profiles
             CreateMap<CarColorViewModel, CarColorModel>().ReverseMap();
             CreateMap<CarModelViewModel, CarModelTypeModel>().ReverseMap();
             CreateMap<CarViewModel, CarModel>().ReverseMap();
+            CreateMap<CarPropertiesViewModel, CarPropertiesModel>().ReverseMap();
         }
     }
 }

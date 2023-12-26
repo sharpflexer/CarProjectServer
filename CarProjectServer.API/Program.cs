@@ -117,6 +117,12 @@ builder.Services.AddAuthorization(opts =>
     {
         policy.RequireClaim("CanDelete", "True");
     });
+    opts.AddPolicy("ReadProperties", policy =>
+        policy.RequireAssertion(context =>
+            context.User.HasClaim("CanCreate", "True") ||
+            context.User.HasClaim ("CanUpdate", "True")
+        )
+    );
     opts.AddPolicy("Users", policy =>
     {
         policy.RequireClaim("CanManageUsers", "True");

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using CarProjectServer.DAL.Entities.Identity;
 using CarProjectServer.API.ViewModels;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace CarProjectServer.API.Controllers.Authentication
 {
