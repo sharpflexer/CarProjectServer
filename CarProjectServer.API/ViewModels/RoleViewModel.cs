@@ -2,6 +2,9 @@
 
 namespace CarProjectServer.API.ViewModels
 {
+    /// <summary>
+    /// Роль пользователя.
+    /// </summary>
     public class RoleViewModel
     {
         /// <summary>
