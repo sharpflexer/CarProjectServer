@@ -4,10 +4,10 @@ namespace CarProjectServer.API.ViewModels
 {
     public class CarPropertiesModel
     {
-        public IEnumerable<BrandModel> brands { get; set; }
+        public IEnumerable<BrandModel> Brands { get; set; }
 
-        public IEnumerable<CarModelTypeModel> models { get; set; }
+        public IEnumerable<CarModelTypeModel> Models { get; set; }
 
-        public IEnumerable<CarColorModel> colors { get; set; }
+        public IEnumerable<CarColorModel> Colors { get; set; }
     }
 }

@@ -146,28 +146,28 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <returns>Свойства автомобиля</returns>
         public async Task<CarPropertiesModel> ReadPropertiesAsync()
         {
-            return new CarPropertiesModel
-            {
-                brands = _mapper.Map<List<BrandModel>>(await _context
+            var brands = await _context
                 .Brands
                 .Include(c => c.Models)
-                .ThenInclude(m => m)
                 .AsNoTracking()
-                .ToListAsync()),
+                .ToListAsync();
 
-                models = _mapper.Map<List<CarModelTypeModel>>(await _context
+            var models = await _context
                 .Models
                 .Include(m => m.Colors)
-                .ThenInclude(c => c)
                 .AsNoTracking()
-                .ToListAsync()),
+                .ToListAsync();
 
-                colors = _mapper.Map<List<CarColorModel>>(await _context
+            var colors = await _context
                 .Colors
-                .Include(c => c.Models)
-                .ThenInclude(m => m)
                 .AsNoTracking()
-                .ToListAsync())
+                .ToListAsync();
+
+            return new CarPropertiesModel
+            {
+                Brands = _mapper.Map<List<BrandModel>>(brands),
+                Models = _mapper.Map<List<CarModelTypeModel>>(models),
+                Colors = _mapper.Map<List<CarColorModel>>(colors)
             };
         }
     }
