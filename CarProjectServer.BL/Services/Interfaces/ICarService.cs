@@ -13,7 +13,7 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// Отправляет запрос на добавление нового автомобиля в БД через ApplicationContext.
         /// </summary>
         /// <param name="carModel">Автомобиль для добавления.</param>
-        public Task CreateAsync(CarModel carModel);
+        public Task<CarModel> CreateAsync(CarModel carModel);
 
         /// <summary>
         /// Получает список всех автомобилей из БД.

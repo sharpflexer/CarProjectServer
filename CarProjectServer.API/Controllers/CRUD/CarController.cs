@@ -58,14 +58,14 @@ namespace CarProjectServer.API.Controllers.CRUD
         // POST api/car/create
         [Authorize(Policy = "Create")]
         [HttpPost("create")]
-        public async Task<ActionResult> Create(CarViewModel carViewModel)
+        public async Task<ActionResult<CarViewModel>> Create(CarViewModel carViewModel)
         {
             try
             {
                 var auto = _mapper.Map<CarModel>(carViewModel);
-                await _carService.CreateAsync(auto);
+                var responseAuto = await _carService.CreateAsync(auto);
 
-                return Ok();
+                return Ok(_mapper.Map<CarViewModel>(responseAuto));
             }
             catch (ApiException)
             {

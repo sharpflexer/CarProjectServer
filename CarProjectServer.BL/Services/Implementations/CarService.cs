@@ -50,7 +50,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// Отправляет запрос на добавление нового автомобиля в БД через ApplicationContext.
         /// </summary>
         /// <param name="form">Форма с данными списков IDs, Brands, Models и Colors.</param>
-        public async Task CreateAsync(CarModel carModel)
+        public async Task<CarModel> CreateAsync(CarModel carModel)
         {
             try
             {
@@ -59,8 +59,9 @@ namespace CarProjectServer.BL.Services.Implementations
                 auto.Model = _context.Models.FirstOrDefault(m => m.Id == carModel.Model.Id);
                 auto.Color = _context.Colors.FirstOrDefault(c => c.Id == carModel.Color.Id);
                 auto.Price = carModel.Price;
-                _context.Cars.Add(auto);
+                var response = _context.Cars.Add(auto);
                 await _context.SaveChangesAsync();
+                return _mapper.Map<CarModel>(response.Entity);
             }
             catch (Exception ex)
             {

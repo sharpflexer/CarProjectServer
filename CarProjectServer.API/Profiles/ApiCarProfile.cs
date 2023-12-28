@@ -13,9 +13,7 @@ namespace CarProjectServer.API.Profiles
         public ApiCarProfile()
         {
             CreateMap<BrandViewModel, BrandModel>().ReverseMap();
-            CreateMap<CarColorViewModel, CarColorModel>()
-                .ReverseMap()
-                .ForMember(dest => dest.Models, opt => opt.Ignore());
+            CreateMap<CarColorViewModel, CarColorModel>().ReverseMap();     
             CreateMap<CarModelViewModel, CarModelTypeModel>().ReverseMap();        
             CreateMap<CarViewModel, CarModel>().ReverseMap();
             CreateMap<CarPropertiesModel, CarPropertiesViewModel>();

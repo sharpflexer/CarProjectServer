@@ -14,10 +14,5 @@
         /// Наименование цвета.
         /// </summary>
         public string Name { get; set; }
-
-        /// <summary>
-        /// Список моделей данного цвета.
-        /// </summary>
-        public ICollection<CarModelViewModel> Models { get; set; }
     }
 }
