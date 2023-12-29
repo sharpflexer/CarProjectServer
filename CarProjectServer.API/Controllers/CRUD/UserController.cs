@@ -74,7 +74,6 @@ namespace CarProjectServer.API.Controllers.CRUD
             }
         }
 
-
         /// <summary>
         /// Отправляет запрос на обновление пользователя 
         /// в базу данных через IRequestService.CreateAsync().

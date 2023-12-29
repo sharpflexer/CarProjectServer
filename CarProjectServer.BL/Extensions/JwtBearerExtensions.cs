@@ -1,4 +1,5 @@
-﻿using CarProjectServer.BL.Models;
+﻿using CarProjectServer.BL.Enums;
+using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
@@ -24,11 +25,12 @@ public static class JwtBearerExtensions
         {
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat, EpochTime.GetIntDate(DateTime.Now.ToUniversalTime()).ToString()),
-            new Claim("CanCreate", user.Role.CanCreate.ToString()),
-            new Claim("CanRead", user.Role.CanRead.ToString()),
-            new Claim("CanUpdate", user.Role.CanUpdate.ToString()),
-            new Claim("CanDelete", user.Role.CanDelete.ToString()),
-            new Claim("CanManageUsers", user.Role.CanManageUsers.ToString())
+            new(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
+            new(UserPolicies.CanCreate.ToString(), user.Role.CanCreate.ToString()),
+            new(UserPolicies.CanRead.ToString(), user.Role.CanRead.ToString()),
+            new(UserPolicies.CanUpdate.ToString(), user.Role.CanUpdate.ToString()),
+            new(UserPolicies.CanDelete.ToString(), user.Role.CanDelete.ToString()),
+            new(UserPolicies.CanManageUsers.ToString(), user.Role.CanManageUsers.ToString())
         };
 
         return claims;

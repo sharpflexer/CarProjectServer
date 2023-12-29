@@ -65,5 +65,12 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// <param name="username">Имя пользователя.</param>
         /// <returns>Наименование роли.</returns>
         Task<string> GetRoleNameAsync(string username);
+
+        /// <summary>
+        /// Получает роль на основе прав пользователя.
+        /// </summary>
+        /// <param name="claims">Права пользователя.</param>
+        /// <returns>Роль пользователя.</returns>
+        Task<string> GetRoleByClaims(IEnumerable<System.Security.Claims.Claim> claims);
     }
 }

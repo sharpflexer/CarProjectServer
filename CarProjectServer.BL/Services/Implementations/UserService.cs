@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CarProjectServer.BL.Enums;
 using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
@@ -8,6 +9,9 @@ using CarProjectServer.DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NLog.Filters;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -236,6 +240,38 @@ namespace CarProjectServer.BL.Services.Implementations
 
                 throw new ApiException("Внутренняя ошибка сервера");
             }
+        }
+
+        /// <summary>
+        /// Получает роль на основе прав пользователя.
+        /// </summary>
+        /// <param name="claims">Права пользователя.</param>
+        /// <returns>Роль пользователя.</returns>
+        public async Task<string> GetRoleByClaims(IEnumerable<Claim> claims)
+        {
+            var userId = claims.Single(c => c.Type == JwtRegisteredClaimNames.NameId);
+
+            var 
+
+
+            var roles = await _context.Roles.ToListAsync();
+            var allPolicies = roles.Select(r => new List<(string Type, string Value)>(){    
+                ("CanCreate", r.CanCreate.ToString()),
+                ("CanRead", r.CanRead.ToString()),
+                ("CanUpdate", r.CanUpdate.ToString()),
+                ("CanDelete", r.CanDelete.ToString()),
+                ("CanManageUsers", r.CanManageUsers.ToString()),
+            });
+
+
+
+            return allPolicies.Any(p => ComparePolicies(p, policies));
+
+        }
+
+        private bool ComparePolicies(List<(string Type, string Value)> p, IEnumerable<(string Type, string Value)> policies)
+        {
+            throw new NotImplementedException();
         }
     }
 }

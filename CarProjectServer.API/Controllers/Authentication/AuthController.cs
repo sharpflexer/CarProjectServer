@@ -22,9 +22,6 @@ namespace CarProjectServer.API.Controllers.Authentication
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<UserViewModel> _userManager;
-        private readonly SignInManager<UserViewModel> _signInManager;
-
         /// <summary>
         /// Сервис для работы с JWT токенами.
         /// </summary>
@@ -173,6 +170,37 @@ namespace CarProjectServer.API.Controllers.Authentication
                 throw ex;
             }
             catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                throw new ApiException("Ошибка аутентификации");
+            }
+        }
+
+        /// <summary>
+        /// Проверяет роль пользователя из токена доступа.
+        /// </summary>
+        /// <returns>Роль пользователя.</returns>
+        // GET api/auth/get_role
+        [HttpGet("get_role")]
+        public async Task<ActionResult<string>> GetRole()
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["Authorization"][0].Replace("Bearer ", "");
+                var token = new JwtSecurityToken(accessToken);
+                var claims = token.Claims;
+
+                string role = await _userService.GetRoleByClaims(claims);
+
+                return role;
+
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
 
