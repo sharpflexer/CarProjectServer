@@ -182,6 +182,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// </summary>
         /// <returns>Роль пользователя.</returns>
         // GET api/auth/get_role
+        [Authorize]
         [HttpGet("get_role")]
         public async Task<ActionResult<string>> GetRole()
         {
@@ -191,7 +192,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                 var token = new JwtSecurityToken(accessToken);
                 var claims = token.Claims;
 
-                string role = await _userService.GetRoleByClaims(claims);
+                string role = _userService.GetRoleByClaims(claims);
 
                 return role;
 

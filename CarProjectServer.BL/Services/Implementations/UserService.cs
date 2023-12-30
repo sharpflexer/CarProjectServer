@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using CarProjectServer.BL.Enums;
 using CarProjectServer.BL.Exceptions;
+using CarProjectServer.BL.Extensions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
@@ -247,31 +247,16 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         /// <param name="claims">Права пользователя.</param>
         /// <returns>Роль пользователя.</returns>
-        public async Task<string> GetRoleByClaims(IEnumerable<Claim> claims)
+        public string GetRoleByClaims(IEnumerable<Claim> claims)
         {
-            var userId = claims.Single(c => c.Type == JwtRegisteredClaimNames.NameId);
+            var userId = int.Parse(claims
+                .Single(c => c.Type == JwtRegisteredClaimNames.NameId)
+                .Value);
 
-            var 
-
-
-            var roles = await _context.Roles.ToListAsync();
-            var allPolicies = roles.Select(r => new List<(string Type, string Value)>(){    
-                ("CanCreate", r.CanCreate.ToString()),
-                ("CanRead", r.CanRead.ToString()),
-                ("CanUpdate", r.CanUpdate.ToString()),
-                ("CanDelete", r.CanDelete.ToString()),
-                ("CanManageUsers", r.CanManageUsers.ToString()),
-            });
-
-
-
-            return allPolicies.Any(p => ComparePolicies(p, policies));
-
-        }
-
-        private bool ComparePolicies(List<(string Type, string Value)> p, IEnumerable<(string Type, string Value)> policies)
-        {
-            throw new NotImplementedException();
+            return _context.Users.Include(u => u.Role)
+                .Single(user => user.Id == userId)
+                .Role
+                .Name;
         }
     }
 }

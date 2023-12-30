@@ -1,9 +1,8 @@
-﻿using CarProjectServer.BL.Enums;
-using CarProjectServer.BL.Models;
+﻿using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Security.Claims;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
@@ -26,12 +25,13 @@ public static class JwtBearerExtensions
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Iat, EpochTime.GetIntDate(DateTime.Now.ToUniversalTime()).ToString()),
             new(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
-            new(UserPolicies.CanCreate.ToString(), user.Role.CanCreate.ToString()),
-            new(UserPolicies.CanRead.ToString(), user.Role.CanRead.ToString()),
-            new(UserPolicies.CanUpdate.ToString(), user.Role.CanUpdate.ToString()),
-            new(UserPolicies.CanDelete.ToString(), user.Role.CanDelete.ToString()),
-            new(UserPolicies.CanManageUsers.ToString(), user.Role.CanManageUsers.ToString())
         };
+        IEnumerable<PropertyInfo> props = user.GetPolicies();
+
+        foreach (var prop in props)
+        {
+            claims.Add(new Claim(prop.Name.ToString(), prop.GetValue(user.Role).ToString()));
+        }
 
         return claims;
     }

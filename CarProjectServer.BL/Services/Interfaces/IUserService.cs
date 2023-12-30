@@ -71,6 +71,6 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// </summary>
         /// <param name="claims">Права пользователя.</param>
         /// <returns>Роль пользователя.</returns>
-        Task<string> GetRoleByClaims(IEnumerable<System.Security.Claims.Claim> claims);
+        string GetRoleByClaims(IEnumerable<System.Security.Claims.Claim> claims);
     }
 }
