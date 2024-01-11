@@ -8,11 +8,13 @@ using CarProjectServer.BL.Services.Implementations;
 using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
 using CarProjectServer.DAL.Entities.Identity;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using NLog.Web;
 
 var clientOrigin = "clientOrigin";
@@ -61,6 +63,11 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+
+builder.Services.AddHttpClient("Google", httpClient =>
+{
+    httpClient.BaseAddress = new Uri("https://api.github.com/");
+});
 
 builder.Services.AddAuthentication(
 x =>

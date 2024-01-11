@@ -12,6 +12,13 @@ using Microsoft.AspNetCore.Identity;
 using CarProjectServer.DAL.Entities.Identity;
 using CarProjectServer.API.ViewModels;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using Microsoft.Net.Http.Headers;
+using System.Text;
 
 namespace CarProjectServer.API.Controllers.Authentication
 {
@@ -49,19 +56,30 @@ namespace CarProjectServer.API.Controllers.Authentication
         private readonly IUserService _userService;
 
         /// <summary>
+        /// Фабрика, предоставляющая HttpClient
+        /// </summary>
+        private readonly IHttpClientFactory _httpFactory;
+
+        /// <summary>
         /// Инициализирует контроллер сервисами токенов, аутентификации и запросов в БД.
         /// </summary>
         /// <param name="tokenService">Сервис для работы с JWT токенами.</param>
         /// <param name="authenticateService">Сервис для аутентификации пользователей.</param>
         /// <param name="mapper">Маппер для маппинга моделей между слоями.</param>
         /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
-        public AuthController(ITokenService tokenService, IAuthenticateService authenticateService, IMapper mapper, ILogger<AuthController> logger, IUserService userService)
+        public AuthController(ITokenService tokenService,
+            IAuthenticateService authenticateService,
+            IMapper mapper,
+            ILogger<AuthController> logger,
+            IUserService userService,
+            IHttpClientFactory httpFactory)
         {
             _tokenService = tokenService;
             _authenticateService = authenticateService;
             _mapper = mapper;
             _logger = logger;
             _userService = userService;
+            _httpFactory = httpFactory;
         }
 
         /// <summary>
@@ -84,7 +102,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                 HttpContext.Response.Cookies.Append("Refresh", jwtTokenViewModel.RefreshToken, new CookieOptions()
                 {
                     HttpOnly = true,
-                    SameSite = SameSiteMode.Lax
+                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax
                 });
 
                 string roleName = await _userService.GetRoleNameAsync(credentials.Username);
@@ -105,6 +123,24 @@ namespace CarProjectServer.API.Controllers.Authentication
 
                 throw new ApiException("Ошибка аутентификации");
             }
+        }
+
+        [HttpGet("login_via_google")]
+        public async Task<ActionResult> LoginViaGoogle(string authCode)
+        {
+            var client = _httpFactory.CreateClient("Google");
+
+            var body = new Dictionary<string, string>
+            {
+                { "client_id", "512072756601-r7ibo68bvteters981sgf84cb5vvarer.apps.googleusercontent.com" },
+                { "client_secret",  "=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&" },
+                { "code", authCode },
+                { "access_type:", "offline" },
+                { "grant_type", "authorization_code" }
+            };
+
+            var response = await client.PostAsync("https://accounts.google.com/o/oauth2/token", new FormUrlEncodedContent(body));
+            return Ok(response);
         }
 
         /// <summary>
@@ -131,7 +167,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                 HttpContext.Response.Cookies.Append("Refresh", newToken.RefreshToken, new CookieOptions()
                 {
                     HttpOnly = true,
-                    SameSite = SameSiteMode.Lax,
+                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax,
 
                 });
 
