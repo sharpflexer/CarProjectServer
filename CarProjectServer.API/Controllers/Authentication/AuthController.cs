@@ -19,6 +19,7 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using Microsoft.Net.Http.Headers;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace CarProjectServer.API.Controllers.Authentication
 {
@@ -126,21 +127,110 @@ namespace CarProjectServer.API.Controllers.Authentication
         }
 
         [HttpGet("login_via_google")]
-        public async Task<ActionResult> LoginViaGoogle(string authCode)
+        public async Task<ActionResult<LoginResponseViewModel>> LoginViaGoogle(string authCode)
         {
-            var client = _httpFactory.CreateClient("Google");
-
-            var body = new Dictionary<string, string>
+            try
             {
-                { "client_id", "512072756601-r7ibo68bvteters981sgf84cb5vvarer.apps.googleusercontent.com" },
-                { "client_secret",  "=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&" },
-                { "code", authCode },
-                { "access_type:", "offline" },
-                { "grant_type", "authorization_code" }
+                var client = _httpFactory.CreateClient("Google");
+
+                var accessToken = await ExchangeCodeForToken(authCode, client);
+                var userMail = await GetUserMail(accessToken, client);
+                UserViewModel user = await GenerateUserByMailAsync(userMail);
+
+                return await Login(new CredentialsViewModel {
+                    Username = user.Login, 
+                    Password = user.Password 
+                });
+            }
+            catch (ApiException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                throw new ApiException("Ошибка регистрации");
+            }
+        }
+
+        private async Task<UserViewModel> GenerateUserByMailAsync(string email)
+        {
+            string login = GetLoginFromEmail(email);
+            string password = GetRandomPassword();
+
+            var user = new UserViewModel
+            {
+                Email = email,
+                Login = login,
+                Password = password
             };
 
-            var response = await client.PostAsync("https://accounts.google.com/o/oauth2/token", new FormUrlEncodedContent(body));
-            return Ok(response);
+            var userModel = _mapper.Map<UserModel>(user);
+            var roleModel = await _userService.GetDefaultRole();
+            userModel.Role = roleModel;
+            await _userService.AddUserAsync(userModel);
+
+            return user;
+        }
+
+        private string GetRandomPassword()
+        {
+            var randomNumber = new byte[8];
+            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+
+            return Convert.ToBase64String(randomNumber);
+        }
+
+        private string GetLoginFromEmail(string email)
+        {
+            return email.Split('@')[0]; // Никнейм до "@"
+        }
+
+        private async Task<string> GetUserMail(string accessToken, HttpClient client)
+        {
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
+            var response = await client.GetAsync("https://www.googleapis.com/oauth2/v1/userinfo?alt=json");
+            var content = await response.Content.ReadAsStringAsync();
+            var contentList = JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+            if (!contentList.ContainsKey("email"))
+            {
+                throw new ApiException("Ошибка аутентификации");            
+            }
+
+            return contentList.GetValueOrDefault("email");
+        }
+
+        private async Task<string> ExchangeCodeForToken(string authCode, HttpClient client)
+        {
+            var body = new Dictionary<string, string>
+                {
+                    { "client_id", "512072756601-r7ibo68bvteters981sgf84cb5vvarer.apps.googleusercontent.com" },
+                    { "client_secret",  "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" },
+                    { "code", authCode },
+                    { "access_type", "offline" },
+                    { "grant_type", "authorization_code" },
+                    { "redirect_uri", "http://localhost:3000"},
+                    { "scope", "openid profile email" }
+                };
+
+            var response = await client.PostAsync("https://oauth2.googleapis.com/token", new FormUrlEncodedContent(body));
+            var content = await response.Content.ReadAsStringAsync();
+
+            var options = new JsonSerializerOptions
+            {
+                NumberHandling = JsonNumberHandling.WriteAsString
+            };
+
+            var contentList = JsonSerializer.Deserialize<Dictionary<string, string>>(content, options);
+
+            if (!contentList.ContainsKey("access_token"))
+            {
+                throw new ApiException("Ошибка аутентификации");
+            }
+
+            return contentList.GetValueOrDefault("access_token");
         }
 
         /// <summary>
@@ -154,12 +244,9 @@ namespace CarProjectServer.API.Controllers.Authentication
         [HttpGet("refresh")]
         public async Task<ActionResult<string>> Refresh()
         {
-            JwtTokenViewModel oldToken;
-
             try
             {
-                oldToken = TryGetOldJwtToken(HttpContext.Request);
-
+                var oldToken = TryGetOldJwtToken(HttpContext.Request);
                 var oldTokenModel = _mapper.Map<JwtTokenModel>(oldToken);
                 var newTokenModel = await _tokenService.CreateNewTokenAsync(oldTokenModel);
                 var newToken = _mapper.Map<JwtTokenViewModel>(newTokenModel);
