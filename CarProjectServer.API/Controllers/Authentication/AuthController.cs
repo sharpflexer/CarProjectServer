@@ -20,6 +20,7 @@ using System.Text.Json;
 using Microsoft.Net.Http.Headers;
 using System.Text;
 using System.Security.Cryptography;
+using CarProjectServer.API.ViewModels.Google;
 
 namespace CarProjectServer.API.Controllers.Authentication
 {
@@ -135,11 +136,19 @@ namespace CarProjectServer.API.Controllers.Authentication
 
                 var accessToken = await ExchangeCodeForToken(authCode, client);
                 var userMail = await GetUserMail(accessToken, client);
-                UserViewModel user = await GenerateUserByMailAsync(userMail);
 
-                return await Login(new CredentialsViewModel {
-                    Username = user.Login, 
-                    Password = user.Password 
+                var userModel = _userService.TryGetUserByEmail(userMail);
+                var user = _mapper.Map<UserViewModel?>(userModel);
+
+                if (user == null)
+                {
+                    user = await GenerateUserByMailAsync(userMail);
+                }
+
+                return await Login(new CredentialsViewModel
+                {
+                    Username = user.Login,
+                    Password = user.Password
                 });
             }
             catch (ApiException ex)
@@ -193,13 +202,13 @@ namespace CarProjectServer.API.Controllers.Authentication
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
             var response = await client.GetAsync("https://www.googleapis.com/oauth2/v1/userinfo?alt=json");
             var content = await response.Content.ReadAsStringAsync();
-            var contentList = JsonSerializer.Deserialize<Dictionary<string, string>>(content);
-            if (!contentList.ContainsKey("email"))
+            var googleProfile = JsonSerializer.Deserialize<GoogleProfileViewModel>(content);
+            if (!googleProfile.VerifiedEmail)
             {
-                throw new ApiException("Ошибка аутентификации");            
+                throw new ApiException("Учётная запись Google не подтверждена.");            
             }
 
-            return contentList.GetValueOrDefault("email");
+            return googleProfile.Email;
         }
 
         private async Task<string> ExchangeCodeForToken(string authCode, HttpClient client)
@@ -220,17 +229,12 @@ namespace CarProjectServer.API.Controllers.Authentication
 
             var options = new JsonSerializerOptions
             {
-                NumberHandling = JsonNumberHandling.WriteAsString
+                NumberHandling = JsonNumberHandling.AllowReadingFromString
             };
 
-            var contentList = JsonSerializer.Deserialize<Dictionary<string, string>>(content, options);
+            var googleToken = JsonSerializer.Deserialize<GoogleTokenViewModel>(content, options);
 
-            if (!contentList.ContainsKey("access_token"))
-            {
-                throw new ApiException("Ошибка аутентификации");
-            }
-
-            return contentList.GetValueOrDefault("access_token");
+            return googleToken.AccessToken;
         }
 
         /// <summary>

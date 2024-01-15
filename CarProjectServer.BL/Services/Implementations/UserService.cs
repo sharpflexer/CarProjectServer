@@ -258,6 +258,13 @@ namespace CarProjectServer.BL.Services.Implementations
                 .Role
                 .Name;
         }
+
+        public UserModel? TryGetUserByEmail(string userMail)
+        {
+            var user = _context.Users.ToList().Find(u => u.Email == userMail);
+
+            return _mapper.Map<UserModel?>(user);
+        }
     }
 }
 
