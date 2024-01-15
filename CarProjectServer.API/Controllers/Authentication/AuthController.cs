@@ -54,7 +54,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Сервис для работы с БД пользоватей.
+        /// Сервис для работы с БД пользователей.
         /// </summary>
         private readonly IUserService _userService;
 
