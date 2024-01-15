@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using NLog.Filters;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -259,11 +260,70 @@ namespace CarProjectServer.BL.Services.Implementations
                 .Name;
         }
 
-        public UserModel? TryGetUserByEmail(string userMail)
+        /// <summary>
+        /// Получение пользователя по E-Mail.
+        /// </summary>
+        /// <param name="email">E-mail пользователя.</param>
+        /// <returns>Пользователь.</returns>
+        public async Task<UserModel?> TryGetUserByEmailAsync(string email)
         {
-            var user = _context.Users.ToList().Find(u => u.Email == userMail);
+            var user = _context.Users
+                .ToList()
+                .Find(u => u.Email == email);
 
-            return _mapper.Map<UserModel?>(user);
+            if(user != null)
+            {
+                return _mapper.Map<UserModel?>(user);
+            }
+
+            return await GenerateUserByMailAsync(email);
+        }
+
+        /// <summary>
+        /// Создание пользователя по E-Mail.
+        /// </summary>
+        /// <param name="email">E-Mail пользователя.</param>
+        /// <returns>Пользователь.</returns>
+        private async Task<UserModel> GenerateUserByMailAsync(string email)
+        {
+            string login = GetLoginFromEmail(email);
+            string password = GetRandomPassword();
+
+            var user = new UserModel
+            {
+                Email = email,
+                Login = login,
+                Password = password
+            };
+
+            var roleModel = await GetDefaultRole();
+            user.Role = roleModel;
+            await AddUserAsync(user);
+
+            return user;
+        }
+
+        /// <summary>
+        /// Генерация случайного пароля.
+        /// </summary>
+        /// <returns>Случайный пароль.</returns>
+        private string GetRandomPassword()
+        {
+            var randomNumber = new byte[8];
+            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+
+            return Convert.ToBase64String(randomNumber);
+        }
+
+        /// <summary>
+        /// Создание логина по E-Mail.
+        /// </summary>
+        /// <param name="email">E-Mail пользователя.</param>
+        /// <returns>Логин пользователя.</returns>
+        private string GetLoginFromEmail(string email)
+        {
+            return email.Split('@')[0]; // Никнейм до "@"
         }
     }
 }

@@ -73,6 +73,11 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// <returns>Роль пользователя.</returns>
         string GetRoleByClaims(IEnumerable<System.Security.Claims.Claim> claims);
 
-        UserModel? TryGetUserByEmail(string userMail);
+        /// <summary>
+        /// Получение пользователя по E-Mail.
+        /// </summary>
+        /// <param name="email">E-mail пользователя.</param>
+        /// <returns>Пользователь.</returns>
+        Task<UserModel?> TryGetUserByEmailAsync(string email);
     }
 }

@@ -21,6 +21,7 @@ using Microsoft.Net.Http.Headers;
 using System.Text;
 using System.Security.Cryptography;
 using CarProjectServer.API.ViewModels.Google;
+using Microsoft.Extensions.Options;
 
 namespace CarProjectServer.API.Controllers.Authentication
 {
@@ -58,9 +59,14 @@ namespace CarProjectServer.API.Controllers.Authentication
         private readonly IUserService _userService;
 
         /// <summary>
-        /// Фабрика, предоставляющая HttpClient
+        /// Фабрика, предоставляющая HttpClient.
         /// </summary>
         private readonly IHttpClientFactory _httpFactory;
+
+        /// <summary>
+        /// Параметры Google OAuth.
+        /// </summary>
+        private readonly Options.GoogleOptions _googleOptions;
 
         /// <summary>
         /// Инициализирует контроллер сервисами токенов, аутентификации и запросов в БД.
@@ -69,12 +75,15 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// <param name="authenticateService">Сервис для аутентификации пользователей.</param>
         /// <param name="mapper">Маппер для маппинга моделей между слоями.</param>
         /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
+        /// <param name="httpFactory">Фабрика, предоставляющая HttpClient.</param>
+        /// <param name="googleOptions">Параметры Google OAuth.</param>
         public AuthController(ITokenService tokenService,
             IAuthenticateService authenticateService,
             IMapper mapper,
             ILogger<AuthController> logger,
             IUserService userService,
-            IHttpClientFactory httpFactory)
+            IHttpClientFactory httpFactory,
+            IOptions<Options.GoogleOptions> googleOptions)
         {
             _tokenService = tokenService;
             _authenticateService = authenticateService;
@@ -82,6 +91,7 @@ namespace CarProjectServer.API.Controllers.Authentication
             _logger = logger;
             _userService = userService;
             _httpFactory = httpFactory;
+            _googleOptions = googleOptions.Value;
         }
 
         /// <summary>
@@ -126,7 +136,15 @@ namespace CarProjectServer.API.Controllers.Authentication
                 throw new ApiException("Ошибка аутентификации");
             }
         }
-
+        /// <summary>
+        /// Осуществляет OAuth 2.0 аутентификацию через Google API
+        /// </summary>
+        /// <param name="authCode">Код авторизации.</param>
+        /// <returns>
+        /// Результат валидации пользователя.
+        /// </returns>
+        /// <exception cref="ApiException">Исключение, отправляемое клиенту.</exception>
+        /// GET api/auth/login_via_google
         [HttpGet("login_via_google")]
         public async Task<ActionResult<LoginResponseViewModel>> LoginViaGoogle(string authCode)
         {
@@ -137,13 +155,8 @@ namespace CarProjectServer.API.Controllers.Authentication
                 var accessToken = await ExchangeCodeForToken(authCode, client);
                 var userMail = await GetUserMail(accessToken, client);
 
-                var userModel = _userService.TryGetUserByEmail(userMail);
+                var userModel = await _userService.TryGetUserByEmailAsync(userMail);
                 var user = _mapper.Map<UserViewModel?>(userModel);
-
-                if (user == null)
-                {
-                    user = await GenerateUserByMailAsync(userMail);
-                }
 
                 return await Login(new CredentialsViewModel
                 {
@@ -163,44 +176,17 @@ namespace CarProjectServer.API.Controllers.Authentication
             }
         }
 
-        private async Task<UserViewModel> GenerateUserByMailAsync(string email)
-        {
-            string login = GetLoginFromEmail(email);
-            string password = GetRandomPassword();
-
-            var user = new UserViewModel
-            {
-                Email = email,
-                Login = login,
-                Password = password
-            };
-
-            var userModel = _mapper.Map<UserModel>(user);
-            var roleModel = await _userService.GetDefaultRole();
-            userModel.Role = roleModel;
-            await _userService.AddUserAsync(userModel);
-
-            return user;
-        }
-
-        private string GetRandomPassword()
-        {
-            var randomNumber = new byte[8];
-            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
-
-            return Convert.ToBase64String(randomNumber);
-        }
-
-        private string GetLoginFromEmail(string email)
-        {
-            return email.Split('@')[0]; // Никнейм до "@"
-        }
-
+        /// <summary>
+        /// Получает E-Mail пользователя через Google API.
+        /// </summary>
+        /// <param name="accessToken">Токен доступа к Google API пользователя.</param>
+        /// <param name="client">HTTP-клиент для запросов Google API.</param>
+        /// <returns>E-Mail пользователя.</returns>
+        /// <exception cref="ApiException">Исключение, отправляемое клиенту.</exception>
         private async Task<string> GetUserMail(string accessToken, HttpClient client)
         {
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
-            var response = await client.GetAsync("https://www.googleapis.com/oauth2/v1/userinfo?alt=json");
+            var response = await client.GetAsync(_googleOptions.EmailUrl);
             var content = await response.Content.ReadAsStringAsync();
             var googleProfile = JsonSerializer.Deserialize<GoogleProfileViewModel>(content);
             if (!googleProfile.VerifiedEmail)
@@ -211,20 +197,17 @@ namespace CarProjectServer.API.Controllers.Authentication
             return googleProfile.Email;
         }
 
+        /// <summary>
+        /// Обменивает код авторизации на токен доступа к Google API.
+        /// </summary>
+        /// <param name="authCode">Код авторизации.</param>
+        /// <param name="client">HTTP-клиент для запросов Google API.</param>
+        /// <returns>Токен доступа к Google API</returns>
         private async Task<string> ExchangeCodeForToken(string authCode, HttpClient client)
         {
-            var body = new Dictionary<string, string>
-                {
-                    { "client_id", "512072756601-r7ibo68bvteters981sgf84cb5vvarer.apps.googleusercontent.com" },
-                    { "client_secret",  "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" },
-                    { "code", authCode },
-                    { "access_type", "offline" },
-                    { "grant_type", "authorization_code" },
-                    { "redirect_uri", "http://localhost:3000"},
-                    { "scope", "openid profile email" }
-                };
+            var body = CreateBody(authCode);
 
-            var response = await client.PostAsync("https://oauth2.googleapis.com/token", new FormUrlEncodedContent(body));
+            var response = await client.PostAsync(_googleOptions.TokenUrl, new FormUrlEncodedContent(body));
             var content = await response.Content.ReadAsStringAsync();
 
             var options = new JsonSerializerOptions
@@ -235,6 +218,25 @@ namespace CarProjectServer.API.Controllers.Authentication
             var googleToken = JsonSerializer.Deserialize<GoogleTokenViewModel>(content, options);
 
             return googleToken.AccessToken;
+        }
+
+        /// <summary>
+        /// Создает тело запроса для обмена кода авторизации на токен доступа.
+        /// </summary>
+        /// <param name="authCode">Код авторизации</param>
+        /// <returns>Тело запроса.</returns>
+        private Dictionary<string, string> CreateBody(string authCode)
+        {
+            return new Dictionary<string, string>
+                {
+                    { "client_id", "512072756601-r7ibo68bvteters981sgf84cb5vvarer.apps.googleusercontent.com" },
+                    { "client_secret",  "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" },
+                    { "code", authCode },
+                    { "access_type", "offline" },
+                    { "grant_type", "authorization_code" },
+                    { "redirect_uri", _googleOptions.RedirectUri },
+                    { "scope", "openid profile email" }
+                };
         }
 
         /// <summary>

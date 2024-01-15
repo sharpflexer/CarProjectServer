@@ -1,6 +1,7 @@
 using AutoMapper;
 using CarProjectServer.API.Middleware;
 using CarProjectServer.API.Models;
+using CarProjectServer.API.Options;
 using CarProjectServer.API.Profiles;
 using CarProjectServer.BL.Options;
 using CarProjectServer.BL.Profiles;
@@ -33,6 +34,9 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
+builder.Services.Configure<CarProjectServer.API.Options.GoogleOptions>(
+    builder.Configuration.GetSection("GoogleOptions"));
+
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 
@@ -64,77 +68,17 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
-builder.Services.AddHttpClient("Google", httpClient =>
-{
-    httpClient.BaseAddress = new Uri("https://api.github.com/");
-});
+builder.Services.AddHttpClient("Google");
 
-builder.Services.AddAuthentication(
-x =>
+builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }
     )
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
+    .AddJwtBearer(options => CarJwtBearerOptions.GetInstance(options));
 
-            ValidIssuer = AuthOptions.Issuer,
-            ValidAudience = AuthOptions.Audience,
-            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
-
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ClockSkew = TimeSpan.Zero
-        };
-        options.Events = new JwtBearerEvents
-        {
-            OnAuthenticationFailed = context =>
-            {
-                if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                {
-                    context.Response.Headers.Add("IS-TOKEN-EXPIRED", "true");
-                }
-
-                return Task.CompletedTask;
-            }
-        };
-
-    });
-
-builder.Services.AddAuthorization(opts =>
-{
-    opts.AddPolicy("Create", policy =>
-    {
-        policy.RequireClaim("CanCreate", "True");
-    });
-    opts.AddPolicy("Read", policy =>
-    {
-        policy.RequireClaim("CanRead", "True");
-    });
-    opts.AddPolicy("Update", policy =>
-    {
-        policy.RequireClaim("CanUpdate", "True");
-    });
-    opts.AddPolicy("Delete", policy =>
-    {
-        policy.RequireClaim("CanDelete", "True");
-    });
-    opts.AddPolicy("ReadProperties", policy =>
-        policy.RequireAssertion(context =>
-            context.User.HasClaim("CanCreate", "True") ||
-            context.User.HasClaim ("CanUpdate", "True")
-        )
-    );
-    opts.AddPolicy("Users", policy =>
-    {
-        policy.RequireClaim("CanManageUsers", "True");
-    });
-});
+builder.Services.AddAuthorization(options => CarAuthorizationOptions.GetInstance(options));
 
 var app = builder.Build();
 
