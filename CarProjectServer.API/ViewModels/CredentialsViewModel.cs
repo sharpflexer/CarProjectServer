@@ -11,7 +11,7 @@
         public string Username { get; set; }
 
         /// <summary>
-        /// Пароль
+        /// Пароль.
         /// </summary>
         public string Password { get; set; }
     }

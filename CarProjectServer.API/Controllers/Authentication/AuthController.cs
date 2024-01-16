@@ -11,6 +11,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using CarProjectServer.DAL.Entities.Identity;
 using CarProjectServer.API.ViewModels;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using Microsoft.Net.Http.Headers;
+using System.Text;
+using System.Security.Cryptography;
+using CarProjectServer.API.ViewModels.Google;
+using Microsoft.Extensions.Options;
 
 namespace CarProjectServer.API.Controllers.Authentication
 {
@@ -21,9 +32,6 @@ namespace CarProjectServer.API.Controllers.Authentication
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<UserViewModel> _userManager;
-        private readonly SignInManager<UserViewModel> _signInManager;
-
         /// <summary>
         /// Сервис для работы с JWT токенами.
         /// </summary>
@@ -46,9 +54,19 @@ namespace CarProjectServer.API.Controllers.Authentication
         private readonly ILogger _logger;
 
         /// <summary>
-        /// Сервис для работы с БД пользоватей.
+        /// Сервис для работы с БД пользователей.
         /// </summary>
         private readonly IUserService _userService;
+
+        /// <summary>
+        /// Фабрика, предоставляющая HttpClient.
+        /// </summary>
+        private readonly IHttpClientFactory _httpFactory;
+
+        /// <summary>
+        /// Параметры Google OAuth.
+        /// </summary>
+        private readonly Options.GoogleOptions _googleOptions;
 
         /// <summary>
         /// Инициализирует контроллер сервисами токенов, аутентификации и запросов в БД.
@@ -57,13 +75,23 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// <param name="authenticateService">Сервис для аутентификации пользователей.</param>
         /// <param name="mapper">Маппер для маппинга моделей между слоями.</param>
         /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
-        public AuthController(ITokenService tokenService, IAuthenticateService authenticateService, IMapper mapper, ILogger<AuthController> logger, IUserService userService)
+        /// <param name="httpFactory">Фабрика, предоставляющая HttpClient.</param>
+        /// <param name="googleOptions">Параметры Google OAuth.</param>
+        public AuthController(ITokenService tokenService,
+            IAuthenticateService authenticateService,
+            IMapper mapper,
+            ILogger<AuthController> logger,
+            IUserService userService,
+            IHttpClientFactory httpFactory,
+            IOptions<Options.GoogleOptions> googleOptions)
         {
             _tokenService = tokenService;
             _authenticateService = authenticateService;
             _mapper = mapper;
             _logger = logger;
             _userService = userService;
+            _httpFactory = httpFactory;
+            _googleOptions = googleOptions.Value;
         }
 
         /// <summary>
@@ -86,8 +114,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                 HttpContext.Response.Cookies.Append("Refresh", jwtTokenViewModel.RefreshToken, new CookieOptions()
                 {
                     HttpOnly = true,
-                    SameSite = SameSiteMode.Lax,
-                    Secure = true
+                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax
                 });
 
                 string roleName = await _userService.GetRoleNameAsync(credentials.Username);
@@ -109,6 +136,108 @@ namespace CarProjectServer.API.Controllers.Authentication
                 throw new ApiException("Ошибка аутентификации");
             }
         }
+        /// <summary>
+        /// Осуществляет OAuth 2.0 аутентификацию через Google API
+        /// </summary>
+        /// <param name="authCode">Код авторизации.</param>
+        /// <returns>
+        /// Результат валидации пользователя.
+        /// </returns>
+        /// <exception cref="ApiException">Исключение, отправляемое клиенту.</exception>
+        /// GET api/auth/login_via_google
+        [HttpGet("login_via_google")]
+        public async Task<ActionResult<LoginResponseViewModel>> LoginViaGoogle(string authCode)
+        {
+            try
+            {
+                var client = _httpFactory.CreateClient("Google");
+
+                var accessToken = await ExchangeCodeForToken(authCode, client);
+                var userMail = await GetUserMail(accessToken, client);
+
+                var userModel = await _userService.TryGetUserByEmailAsync(userMail);
+                var user = _mapper.Map<UserViewModel?>(userModel);
+
+                return await Login(new CredentialsViewModel
+                {
+                    Username = user.Login,
+                    Password = user.Password
+                });
+            }
+            catch (ApiException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                throw new ApiException("Ошибка регистрации");
+            }
+        }
+
+        /// <summary>
+        /// Получает E-Mail пользователя через Google API.
+        /// </summary>
+        /// <param name="accessToken">Токен доступа к Google API пользователя.</param>
+        /// <param name="client">HTTP-клиент для запросов Google API.</param>
+        /// <returns>E-Mail пользователя.</returns>
+        /// <exception cref="ApiException">Исключение, отправляемое клиенту.</exception>
+        private async Task<string> GetUserMail(string accessToken, HttpClient client)
+        {
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
+            var response = await client.GetAsync(_googleOptions.EmailUrl);
+            var content = await response.Content.ReadAsStringAsync();
+            var googleProfile = JsonSerializer.Deserialize<GoogleProfileViewModel>(content);
+            if (!googleProfile.VerifiedEmail)
+            {
+                throw new ApiException("Учётная запись Google не подтверждена.");            
+            }
+
+            return googleProfile.Email;
+        }
+
+        /// <summary>
+        /// Обменивает код авторизации на токен доступа к Google API.
+        /// </summary>
+        /// <param name="authCode">Код авторизации.</param>
+        /// <param name="client">HTTP-клиент для запросов Google API.</param>
+        /// <returns>Токен доступа к Google API.</returns>
+        private async Task<string> ExchangeCodeForToken(string authCode, HttpClient client)
+        {
+            var body = CreateBody(authCode);
+
+            var response = await client.PostAsync(_googleOptions.TokenUrl, new FormUrlEncodedContent(body));
+            var content = await response.Content.ReadAsStringAsync();
+
+            var options = new JsonSerializerOptions
+            {
+                NumberHandling = JsonNumberHandling.AllowReadingFromString
+            };
+
+            var googleToken = JsonSerializer.Deserialize<GoogleTokenViewModel>(content, options);
+
+            return googleToken.AccessToken;
+        }
+
+        /// <summary>
+        /// Создает тело запроса для обмена кода авторизации на токен доступа.
+        /// </summary>
+        /// <param name="authCode">Код авторизации.</param>
+        /// <returns>Тело запроса.</returns>
+        private Dictionary<string, string> CreateBody(string authCode)
+        {
+            return new Dictionary<string, string>
+                {
+                    { "client_id", "512072756601-r7ibo68bvteters981sgf84cb5vvarer.apps.googleusercontent.com" },
+                    { "client_secret",  "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" },
+                    { "code", authCode },
+                    { "access_type", "offline" },
+                    { "grant_type", "authorization_code" },
+                    { "redirect_uri", _googleOptions.RedirectUri },
+                    { "scope", "openid profile email" }
+                };
+        }
 
         /// <summary>
         /// Обновляет Access и Refresh токены
@@ -121,12 +250,9 @@ namespace CarProjectServer.API.Controllers.Authentication
         [HttpGet("refresh")]
         public async Task<ActionResult<string>> Refresh()
         {
-            JwtTokenViewModel oldToken;
-
             try
             {
-                oldToken = TryGetOldJwtToken(HttpContext.Request);
-
+                var oldToken = TryGetOldJwtToken(HttpContext.Request);
                 var oldTokenModel = _mapper.Map<JwtTokenModel>(oldToken);
                 var newTokenModel = await _tokenService.CreateNewTokenAsync(oldTokenModel);
                 var newToken = _mapper.Map<JwtTokenViewModel>(newTokenModel);
@@ -134,8 +260,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                 HttpContext.Response.Cookies.Append("Refresh", newToken.RefreshToken, new CookieOptions()
                 {
                     HttpOnly = true,
-                    SameSite = SameSiteMode.Lax,
-                    Secure = true
+                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax,
 
                 });
 
@@ -174,6 +299,40 @@ namespace CarProjectServer.API.Controllers.Authentication
                 throw ex;
             }
             catch(Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                throw new ApiException("Ошибка аутентификации");
+            }
+        }
+
+        /// <summary>
+        /// Проверяет роль пользователя из токена доступа.
+        /// </summary>
+        /// <returns>Роль пользователя.</returns>
+        // GET api/auth/get_role
+        [Authorize]
+        [HttpGet("get_role")]
+        public async Task<ActionResult<string>> GetRole()
+        {
+            try
+            {
+                var accessToken = HttpContext.Request.Headers["Authorization"]
+                    .FirstOrDefault()
+                    .Replace("Bearer ", "");
+                var token = new JwtSecurityToken(accessToken);
+                var claims = token.Claims;
+
+                string role = _userService.GetRoleByClaims(claims);
+
+                return role;
+
+            }
+            catch (ApiException)
+            {
+                throw;
+            }
+            catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
 

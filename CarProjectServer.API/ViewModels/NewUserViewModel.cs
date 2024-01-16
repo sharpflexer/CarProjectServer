@@ -3,7 +3,7 @@
 namespace CarProjectServer.API.Models
 {
     /// <summary>
-    /// Пользователь.
+    /// Новый пользователь.
     /// </summary>
     public class NewUserViewModel
     {

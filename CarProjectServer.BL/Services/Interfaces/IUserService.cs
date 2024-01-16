@@ -1,5 +1,5 @@
 ﻿using CarProjectServer.BL.Models;
-using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace CarProjectServer.BL.Services.Interfaces
 {
@@ -65,5 +65,19 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// <param name="username">Имя пользователя.</param>
         /// <returns>Наименование роли.</returns>
         Task<string> GetRoleNameAsync(string username);
+
+        /// <summary>
+        /// Получает роль на основе прав пользователя.
+        /// </summary>
+        /// <param name="claims">Права пользователя.</param>
+        /// <returns>Роль пользователя.</returns>
+        string GetRoleByClaims(IEnumerable<Claim> claims);
+
+        /// <summary>
+        /// Получение пользователя по E-Mail.
+        /// </summary>
+        /// <param name="email">E-mail пользователя.</param>
+        /// <returns>Пользователь.</returns>
+        Task<UserModel?> TryGetUserByEmailAsync(string email);
     }
 }

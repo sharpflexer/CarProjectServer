@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CarProjectServer.API.ViewModels;
 using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
@@ -6,6 +7,8 @@ using CarProjectServer.DAL.Context;
 using CarProjectServer.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -47,7 +50,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// Отправляет запрос на добавление нового автомобиля в БД через ApplicationContext.
         /// </summary>
         /// <param name="form">Форма с данными списков IDs, Brands, Models и Colors.</param>
-        public async Task CreateAsync(CarModel carModel)
+        public async Task<CarModel> CreateAsync(CarModel carModel)
         {
             try
             {
@@ -56,8 +59,9 @@ namespace CarProjectServer.BL.Services.Implementations
                 auto.Model = _context.Models.FirstOrDefault(m => m.Id == carModel.Model.Id);
                 auto.Color = _context.Colors.FirstOrDefault(c => c.Id == carModel.Color.Id);
                 auto.Price = carModel.Price;
-                _context.Cars.Add(auto);
+                var response = _context.Cars.Add(auto);
                 await _context.SaveChangesAsync();
+                return _mapper.Map<CarModel>(response.Entity);
             }
             catch (Exception ex)
             {
@@ -135,6 +139,37 @@ namespace CarProjectServer.BL.Services.Implementations
 
                 throw new ApiException("Список автомобилей недоступен");
             }
+        }
+
+        /// <summary>
+        /// Получает свойства автомобиля: марки, модели и цвета.
+        /// </summary>
+        /// <returns>Свойства автомобиля.</returns>
+        public async Task<CarPropertiesModel> ReadPropertiesAsync()
+        {
+            var brands = await _context
+                .Brands
+                .Include(c => c.Models)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var models = await _context
+                .Models
+                .Include(m => m.Colors)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var colors = await _context
+                .Colors
+                .AsNoTracking()
+                .ToListAsync();
+
+            return new CarPropertiesModel
+            {
+                Brands = _mapper.Map<List<BrandModel>>(brands),
+                Models = _mapper.Map<List<CarModelTypeModel>>(models),
+                Colors = _mapper.Map<List<CarColorModel>>(colors)
+            };
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using CarProjectServer.BL.Models;
+﻿using CarProjectServer.API.ViewModels;
+using CarProjectServer.BL.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace CarProjectServer.BL.Services.Interfaces
@@ -12,7 +13,7 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// Отправляет запрос на добавление нового автомобиля в БД через ApplicationContext.
         /// </summary>
         /// <param name="carModel">Автомобиль для добавления.</param>
-        public Task CreateAsync(CarModel carModel);
+        public Task<CarModel> CreateAsync(CarModel carModel);
 
         /// <summary>
         /// Получает список всех автомобилей из БД.
@@ -31,5 +32,11 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// </summary>
         /// <param name="carModel">Автомобиль для удаления.</param>
         public Task DeleteAsync(CarModel carModel);
+
+        /// <summary>
+        /// Получает свойства автомобиля: марки, модели и цвета.
+        /// </summary>
+        /// <returns>Свойства автомобиля.</returns>
+        Task<CarPropertiesModel> ReadPropertiesAsync();
     }
 }
