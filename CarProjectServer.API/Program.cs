@@ -19,13 +19,18 @@ using Microsoft.Net.Http.Headers;
 using NLog.Web;
 
 var clientOrigin = "clientOrigin";
+
 var builder = WebApplication.CreateBuilder(args);
+var corsOrigin = builder.Configuration
+    .GetSection("Cors")
+    .GetValue<string>("Origin");
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: clientOrigin,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:3000")
+                          policy.WithOrigins()
                           .WithMethods("GET", "POST", "PUT", "DELETE")
                           .AllowAnyHeader()
                           .AllowCredentials();

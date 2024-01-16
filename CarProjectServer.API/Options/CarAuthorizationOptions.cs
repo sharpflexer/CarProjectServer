@@ -6,12 +6,22 @@ namespace CarProjectServer.API.Options
     /// Осуществляет настройку политик авторизации.
     /// Singleton.
     /// </summary>
-    public class CarAuthorizationOptions : AuthorizationOptions
+    public class CarAuthorizationOptions
     {
+        /// <summary>
+        /// Инстанс класса.
+        /// </summary>
         private static CarAuthorizationOptions _instance;
 
+        /// <summary>
+        /// Приватный базовый конструктор.
+        /// </summary>
         private CarAuthorizationOptions() { }
 
+        /// <summary>
+        /// Приватный конструктор с options.
+        /// </summary>
+        /// <param name="options">Конфигурация авторизации.</param>
         private CarAuthorizationOptions(AuthorizationOptions options) 
         {
             options.AddPolicy("Create", policy =>
@@ -42,6 +52,11 @@ namespace CarProjectServer.API.Options
             });
         }
 
+        /// <summary>
+        /// Создает инстанс если его нет, и возвращает существующий если он есть.
+        /// </summary>
+        /// <param name="options">Конфигурация авторизации.</param>
+        /// <returns>Инстанс.</returns>
         public static CarAuthorizationOptions GetInstance(AuthorizationOptions options)
         {
             if (_instance == null)

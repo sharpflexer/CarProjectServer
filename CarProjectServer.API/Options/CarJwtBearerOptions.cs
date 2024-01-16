@@ -10,15 +10,24 @@ namespace CarProjectServer.API.Options
     /// </summary>
     public class CarJwtBearerOptions
     {
+        /// <summary>
+        /// Инстанс класса.
+        /// </summary>
         private static CarJwtBearerOptions _instance;
 
+        /// <summary>
+        /// Приватный базовый конструктор.
+        /// </summary>
         private CarJwtBearerOptions() { }
 
+        /// <summary>
+        /// Приватный конструктор с options.
+        /// </summary>
+        /// <param name="options">Конфигурация JWT-токена.</param>
         private CarJwtBearerOptions(JwtBearerOptions options)
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
-
                 ValidIssuer = AuthOptions.Issuer,
                 ValidAudience = AuthOptions.Audience,
                 IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
@@ -44,6 +53,11 @@ namespace CarProjectServer.API.Options
             };
         }
 
+        /// <summary>
+        /// Создает инстанс если его нет, и возвращает существующий если он есть.
+        /// </summary>
+        /// <param name="options">Конфигурация JWT-токена.</param>
+        /// <returns>Инстанс.</returns>
         public static CarJwtBearerOptions GetInstance(JwtBearerOptions options)
         {
             if (_instance == null)

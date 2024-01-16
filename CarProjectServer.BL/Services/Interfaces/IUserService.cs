@@ -1,5 +1,5 @@
 ﻿using CarProjectServer.BL.Models;
-using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace CarProjectServer.BL.Services.Interfaces
 {
@@ -71,7 +71,7 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// </summary>
         /// <param name="claims">Права пользователя.</param>
         /// <returns>Роль пользователя.</returns>
-        string GetRoleByClaims(IEnumerable<System.Security.Claims.Claim> claims);
+        string GetRoleByClaims(IEnumerable<Claim> claims);
 
         /// <summary>
         /// Получение пользователя по E-Mail.

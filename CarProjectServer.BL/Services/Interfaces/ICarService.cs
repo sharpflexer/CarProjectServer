@@ -36,7 +36,7 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// <summary>
         /// Получает свойства автомобиля: марки, модели и цвета.
         /// </summary>
-        /// <returns>Свойства автомобиля</returns>
+        /// <returns>Свойства автомобиля.</returns>
         Task<CarPropertiesModel> ReadPropertiesAsync();
     }
 }

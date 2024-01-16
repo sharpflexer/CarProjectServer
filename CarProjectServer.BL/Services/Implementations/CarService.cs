@@ -144,7 +144,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <summary>
         /// Получает свойства автомобиля: марки, модели и цвета.
         /// </summary>
-        /// <returns>Свойства автомобиля</returns>
+        /// <returns>Свойства автомобиля.</returns>
         public async Task<CarPropertiesModel> ReadPropertiesAsync()
         {
             var brands = await _context

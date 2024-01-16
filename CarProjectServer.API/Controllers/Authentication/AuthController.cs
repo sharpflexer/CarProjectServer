@@ -202,7 +202,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// </summary>
         /// <param name="authCode">Код авторизации.</param>
         /// <param name="client">HTTP-клиент для запросов Google API.</param>
-        /// <returns>Токен доступа к Google API</returns>
+        /// <returns>Токен доступа к Google API.</returns>
         private async Task<string> ExchangeCodeForToken(string authCode, HttpClient client)
         {
             var body = CreateBody(authCode);
@@ -223,7 +223,7 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// <summary>
         /// Создает тело запроса для обмена кода авторизации на токен доступа.
         /// </summary>
-        /// <param name="authCode">Код авторизации</param>
+        /// <param name="authCode">Код авторизации.</param>
         /// <returns>Тело запроса.</returns>
         private Dictionary<string, string> CreateBody(string authCode)
         {
@@ -317,7 +317,9 @@ namespace CarProjectServer.API.Controllers.Authentication
         {
             try
             {
-                var accessToken = HttpContext.Request.Headers["Authorization"][0].Replace("Bearer ", "");
+                var accessToken = HttpContext.Request.Headers["Authorization"]
+                    .FirstOrDefault()
+                    .Replace("Bearer ", "");
                 var token = new JwtSecurityToken(accessToken);
                 var claims = token.Claims;
 

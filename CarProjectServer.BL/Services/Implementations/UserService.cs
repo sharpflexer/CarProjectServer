@@ -268,8 +268,7 @@ namespace CarProjectServer.BL.Services.Implementations
         public async Task<UserModel?> TryGetUserByEmailAsync(string email)
         {
             var user = _context.Users
-                .ToList()
-                .Find(u => u.Email == email);
+                .FirstOrDefault(u => u.Email == email);
 
             if(user != null)
             {
