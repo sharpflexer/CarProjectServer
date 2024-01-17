@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
+using System.Text;
 
 namespace CarProjectServer.API.Controllers
 {
@@ -11,15 +12,18 @@ namespace CarProjectServer.API.Controllers
         [HttpGet("ws")]
         public async Task Get()
         {
-            if (HttpContext.WebSockets.IsWebSocketRequest)
+            using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+            NotificationTimer.Notify += MessageHandler;
+            await Echo(webSocket);
+            
+            async Task MessageHandler(string message)
             {
-                using var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-                await Echo(webSocket);
+                var bytes = Encoding.UTF8.GetBytes(message);
+
+                await webSocket.SendAsync(
+                    bytes, WebSocketMessageType.Text, true, CancellationToken.None);
             }
-            else
-            {
-                HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-            }
+            
         }
 
         private static async Task Echo(WebSocket webSocket)

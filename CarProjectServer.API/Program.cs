@@ -1,4 +1,5 @@
 using AutoMapper;
+using CarProjectServer.API.Controllers;
 using CarProjectServer.API.Middleware;
 using CarProjectServer.API.Models;
 using CarProjectServer.API.Options;
@@ -107,4 +108,12 @@ app.UseWebSockets();
  
 app.MapControllers();
 
+app.Use(async (context, next) =>
+{
+    NotificationTimer.StartTimer();
+
+    await next.Invoke();
+});
+
 app.Run();
+
