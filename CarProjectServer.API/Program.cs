@@ -31,7 +31,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: clientOrigin,
                       policy =>
                       {
-                          policy.WithOrigins()
+                          policy.WithOrigins("http://localhost:3000")
                           .WithMethods("GET", "POST", "PUT", "DELETE")
                           .AllowAnyHeader()
                           .AllowCredentials();
@@ -73,6 +73,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ITechnicalWorksService, TechnicalWorksService>();
 
 builder.Services.AddHttpClient("Google");
 
@@ -90,6 +91,7 @@ var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<LogMiddleware>();
+app.UseMiddleware<TechnicalWorksMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

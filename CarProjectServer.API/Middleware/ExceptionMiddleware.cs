@@ -13,7 +13,7 @@ using static MailKit.Net.Imap.ImapEvent;
 namespace CarProjectServer.API.Middleware
 {
     /// <summary>
-    /// Middleware обработчик исключений
+    /// Middleware обработчик исключений.
     /// </summary>
     public class ExceptionMiddleware
     {
@@ -31,7 +31,8 @@ namespace CarProjectServer.API.Middleware
         /// <summary>
         /// Инициализирует middleware запросом и логгером.
         /// </summary>
-        /// <param name="next"></param>
+        /// <param name="next">Http-запрос.</param>
+        /// <param name="logger">Логгер для логирования в файлы ошибок.</param>
         public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;

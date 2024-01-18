@@ -1,0 +1,45 @@
+﻿using CarProjectServer.BL.Services.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Org.BouncyCastle.Asn1.Ocsp;
+using System.Text;
+
+namespace CarProjectServer.API.Middleware
+{
+    /// <summary>
+    /// Middleware для блокирования запросов 
+    /// во время технических работ.
+    /// </summary>
+    public class TechnicalWorksMiddleware
+    {
+        /// <summary>
+        /// Http-запрос.
+        /// </summary>
+        private readonly RequestDelegate _next;
+
+        /// <summary>
+        /// Инициализирует middleware запросом.
+        /// </summary>
+        /// <param name="next">Http-запрос.</param>
+        public TechnicalWorksMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        /// <summary>
+        /// Обрабатывает запроc и возвращает 503, 
+        /// если начались технические работы.
+        /// </summary>
+        /// <param name="httpContext">Контекст запроса.</param>
+        public async Task Invoke(HttpContext httpContext, ITechnicalWorksService worksService)
+        {
+            if (!worksService.AreTechnicalWorksNow())
+            {
+                await _next(httpContext);
+            }
+
+            httpContext.Response.StatusCode = 503;
+
+            return;
+        }
+    }
+}

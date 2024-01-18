@@ -23,7 +23,8 @@ namespace CarProjectServer.API.Middleware
         /// <summary>
         /// Инициализирует middleware запросом и логгером.
         /// </summary>
-        /// <param name="next"></param>
+        /// <param name="next">Http-запрос.</param>
+        /// <param name="logger">Логгер для логирования в файлы ошибок.</param>
         public LogMiddleware(RequestDelegate next, ILogger<LogMiddleware> logger)
         {
             _next = next;
