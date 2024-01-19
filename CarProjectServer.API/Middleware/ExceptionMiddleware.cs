@@ -71,7 +71,7 @@ namespace CarProjectServer.API.Middleware
                 Message = message,
             };
 
-            await httpContext.Response.WriteAsJsonAsync(error);
+            await httpContext.Response.WriteAsJsonAsync(error); 
         }
     }
 }

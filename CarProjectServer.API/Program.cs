@@ -31,7 +31,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: clientOrigin,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:3000")
+                          policy.WithOrigins(corsOrigin)
                           .WithMethods("GET", "POST", "PUT", "DELETE")
                           .AllowAnyHeader()
                           .AllowCredentials();
@@ -88,7 +88,7 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddAuthorization(options => CarAuthorizationOptions.GetInstance(options));
 
 var app = builder.Build();
-
+app.UseCors(clientOrigin);
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<LogMiddleware>();
 app.UseMiddleware<TechnicalWorksMiddleware>();
@@ -101,7 +101,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors(clientOrigin);
 
 app.UseAuthentication();
 app.UseAuthorization();

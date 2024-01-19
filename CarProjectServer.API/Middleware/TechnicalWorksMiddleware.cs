@@ -1,6 +1,8 @@
-﻿using CarProjectServer.BL.Services.Interfaces;
+﻿using CarProjectServer.API.Models;
+using CarProjectServer.BL.Services.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Org.BouncyCastle.Asn1.Ocsp;
+using System.Buffers;
 using System.Text;
 
 namespace CarProjectServer.API.Middleware
@@ -32,14 +34,24 @@ namespace CarProjectServer.API.Middleware
         /// <param name="httpContext">Контекст запроса.</param>
         public async Task Invoke(HttpContext httpContext, ITechnicalWorksService worksService)
         {
-            if (!worksService.AreTechnicalWorksNow())
+            if (worksService.AreTechnicalWorksNow())
             {
-                await _next(httpContext);
+                httpContext.Response.StatusCode = 503;
+                httpContext.Response.ContentType = "application/json";
+
+                var error = new ErrorViewModel
+                {
+                    StatusCode = httpContext.Response.StatusCode.ToString(),
+                    Message = "Технические работы...",
+                };
+
+                await httpContext.Response.WriteAsJsonAsync(error);
+
+                return;
             }
 
-            httpContext.Response.StatusCode = 503;
+            await _next(httpContext);
 
-            return;
         }
     }
 }
