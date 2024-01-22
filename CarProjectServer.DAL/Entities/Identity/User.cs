@@ -1,5 +1,4 @@
-﻿using CarProjectServer.DAL.Context;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace CarProjectServer.DAL.Entities.Identity
 {

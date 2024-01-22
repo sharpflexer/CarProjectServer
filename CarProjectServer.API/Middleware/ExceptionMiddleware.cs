@@ -1,14 +1,6 @@
 ﻿using CarProjectServer.API.Models;
 using CarProjectServer.BL.Exceptions;
-using CarProjectServer.BL.Options;
-using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using NLog.LayoutRenderers;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Security.Claims;
-using System.Text;
-using static MailKit.Net.Imap.ImapEvent;
 
 namespace CarProjectServer.API.Middleware
 {
@@ -71,7 +63,7 @@ namespace CarProjectServer.API.Middleware
                 Message = message,
             };
 
-            await httpContext.Response.WriteAsJsonAsync(error); 
+            await httpContext.Response.WriteAsJsonAsync(error);
         }
     }
 }

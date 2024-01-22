@@ -7,8 +7,6 @@ using CarProjectServer.DAL.Context;
 using CarProjectServer.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace CarProjectServer.BL.Services.Implementations
 {

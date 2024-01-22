@@ -1,15 +1,11 @@
 ﻿using AutoMapper;
 using CarProjectServer.BL.Exceptions;
-using CarProjectServer.BL.Extensions;
 using CarProjectServer.BL.Models;
 using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
 using CarProjectServer.DAL.Entities.Identity;
-using CarProjectServer.DAL.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NLog.Filters;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;

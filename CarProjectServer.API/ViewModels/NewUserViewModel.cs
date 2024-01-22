@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace CarProjectServer.API.Models
+﻿namespace CarProjectServer.API.Models
 {
     /// <summary>
     /// Новый пользователь.

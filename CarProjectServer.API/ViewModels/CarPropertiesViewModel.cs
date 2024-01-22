@@ -1,5 +1,4 @@
 ﻿using CarProjectServer.API.Models;
-using System.Collections.Generic;
 
 namespace CarProjectServer.API.ViewModels
 {

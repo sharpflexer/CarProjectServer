@@ -1,5 +1,4 @@
 ﻿using CarProjectServer.API.Filters;
-using Microsoft.AspNetCore.Http;
 using System.Text;
 
 namespace CarProjectServer.API.Middleware

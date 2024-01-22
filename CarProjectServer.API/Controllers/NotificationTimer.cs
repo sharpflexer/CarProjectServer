@@ -1,9 +1,4 @@
-﻿using System;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
-
-namespace CarProjectServer.API.Controllers
+﻿namespace CarProjectServer.API.Controllers
 {
     public class NotificationTimer
     {

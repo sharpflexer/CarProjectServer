@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace CarProjectServer.API.ViewModels
+﻿namespace CarProjectServer.API.ViewModels
 {
     /// <summary>
     /// Роль пользователя.

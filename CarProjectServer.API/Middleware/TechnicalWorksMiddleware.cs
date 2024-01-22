@@ -1,9 +1,5 @@
 ﻿using CarProjectServer.API.Models;
 using CarProjectServer.BL.Services.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Org.BouncyCastle.Asn1.Ocsp;
-using System.Buffers;
-using System.Text;
 
 namespace CarProjectServer.API.Middleware
 {
