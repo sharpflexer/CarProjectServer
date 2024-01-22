@@ -33,7 +33,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
-builder.Services.Configure<CarProjectServer.API.Options.GoogleOptions>(
+builder.Services.Configure<GoogleOptions>(
     builder.Configuration.GetSection("GoogleOptions"));
 
 builder.Logging.ClearProviders();

@@ -1,5 +1,6 @@
 ﻿using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
+using CarProjectServer.DAL.Entities;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -17,6 +18,18 @@ namespace CarProjectServer.BL.Services.Implementations
                 .Any(work =>
                 work.Start < DateTime.UtcNow &&
                 work.End > DateTime.UtcNow);
+        }
+
+        public async Task StartWorks(DateTime endTime)
+        {
+            var technicalWork = new TechnicalWork()
+            {
+                Start = DateTime.UtcNow,
+                End = endTime
+            };
+
+            _context.TechnicalWorks.Add(technicalWork);
+            await _context.SaveChangesAsync();
         }
     }
 }

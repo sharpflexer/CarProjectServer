@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CarProjectServer.BL.Services.Implementations;
+using CarProjectServer.BL.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
 using System.Text;
 
@@ -13,6 +15,13 @@ namespace CarProjectServer.API.Controllers
     {
         private delegate Task MessageHandler(byte[] message, WebSocket webSocket);
         private static event MessageHandler NotifyByAdmin;
+        private readonly ITechnicalWorksService _technicalWorksService;
+
+        public NotificationController(ITechnicalWorksService technicalWorksService)
+        {
+            _technicalWorksService = technicalWorksService;
+        }
+
 
         /// <summary>
         /// Подключение по веб-сокету
@@ -35,8 +44,14 @@ namespace CarProjectServer.API.Controllers
             }
         }
 
-        [HttpGet("notifyAll")]
-        public async Task NotifyAllAsync()
+        [HttpPost("start")]
+        public async Task Start([FromBody] string endTime)
+        {
+            var end = DateTime.Parse(endTime).ToUniversalTime();
+            await _technicalWorksService.StartWorks(end);          
+        }
+
+        private async Task NotifyAllAsync()
         {
             using WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
             NotifyByAdmin += MessageHandler;
@@ -45,7 +60,7 @@ namespace CarProjectServer.API.Controllers
 
             async Task MessageHandler(byte[] message, WebSocket sender)
             {
-                var reciever = webSocket;
+                WebSocket reciever = webSocket;
                 if (reciever != sender)
                 {
                     await webSocket.SendAsync(
