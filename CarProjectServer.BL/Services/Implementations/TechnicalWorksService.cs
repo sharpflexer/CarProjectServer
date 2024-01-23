@@ -28,6 +28,7 @@ namespace CarProjectServer.BL.Services.Implementations
                 End = endTime
             };
 
+            Thread.Sleep(5000);
             _context.TechnicalWorks.Add(technicalWork);
             await _context.SaveChangesAsync();
         }

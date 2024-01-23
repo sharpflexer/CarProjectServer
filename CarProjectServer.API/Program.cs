@@ -1,8 +1,8 @@
 using AutoMapper;
-using CarProjectServer.API.Controllers;
 using CarProjectServer.API.Middleware;
 using CarProjectServer.API.Options;
 using CarProjectServer.API.Profiles;
+using CarProjectServer.API.Timers;
 using CarProjectServer.BL.Profiles;
 using CarProjectServer.BL.Services.Implementations;
 using CarProjectServer.BL.Services.Interfaces;
@@ -69,6 +69,10 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITechnicalWorksService, TechnicalWorksService>();
 
 builder.Services.AddHttpClient("Google");
+builder.Services.AddHttpClient("Role", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7191/api/auth/get_role");
+});
 
 builder.Services.AddAuthentication(x =>
 {
@@ -104,7 +108,7 @@ app.MapControllers();
 
 app.Use(async (context, next) =>
 {
-    NotificationTimer.StartTimer();
+    NotificationTimer.GetInstance().StartTimer();
 
     await next.Invoke();
 });
