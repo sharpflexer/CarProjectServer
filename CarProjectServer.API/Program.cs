@@ -11,11 +11,12 @@ using CarProjectServer.DAL.Entities.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using NLog.Web;
+using System.Reflection;
 
-var clientOrigin = "clientOrigin";
+string clientOrigin = "clientOrigin";
 
-var builder = WebApplication.CreateBuilder(args);
-var corsOrigin = builder.Configuration
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+string? corsOrigin = builder.Configuration
     .GetSection("Cors")
     .GetValue<string>("Origin");
 
@@ -24,13 +25,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: clientOrigin,
                       policy =>
                       {
-                          policy.WithOrigins(corsOrigin)
+                          _ = policy.WithOrigins(corsOrigin)
                           .WithMethods("GET", "POST", "PUT", "DELETE")
                           .AllowAnyHeader()
                           .AllowCredentials();
                       });
 });
-
+builder.Services.AddMediatR();
 builder.Services.AddControllers();
 
 builder.Services.Configure<GoogleOptions>(
@@ -84,7 +85,7 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddAuthorization(options => CarAuthorizationOptions.GetInstance(options));
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 app.UseCors(clientOrigin);
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<LogMiddleware>();
@@ -92,8 +93,8 @@ app.UseMiddleware<TechnicalWorksMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    _ = app.UseSwagger();
+    _ = app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
@@ -103,7 +104,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseWebSockets();
- 
+
 app.MapControllers();
 
 app.Use(async (context, next) =>
