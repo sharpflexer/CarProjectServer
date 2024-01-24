@@ -51,7 +51,7 @@ namespace CarProjectServer.API.Controllers.Notification
         }
 
         /// <summary>
-        /// Подключение по веб-сокету
+        /// Подключение по веб-сокету.
         /// </summary>
         /// GET api/notification/ws
         [HttpGet("ws")]
@@ -82,8 +82,10 @@ namespace CarProjectServer.API.Controllers.Notification
                 WebSocket reciever = webSocket;
                 if (reciever != sender)
                 {
-                    await webSocket.SendAsync(
-                        bytes, WebSocketMessageType.Text, true, CancellationToken.None);
+                    await webSocket.SendAsync(bytes, 
+                        WebSocketMessageType.Text, 
+                        true, 
+                        CancellationToken.None);
                 }
             }
         }
@@ -162,6 +164,7 @@ namespace CarProjectServer.API.Controllers.Notification
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
             var response = await client.GetAsync(client.BaseAddress);
             var role = await response.Content.ReadAsStringAsync();
+
             return role;
         }
     }

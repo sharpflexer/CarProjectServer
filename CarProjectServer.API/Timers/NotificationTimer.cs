@@ -1,5 +1,8 @@
 ﻿namespace CarProjectServer.API.Timers
 {
+    /// <summary>
+    /// Таймер оповещений о технических работах.
+    /// </summary>
     public class NotificationTimer
     {
         /// <summary>
@@ -66,7 +69,7 @@
         /// Метод-callback, вызывающий событие, каждый раз,
         /// когда срабатывает таймер.
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="state">Состояние таймера.</param>
         private void SendMessage(object state)
         {
             if (Notify != null)

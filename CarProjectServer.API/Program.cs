@@ -71,7 +71,9 @@ builder.Services.AddScoped<ITechnicalWorksService, TechnicalWorksService>();
 builder.Services.AddHttpClient("Google");
 builder.Services.AddHttpClient("Role", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7191/api/auth/get_role");
+    client.BaseAddress = new Uri(builder
+        .Configuration
+        .GetSection("GetRole"));
 });
 
 builder.Services.AddAuthentication(x =>

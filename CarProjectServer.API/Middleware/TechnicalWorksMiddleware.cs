@@ -47,7 +47,6 @@ namespace CarProjectServer.API.Middleware
             }
 
             await _next(httpContext);
-
         }
     }
 }
