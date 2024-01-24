@@ -15,9 +15,25 @@ namespace CarProjectServer.API.Controllers.Notification
     [ApiController]
     public class NotificationController : ControllerBase
     {
+        /// <summary>
+        /// Делегат для обработчика оповещения админа.
+        /// </summary>
+        /// <param name="webSocket">Веб-сокет, который отправил соообщение.</param>
         private delegate Task MessageHandler(WebSocket webSocket);
+
+        /// <summary>
+        /// Событие для отправки сообщений от администратора о технических работах.
+        /// </summary>
         private static event MessageHandler NotifyByAdmin;
+
+        /// <summary>
+        /// Сервис технических работ.
+        /// </summary>
         private readonly ITechnicalWorksService _technicalWorksService;
+
+        /// <summary>
+        /// Сообщение о технических работах.
+        /// </summary>
         private const string notifyString = "Технические работы!";
 
         /// <summary>
@@ -53,7 +69,6 @@ namespace CarProjectServer.API.Controllers.Notification
                         true,
                         CancellationToken.None);
 
-                Thread.Sleep(5000);
                 await _technicalWorksService.StartWorks(DateTime.UtcNow.AddMinutes(1));
             }
 
@@ -70,6 +85,10 @@ namespace CarProjectServer.API.Controllers.Notification
             }
         }
 
+        /// <summary>
+        /// Начинает технические работы.
+        /// </summary>
+        /// <param name="endTime">Время окончания технических работ.</param>
         [HttpPost("start")]
         public async Task Start([FromBody] string endTime)
         {
@@ -77,34 +96,50 @@ namespace CarProjectServer.API.Controllers.Notification
             await _technicalWorksService.StartWorks(end);
         }
 
+        /// <summary>
+        /// Обрабатывает сообщения по веб-сокетам.
+        /// </summary>
+        /// <param name="webSocket">Веб-сокет, по которому обрабатываются сообщения.</param>
         private async Task Echo(WebSocket webSocket)
         {
             byte[] buffer = new byte[1024 * 4];
             WebSocketReceiveResult receiveResult = await webSocket.ReceiveAsync(
                 new ArraySegment<byte>(buffer), CancellationToken.None);
 
-            while (!receiveResult.CloseStatus.HasValue)
-            {
-                var client = _httpFactory.CreateClient("Role");
-                var accessToken = Request.Headers["Authorization"].ToString();
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
-
-                var response = await client.GetAsync(client.BaseAddress);
-                var role = await response.Content.ReadAsStringAsync();
-
-                if (role == "Админ")
-                {
-                    await NotifyByAdmin.Invoke(webSocket);
-
-                    receiveResult = await webSocket.ReceiveAsync(
-                    new ArraySegment<byte>(buffer), CancellationToken.None);
-                }
-            }
+            var client = _httpFactory.CreateClient("Role");
+            receiveResult = await HandleMessages(webSocket, buffer, receiveResult, client);
 
             await webSocket.CloseAsync(
                 receiveResult.CloseStatus.Value,
                 receiveResult.CloseStatusDescription,
                 CancellationToken.None);
+        }
+
+        private static async Task<WebSocketReceiveResult> HandleMessages(WebSocket webSocket, byte[] buffer, WebSocketReceiveResult receiveResult, HttpClient client)
+        {
+            while (!receiveResult.CloseStatus.HasValue)
+            {
+                var message = Encoding.UTF8.GetString(buffer);
+                if (message.Contains("Authorization:"))
+                {
+                    var accessToken = message.Split(": ").Last().Replace("\0", "");
+                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
+
+                    var response = await client.GetAsync(client.BaseAddress);
+                    var role = await response.Content.ReadAsStringAsync();
+
+                    if (role == "Админ")
+                    {
+                        await NotifyByAdmin.Invoke(webSocket);
+                    }
+                }
+
+                receiveResult = await webSocket.ReceiveAsync(
+                    new ArraySegment<byte>(buffer), CancellationToken.None);
+
+            }
+
+            return receiveResult;
         }
     }
 }

@@ -7,6 +7,8 @@ namespace CarProjectServer.BL.Services.Implementations
     public class TechnicalWorksService : ITechnicalWorksService
     {
         private ApplicationContext _context;
+
+        private const int timeShift = 5;
         public TechnicalWorksService(ApplicationContext context) 
         {
             _context = context;
@@ -24,11 +26,10 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             var technicalWork = new TechnicalWork()
             {
-                Start = DateTime.UtcNow,
-                End = endTime
+                Start = DateTime.UtcNow.AddSeconds(timeShift),
+                End = endTime.AddSeconds(timeShift)
             };
 
-            Thread.Sleep(5000);
             _context.TechnicalWorks.Add(technicalWork);
             await _context.SaveChangesAsync();
         }
