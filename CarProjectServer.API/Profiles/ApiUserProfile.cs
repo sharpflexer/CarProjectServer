@@ -2,8 +2,6 @@
 using CarProjectServer.API.Models;
 using CarProjectServer.API.ViewModels;
 using CarProjectServer.BL.Models;
-using CarProjectServer.BL.Services.Implementations;
-using CarProjectServer.BL.Services.Interfaces;
 
 namespace CarProjectServer.API.Profiles
 {

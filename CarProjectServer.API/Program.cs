@@ -1,21 +1,15 @@
 using AutoMapper;
 using CarProjectServer.API.Middleware;
-using CarProjectServer.API.Models;
 using CarProjectServer.API.Options;
 using CarProjectServer.API.Profiles;
-using CarProjectServer.BL.Options;
+using CarProjectServer.API.Timers;
 using CarProjectServer.BL.Profiles;
 using CarProjectServer.BL.Services.Implementations;
 using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
 using CarProjectServer.DAL.Entities.Identity;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
 using NLog.Web;
 
 var clientOrigin = "clientOrigin";
@@ -30,7 +24,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: clientOrigin,
                       policy =>
                       {
-                          policy.WithOrigins()
+                          policy.WithOrigins(corsOrigin)
                           .WithMethods("GET", "POST", "PUT", "DELETE")
                           .AllowAnyHeader()
                           .AllowCredentials();
@@ -39,7 +33,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
-builder.Services.Configure<CarProjectServer.API.Options.GoogleOptions>(
+builder.Services.Configure<GoogleOptions>(
     builder.Configuration.GetSection("GoogleOptions"));
 
 builder.Logging.ClearProviders();
@@ -72,8 +66,15 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ITechnicalWorksService, TechnicalWorksService>();
 
 builder.Services.AddHttpClient("Google");
+builder.Services.AddHttpClient("Role", client =>
+{
+    client.BaseAddress = new Uri(builder
+        .Configuration
+        .GetSection("GetRole"));
+});
 
 builder.Services.AddAuthentication(x =>
 {
@@ -86,9 +87,10 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddAuthorization(options => CarAuthorizationOptions.GetInstance(options));
 
 var app = builder.Build();
-
+app.UseCors(clientOrigin);
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<LogMiddleware>();
+app.UseMiddleware<TechnicalWorksMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -98,11 +100,20 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors(clientOrigin);
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseWebSockets();
+ 
 app.MapControllers();
 
+app.Use(async (context, next) =>
+{
+    NotificationTimer.GetInstance().StartTimer();
+
+    await next.Invoke();
+});
+
 app.Run();
+

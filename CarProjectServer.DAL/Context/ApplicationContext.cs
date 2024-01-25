@@ -1,4 +1,5 @@
-﻿using CarProjectServer.DAL.Entities.Identity;
+﻿using CarProjectServer.DAL.Entities;
+using CarProjectServer.DAL.Entities.Identity;
 using CarProjectServer.DAL.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -40,6 +41,11 @@ namespace CarProjectServer.DAL.Context
         /// Таблица пользователей.
         /// </summary>
         public DbSet<User> Users => Set<User>();
+
+        /// <summary>
+        /// Таблица техничских работ.
+        /// </summary>
+        public DbSet<TechnicalWork> TechnicalWorks => Set<TechnicalWork>();
 
         /// <summary>
         /// Инициализирует контекст настройками. 
@@ -262,9 +268,19 @@ namespace CarProjectServer.DAL.Context
                 });
             SaveChanges();
             Users.AddRange(
-                new User() { Email = "admin456@mail.ru", Login = "admin", Password = "admin123", Role = Roles.Single(role => role.Name == "Админ") },
-                new User() { Email = "manager456@gmail.com", Login = "manager", Password = "manager123", Role = Roles.Single(role => role.Name == "Менеджер") },
-                new User() { Email = "user456@yandex.ru", Login = "user", Password = "user123", Role = Roles.Single(role => role.Name == "Пользователь") }
+                new User() { Email = "admin456@mail.ru", Login = "admin", Password = "admin1234", Role = Roles.Single(role => role.Name == "Админ") },
+                new User() { Email = "manager456@gmail.com", Login = "manager", Password = "manager1234", Role = Roles.Single(role => role.Name == "Менеджер") },
+                new User() { Email = "user456@yandex.ru", Login = "user", Password = "user1234", Role = Roles.Single(role => role.Name == "Пользователь") }
+            );
+            SaveChanges();
+
+            TechnicalWorks.AddRange(
+                new TechnicalWork() { Start = DateTime.UtcNow, End = DateTime.UtcNow.AddMinutes(5) },
+                new TechnicalWork() { Start = DateTime.UtcNow.AddMinutes(10), End = DateTime.UtcNow.AddMinutes(15) },
+                new TechnicalWork() { Start = DateTime.UtcNow.AddMinutes(20), End = DateTime.UtcNow.AddMinutes(25) },
+                new TechnicalWork() { Start = DateTime.UtcNow.AddMinutes(30), End = DateTime.UtcNow.AddMinutes(35) },
+                new TechnicalWork() { Start = DateTime.UtcNow.AddMinutes(40), End = DateTime.UtcNow.AddMinutes(45) },
+                new TechnicalWork() { Start = DateTime.UtcNow.AddMinutes(50), End = DateTime.UtcNow.AddMinutes(55) }
             );
             SaveChanges();
         }

@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using CarProjectServer.API.Controllers.CRUD;
 using CarProjectServer.API.Models;
 using CarProjectServer.BL.Exceptions;
 using CarProjectServer.BL.Models;
-using CarProjectServer.BL.Services.Implementations;
 using CarProjectServer.BL.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

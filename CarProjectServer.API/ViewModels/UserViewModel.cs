@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using CarProjectServer.API.ViewModels;
-using CarProjectServer.BL.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
+﻿using CarProjectServer.API.ViewModels;
 using System.Text.Json.Serialization;
 
 namespace CarProjectServer.API.Models

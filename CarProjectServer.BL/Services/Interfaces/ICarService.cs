@@ -1,6 +1,5 @@
 ﻿using CarProjectServer.API.ViewModels;
 using CarProjectServer.BL.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace CarProjectServer.BL.Services.Interfaces
 {

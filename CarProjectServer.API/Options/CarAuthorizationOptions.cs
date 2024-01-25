@@ -9,7 +9,7 @@ namespace CarProjectServer.API.Options
     public class CarAuthorizationOptions
     {
         /// <summary>
-        /// Инстанс класса.
+        /// Экземпляр класса.
         /// </summary>
         private static CarAuthorizationOptions _instance;
 

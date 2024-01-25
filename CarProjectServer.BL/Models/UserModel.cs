@@ -1,7 +1,4 @@
-﻿using CarProjectServer.DAL.Context;
-using CarProjectServer.DAL.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace CarProjectServer.BL.Models
 {
