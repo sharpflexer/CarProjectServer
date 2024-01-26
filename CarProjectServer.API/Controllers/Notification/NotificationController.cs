@@ -1,7 +1,5 @@
 ﻿using CarProjectServer.API.Timers;
-using CarProjectServer.BL.Services.Implementations;
 using CarProjectServer.BL.Services.Interfaces;
-using CarProjectServer.DAL.Entities.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.WebSockets;
 using System.Text;
@@ -41,6 +39,11 @@ namespace CarProjectServer.API.Controllers.Notification
         /// </summary>
         private readonly IHttpClientFactory _httpFactory;
 
+        /// <summary>
+        /// Инициализирует контроллер сервисом для технических работ и фабрикой Http-клиентов.
+        /// </summary>
+        /// <param name="technicalWorksService">Сервис технических работ.</param>
+        /// <param name="httpFactory">Фабрика, предоставляющая HttpClient.</param>
         public NotificationController(ITechnicalWorksService technicalWorksService, IHttpClientFactory httpFactory)
         {
             _technicalWorksService = technicalWorksService;
@@ -48,7 +51,7 @@ namespace CarProjectServer.API.Controllers.Notification
         }
 
         /// <summary>
-        /// Подключение по веб-сокету
+        /// Подключение по веб-сокету.
         /// </summary>
         /// GET api/notification/ws
         [HttpGet("ws")]
@@ -79,8 +82,10 @@ namespace CarProjectServer.API.Controllers.Notification
                 WebSocket reciever = webSocket;
                 if (reciever != sender)
                 {
-                    await webSocket.SendAsync(
-                        bytes, WebSocketMessageType.Text, true, CancellationToken.None);
+                    await webSocket.SendAsync(bytes, 
+                        WebSocketMessageType.Text, 
+                        true, 
+                        CancellationToken.None);
                 }
             }
         }
@@ -115,6 +120,7 @@ namespace CarProjectServer.API.Controllers.Notification
                 CancellationToken.None);
         }
 
+<<<<<<< HEAD
         private static async Task<WebSocketReceiveResult> HandleMessages(WebSocket webSocket, byte[] buffer, WebSocketReceiveResult receiveResult, HttpClient client)
         {
             while (!receiveResult.CloseStatus.HasValue)
@@ -137,9 +143,57 @@ namespace CarProjectServer.API.Controllers.Notification
                 receiveResult = await webSocket.ReceiveAsync(
                     new ArraySegment<byte>(buffer), CancellationToken.None);
 
+=======
+        /// <summary>
+        /// Обрабатывает сообщения, пока не закроется сокет.
+        /// </summary>
+        /// <param name="webSocket">Веб-сокет для обработки сообщений.</param>
+        /// <param name="buffer">Сообщение в виде массива байтов.</param>
+        /// <param name="receiveResult">Результат получения сообщения.</param>
+        /// <param name="client">Http-клиент для проверки роли.</param>
+        private static async Task<WebSocketReceiveResult> HandleMessages(WebSocket webSocket, byte[] buffer, WebSocketReceiveResult receiveResult, HttpClient client)
+        {
+            var message = Encoding.UTF8.GetString(buffer);
+
+            if (message.Contains("Authorization"))
+            {
+                string role = await GetRoleByMessage(client, message);
+
+                if (role == "Админ")
+                {
+                    await NotifyByAdmin.Invoke(webSocket);
+                }
+            }
+
+            receiveResult = await webSocket.ReceiveAsync(
+                new ArraySegment<byte>(buffer), CancellationToken.None); // Получение сообщения по веб-сокету.
+
+            if (!receiveResult.CloseStatus.HasValue) // Проверка на закрытие сокета.
+            {
+                return await HandleMessages(webSocket, buffer, receiveResult, client);
+>>>>>>> bc61e3c091a1b010ef38bb08e18ee8f5ac70f045
             }
 
             return receiveResult;
         }
+<<<<<<< HEAD
+=======
+
+        /// <summary>
+        /// Получает роль пользователя из токена в сообщении.
+        /// </summary>
+        /// <param name="client">Http-клиент для проверки роли.</param>
+        /// <param name="message">Сообщение, содержащее токен доступа.</param>
+        /// <returns>Роль пользователя.</returns>
+        private static async Task<string> GetRoleByMessage(HttpClient client, string message)
+        {
+            var accessToken = message.Split(": ").Last().Replace("\0", "");
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
+            var response = await client.GetAsync(client.BaseAddress);
+            var role = await response.Content.ReadAsStringAsync();
+
+            return role;
+        }
+>>>>>>> bc61e3c091a1b010ef38bb08e18ee8f5ac70f045
     }
 }
