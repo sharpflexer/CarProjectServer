@@ -120,30 +120,6 @@ namespace CarProjectServer.API.Controllers.Notification
                 CancellationToken.None);
         }
 
-<<<<<<< HEAD
-        private static async Task<WebSocketReceiveResult> HandleMessages(WebSocket webSocket, byte[] buffer, WebSocketReceiveResult receiveResult, HttpClient client)
-        {
-            while (!receiveResult.CloseStatus.HasValue)
-            { 
-                var message = Encoding.UTF8.GetString(buffer);
-                if (message.Contains("Authorization:"))
-                {
-                    var accessToken = message.Split(": ").Last().Replace("\0", "");
-                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + accessToken);
-
-                    var response = await client.GetAsync(client.BaseAddress);
-                    var role = await response.Content.ReadAsStringAsync();
-
-                    if (role == "Админ")
-                    {
-                        await NotifyByAdmin.Invoke(webSocket);
-                    }
-                }
-
-                receiveResult = await webSocket.ReceiveAsync(
-                    new ArraySegment<byte>(buffer), CancellationToken.None);
-
-=======
         /// <summary>
         /// Обрабатывает сообщения, пока не закроется сокет.
         /// </summary>
@@ -171,13 +147,10 @@ namespace CarProjectServer.API.Controllers.Notification
             if (!receiveResult.CloseStatus.HasValue) // Проверка на закрытие сокета.
             {
                 return await HandleMessages(webSocket, buffer, receiveResult, client);
->>>>>>> bc61e3c091a1b010ef38bb08e18ee8f5ac70f045
             }
 
             return receiveResult;
         }
-<<<<<<< HEAD
-=======
 
         /// <summary>
         /// Получает роль пользователя из токена в сообщении.
@@ -194,6 +167,5 @@ namespace CarProjectServer.API.Controllers.Notification
 
             return role;
         }
->>>>>>> bc61e3c091a1b010ef38bb08e18ee8f5ac70f045
     }
 }

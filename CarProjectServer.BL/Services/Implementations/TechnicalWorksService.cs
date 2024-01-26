@@ -16,10 +16,6 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         private ApplicationContext _context;
 
-<<<<<<< HEAD
-        private const int timeShift = 5;
-        public TechnicalWorksService(ApplicationContext context) 
-=======
         /// <summary>
         /// Маппер, для маппинга моделей.
         /// </summary>
@@ -36,7 +32,6 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <param name="context">Контекст БД.</param>
         /// <param name="mapper">Маппер, для маппинга моделей.</param>
         public TechnicalWorksService(ApplicationContext context, IMapper mapper)
->>>>>>> bc61e3c091a1b010ef38bb08e18ee8f5ac70f045
         {
             _context = context;
             _mapper = mapper;
@@ -69,10 +64,7 @@ namespace CarProjectServer.BL.Services.Implementations
                 End = endTime.AddSeconds(timeShift)
             };
 
-<<<<<<< HEAD
-=======
             var technicalWork = _mapper.Map<TechnicalWork>(technicalWorkModel);
->>>>>>> bc61e3c091a1b010ef38bb08e18ee8f5ac70f045
             _context.TechnicalWorks.Add(technicalWork);
             await _context.SaveChangesAsync();
         }

@@ -31,7 +31,7 @@ builder.Services.AddCors(options =>
                           .AllowCredentials();
                       });
 });
-builder.Services.AddMediatR();
+//builder.Services.AddMediatR();
 builder.Services.AddControllers();
 
 builder.Services.Configure<GoogleOptions>(
@@ -74,7 +74,7 @@ builder.Services.AddHttpClient("Role", client =>
 {
     client.BaseAddress = new Uri(builder
         .Configuration
-        .GetSection("GetRole"));
+        .GetSection("GetRole").Value);
 });
 
 builder.Services.AddAuthentication(x =>
