@@ -1,6 +1,4 @@
-﻿using CarProjectServer.BL.Models;
-
-namespace CarProjectServer.API.ViewModels
+﻿namespace CarProjectServer.BL.Models
 {
     /// <summary>
     /// Список свойств автомобилей.

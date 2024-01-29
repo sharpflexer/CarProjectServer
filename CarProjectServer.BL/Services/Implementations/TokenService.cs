@@ -94,7 +94,7 @@ namespace CarProjectServer.BL.Services.Implementations
         {
             try
             {
-                var user = _userService.GetUserByToken(oldToken.RefreshToken);
+                var user = await _userService.GetUserByToken(oldToken.RefreshToken);
 
                 var newAccessToken = "Bearer " + CreateToken(user);
                 var newRefreshToken = CreateRefreshToken();

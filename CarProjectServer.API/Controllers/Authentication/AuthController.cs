@@ -107,7 +107,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                     SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax
                 });
 
-                string roleName = await _userService.GetRoleNameAsync(credentials.Username);
+                string roleName = await _userService.GetRoleName(credentials.Username);
 
                 return new LoginResponseViewModel 
                 { 
@@ -145,7 +145,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                 var accessToken = await ExchangeCodeForToken(authCode, client);
                 var userMail = await GetUserMail(accessToken, client);
 
-                var userModel = await _userService.TryGetUserByEmailAsync(userMail);
+                var userModel = await _userService.GetUserByEmail(userMail);
                 var user = _mapper.Map<UserViewModel?>(userModel);
 
                 return await Login(new CredentialsViewModel
@@ -250,7 +250,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                 HttpContext.Response.Cookies.Append("Refresh", newToken.RefreshToken, new CookieOptions()
                 {
                     HttpOnly = true,
-                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax,
+                    SameSite = SameSiteMode.Lax,
 
                 });
 
@@ -280,7 +280,8 @@ namespace CarProjectServer.API.Controllers.Authentication
             {
                 HttpContext.Response.Cookies.Delete("Refresh");
                 var refreshCookie = HttpContext.Request.Cookies["Refresh"];
-                _authenticateService.Revoke(refreshCookie);
+
+                await _authenticateService.Revoke(refreshCookie);
 
                 return Ok();
             }
@@ -313,7 +314,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                 var token = new JwtSecurityToken(accessToken);
                 var claims = token.Claims;
 
-                string role = _userService.GetRoleByClaims(claims);
+                string role = await _userService.GetRoleByClaims(claims);
 
                 return role;
 

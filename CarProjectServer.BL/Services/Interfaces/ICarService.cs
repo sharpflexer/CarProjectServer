@@ -1,5 +1,4 @@
-﻿using CarProjectServer.API.ViewModels;
-using CarProjectServer.BL.Models;
+﻿using CarProjectServer.BL.Models;
 
 namespace CarProjectServer.BL.Services.Interfaces
 {

@@ -63,11 +63,11 @@ namespace CarProjectServer.BL.Services.Implementations
         /// Удаляет куки.
         /// </summary>
         /// <param name="cookieToRevoke">Строка куки, которое нужно очистить.</param>
-        public void Revoke(string cookieToRevoke)
+        public async Task Revoke(string cookieToRevoke)
         {
             try
             {
-                var user = _userService.GetUserByToken(cookieToRevoke);
+                var user = await _userService.GetUserByToken(cookieToRevoke);
                 user.RefreshToken = null;
 
                 _userService.UpdateUser(user);

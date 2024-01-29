@@ -1,14 +1,15 @@
 ﻿using AutoMapper;
-using CarProjectServer.BL.Exceptions;
+using CarProjectServer.BL.Commands.Cars;
+using CarProjectServer.BL.Commands.Token;
 using CarProjectServer.BL.Models;
+using CarProjectServer.BL.Queries.Roles;
+using CarProjectServer.BL.Queries.Users;
 using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
-using CarProjectServer.DAL.Entities.Identity;
-using Microsoft.EntityFrameworkCore;
+using MediatR;
 using Microsoft.Extensions.Logging;
-using System.IdentityModel.Tokens.Jwt;
+using Org.BouncyCastle.Asn1.X509;
 using System.Security.Claims;
-using System.Security.Cryptography;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -18,53 +19,17 @@ namespace CarProjectServer.BL.Services.Implementations
     public class UserService : IUserService
     {
         /// <summary>
-        /// Контекст для взаимодействия с БД.
+        /// Посредник.
         /// </summary>
-        private readonly ApplicationContext _context;
+        private readonly IMediator _mediator;
 
         /// <summary>
-        /// Маппер для маппинга моделей.
+        /// Инициализирует сервис посредником.
         /// </summary>
-        private readonly IMapper _mapper;
-
-        /// <summary>
-        /// Логгер для логирования в файлы ошибок.
-        /// Настраивается в NLog.config.
-        /// </summary>
-        private readonly ILogger _logger;
-
-        /// <summary>
-        /// Инициализирует сервис контекстом БД и маппером.
-        /// </summary>
-        /// <param name="context">Контекст для взаимодействия с БД.</param>
-        /// <param name="mapper">Маппер для маппинга моделей.</param>
-        /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
-        public UserService(ApplicationContext context, IMapper mapper, ILogger<UserService> logger)
+        /// <param name="mediator">Посредник.</param>
+        public UserService(IMediator mediator)
         {
-            _context = context;
-            _mapper = mapper;
-            _logger = logger;
-        }
-
-        /// <summary>
-        /// Получает роль пользователя по умолчанию(при регистрации).
-        /// </summary>
-        /// <returns>Роль по умолчанию</returns>
-        public async Task<RoleModel> GetDefaultRole()
-        {
-            try
-            {
-                //Получаем роль пользователя по умолчанию при регистрации.
-                var role = await _context.Roles
-                    .SingleAsync(role => role.Name == "Пользователь");
-
-                return _mapper.Map<RoleModel>(role);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка регистрации");
-            }
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -72,20 +37,15 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         /// <param name="userModel">Аккаунт пользователя.</param>
         /// <param name="refreshToken">Токен для обновления access token.</param>
-        public void AddRefreshToken(UserModel userModel, string refreshToken)
+        public async Task AddRefreshToken(UserModel userModel, string refreshToken)
         {
-            try
+            AddRefreshTokenCommand addRefreshToken = new AddRefreshTokenCommand()
             {
-                var user = _context.Users.FirstOrDefault(u => u.Id == userModel.Id);
-                user.RefreshToken = refreshToken;
-                _context.Users.Update(user);
-                _context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ApiException("Ошибка аутентификации");
-            }
+                User = userModel,
+                RefreshToken = refreshToken
+            };
+
+            await _mediator.Send(addRefreshToken);
         }
 
         /// Обновляет пользователя в таблице.
@@ -94,40 +54,26 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <summary>
         public async Task UpdateUser(UserModel userModel)
         {
-            try
-            {   var user = _context.Users.FirstOrDefault(u => u.Id == userModel.Id);
-                var fields = _mapper.Map<User>(userModel);
-                var role = _context.Roles.FirstOrDefault(r => r.Id == userModel.Role.Id);
+            UpdateUserCommand updateUser = new UpdateUserCommand() 
+            { 
+                User = userModel 
+            };
 
-                fields.CopyProperties(user, role);
-
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ApiException("Невозможно обновить пользователя");
-            }
+            await _mediator.Send(updateUser);
         }
 
         /// <summary>
         /// Добавляет пользователя в БД при регистрации.
         /// </summary>
         /// <param name="userModel">Аккаунт нового пользователя.</param>
-        public async Task AddUserAsync(UserModel userModel)
+        public async Task AddUser(UserModel userModel)
         {
-            try
+            AddUserCommand addUser = new AddUserCommand()
             {
-                var user = _mapper.Map<User>(userModel);
-                user.Role = _context.Roles.FirstOrDefault(r => r.Id == user.Role.Id);
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ApiException("Невозможно добавить пользователя");
-            }
+                User = userModel
+            };
+
+            await _mediator.Send(addUser);
         }
 
         /// <summary>
@@ -136,17 +82,12 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <param name="user">Пользователь для удаления.</param>
         public async Task DeleteUser(UserModel userModel)
         {
-            try
+            DeleteUserCommand deleteUser = new DeleteUserCommand()
             {
-                var user = _context.Users.FirstOrDefault(u => u.Id == userModel.Id);
-                _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ApiException("Невозможно удалить пользователя");
-            }
+                User = userModel
+            };
+
+            await _mediator.Send(deleteUser);
         }
 
         /// <summary>
@@ -155,39 +96,9 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <returns>Список пользователей.</returns>
         public async Task<IEnumerable<UserModel>> GetUsers()
         {
-            try
-            {
-                var users = await _context.Users
-                    .Include(user => user.Role)
-                    .ToListAsync();
+            GetUsersQuery getUsers = new GetUsersQuery();
 
-                return _mapper.Map<IEnumerable<UserModel>>(users);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ApiException("Список пользователей недоступен");
-            }
-        }
-
-        /// <summary>
-        /// Получает список всех возможных ролей пользователей.
-        /// </summary>
-        /// <returns>Список всех ролей.</returns>
-        public async Task<IEnumerable<RoleModel>> GetRolesAsync()
-        {
-            try
-            {
-                var roles = await _context.Roles.ToListAsync();
-                var roleModels = _mapper.Map<List<RoleModel>>(roles);
-
-                return roleModels;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ApiException("Список ролей недоступен");
-            }
+            return await _mediator.Send(getUsers);
         }
 
         /// <summary>
@@ -195,65 +106,11 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         /// <param name="refreshToken">Токен обновления.</param>
         /// <returns>Найденный пользователь.</returns>
-        public UserModel GetUserByToken(string refreshToken)
+        public async Task<UserModel> GetUserByToken(string refreshToken)
         {
-            try
-            {
-                var user = _context.Users
-                    .Include(user => user.Role)
-                    .SingleOrDefault(u => u.RefreshToken == refreshToken);
-                var userModel = _mapper.Map<UserModel>(user);
+            GetUserByTokenQuery getUserByToken = new GetUserByTokenQuery();
 
-                return userModel;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ApiException("Пользователь не найден");
-            }
-        }
-
-        /// <summary>
-        /// Получает наименование роли по имени пользователя.
-        /// </summary>
-        /// <param name="username">Имя пользователя.</param>
-        /// <returns>Наименование роли.</returns>
-        public async Task<string> GetRoleNameAsync(string username)
-        {
-            try
-            {               
-                var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == username);
-
-                if(user == null)
-                {
-                    throw new ApiException("Пользователь не найден");
-                }
-                
-                return user.Role.Name;
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex.Message);
-
-                throw new ApiException("Внутренняя ошибка сервера");
-            }
-        }
-
-        /// <summary>
-        /// Получает роль на основе прав пользователя.
-        /// </summary>
-        /// <param name="claims">Права пользователя.</param>
-        /// <returns>Роль пользователя.</returns>
-        public string GetRoleByClaims(IEnumerable<Claim> claims)
-        {
-            var userId = int.Parse(claims
-                .Single(c => c.Type == JwtRegisteredClaimNames.NameId)
-                .Value);
-
-            return _context.Users.Include(u => u.Role)
-                .Single(user => user.Id == userId)
-                .Role
-                .Name;
+            return await _mediator.Send(getUserByToken);
         }
 
         /// <summary>
@@ -261,64 +118,14 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         /// <param name="email">E-mail пользователя.</param>
         /// <returns>Пользователь.</returns>
-        public async Task<UserModel?> TryGetUserByEmailAsync(string email)
+        public async Task<UserModel?> GetUserByEmail(string email)
         {
-            var user = _context.Users
-                .FirstOrDefault(u => u.Email == email);
-
-            if(user != null)
+            GetUserByEmailQuery getUserByEmail = new GetUserByEmailQuery()
             {
-                return _mapper.Map<UserModel?>(user);
-            }
-
-            return await GenerateUserByMailAsync(email);
-        }
-
-        /// <summary>
-        /// Создание пользователя по E-Mail.
-        /// </summary>
-        /// <param name="email">E-Mail пользователя.</param>
-        /// <returns>Пользователь.</returns>
-        private async Task<UserModel> GenerateUserByMailAsync(string email)
-        {
-            string login = GetLoginFromEmail(email);
-            string password = GetRandomPassword();
-
-            var user = new UserModel
-            {
-                Email = email,
-                Login = login,
-                Password = password
+                Email = email
             };
 
-            var roleModel = await GetDefaultRole();
-            user.Role = roleModel;
-            await AddUserAsync(user);
-
-            return user;
-        }
-
-        /// <summary>
-        /// Генерация случайного пароля.
-        /// </summary>
-        /// <returns>Случайный пароль.</returns>
-        private string GetRandomPassword()
-        {
-            var randomNumber = new byte[8];
-            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
-
-            return Convert.ToBase64String(randomNumber);
-        }
-
-        /// <summary>
-        /// Создание логина по E-Mail.
-        /// </summary>
-        /// <param name="email">E-Mail пользователя.</param>
-        /// <returns>Логин пользователя.</returns>
-        private string GetLoginFromEmail(string email)
-        {
-            return email.Split('@')[0]; // Никнейм до "@"
+            return await _mediator.Send(getUserByEmail);
         }
     }
 }

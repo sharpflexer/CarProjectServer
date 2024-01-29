@@ -9,7 +9,7 @@ namespace CarProjectServer.BL.Services.Implementations
     /// <summary>
     /// Сервис технических работ.
     /// </summary>
-    public class TechnicalWorksService : ITechnicalWorksService
+    public class TechnicalWorkService : ITechnicalWorkService
     {
         /// <summary>
         /// Контекст БД.
@@ -31,7 +31,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// </summary>
         /// <param name="context">Контекст БД.</param>
         /// <param name="mapper">Маппер, для маппинга моделей.</param>
-        public TechnicalWorksService(ApplicationContext context, IMapper mapper)
+        public TechnicalWorkService(ApplicationContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -44,7 +44,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// True - технические работы идут,
         /// False - технических работ сейчас нет.
         /// </returns>
-        public bool AreTechnicalWorksNow()
+        public bool IsTechnicalWorkNow()
         {
             return _context.TechnicalWorks
                 .Any(work =>
@@ -56,7 +56,7 @@ namespace CarProjectServer.BL.Services.Implementations
         /// Начинает технические работы, с заданной задержкой.
         /// </summary>
         /// <param name="endTime">Время окончания технических работ.</param>
-        public async Task StartWorks(DateTime endTime)
+        public async Task StartWork(DateTime endTime)
         {
             var technicalWorkModel = new TechnicalWorkModel()
             {

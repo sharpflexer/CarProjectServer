@@ -27,7 +27,7 @@ namespace CarProjectServer.API.Controllers.Notification
         /// <summary>
         /// Сервис технических работ.
         /// </summary>
-        private readonly ITechnicalWorksService _technicalWorksService;
+        private readonly ITechnicalWorkService _technicalWorksService;
 
         /// <summary>
         /// Сообщение о технических работах.
@@ -44,7 +44,7 @@ namespace CarProjectServer.API.Controllers.Notification
         /// </summary>
         /// <param name="technicalWorksService">Сервис технических работ.</param>
         /// <param name="httpFactory">Фабрика, предоставляющая HttpClient.</param>
-        public NotificationController(ITechnicalWorksService technicalWorksService, IHttpClientFactory httpFactory)
+        public NotificationController(ITechnicalWorkService technicalWorksService, IHttpClientFactory httpFactory)
         {
             _technicalWorksService = technicalWorksService;
             _httpFactory = httpFactory;
@@ -72,7 +72,7 @@ namespace CarProjectServer.API.Controllers.Notification
                         true,
                         CancellationToken.None);
 
-                await _technicalWorksService.StartWorks(DateTime.UtcNow.AddMinutes(1));
+                await _technicalWorksService.StartWork(DateTime.UtcNow.AddMinutes(1));
             }
 
             async Task AdminMessageHandler(WebSocket sender)
@@ -98,7 +98,7 @@ namespace CarProjectServer.API.Controllers.Notification
         public async Task Start([FromBody] string endTime)
         {
             var end = DateTime.Parse(endTime).ToUniversalTime();
-            await _technicalWorksService.StartWorks(end);
+            await _technicalWorksService.StartWork(end);
         }
 
         /// <summary>

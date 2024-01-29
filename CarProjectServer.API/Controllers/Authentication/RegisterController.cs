@@ -59,7 +59,7 @@ namespace CarProjectMVC.Controllers.Authorization
                 var roleModel = await _userService.GetDefaultRole();
                 userModel.Role = roleModel;
                 
-                await _userService.AddUserAsync(userModel);
+                await _userService.AddUser(userModel);
 
                 return Ok();
             }

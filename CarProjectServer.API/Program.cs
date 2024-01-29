@@ -3,6 +3,8 @@ using CarProjectServer.API.Middleware;
 using CarProjectServer.API.Options;
 using CarProjectServer.API.Profiles;
 using CarProjectServer.API.Timers;
+using CarProjectServer.BL.Commands.Cars;
+using CarProjectServer.BL.Commands.Token;
 using CarProjectServer.BL.Profiles;
 using CarProjectServer.BL.Services.Implementations;
 using CarProjectServer.BL.Services.Interfaces;
@@ -31,7 +33,7 @@ builder.Services.AddCors(options =>
                           .AllowCredentials();
                       });
 });
-//builder.Services.AddMediatR();
+
 builder.Services.AddControllers();
 
 builder.Services.Configure<GoogleOptions>(
@@ -67,7 +69,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<ITechnicalWorksService, TechnicalWorksService>();
+builder.Services.AddScoped<ITechnicalWorkService, TechnicalWorkService>();
 
 builder.Services.AddHttpClient("Google");
 builder.Services.AddHttpClient("Role", client =>
@@ -86,7 +88,7 @@ builder.Services.AddAuthentication(x =>
     .AddJwtBearer(options => CarJwtBearerOptions.GetInstance(options));
 
 builder.Services.AddAuthorization(options => CarAuthorizationOptions.GetInstance(options));
-
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AddRefreshTokenCommand).Assembly));
 WebApplication app = builder.Build();
 app.UseCors(clientOrigin);
 app.UseMiddleware<ExceptionMiddleware>();
