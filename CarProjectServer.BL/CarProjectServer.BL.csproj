@@ -31,12 +31,4 @@
     <ProjectReference Include="..\CarProjectServer.DAL\CarProjectServer.DAL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Commands\Authenticate\" />
-    <Folder Include="Commands\TechnicalWork\" />
-    <Folder Include="Queries\Authenticate\" />
-    <Folder Include="Queries\TechnicalWork\" />
-    <Folder Include="Queries\Token\" />
-  </ItemGroup>
-
 </Project>

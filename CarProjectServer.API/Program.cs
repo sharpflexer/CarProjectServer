@@ -66,9 +66,9 @@ builder.Services.AddAutoMapper(
 builder.Services.AddScoped<IMapper, Mapper>();
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITechnicalWorkService, TechnicalWorkService>();
 
 builder.Services.AddHttpClient("Google");

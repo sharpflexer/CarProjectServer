@@ -72,7 +72,7 @@ namespace CarProjectServer.API.Controllers.Notification
                         true,
                         CancellationToken.None);
 
-                await _technicalWorksService.StartWork(DateTime.UtcNow.AddMinutes(1));
+                await _technicalWorksService.StartTechnicalWork(DateTime.UtcNow.AddMinutes(1));
             }
 
             async Task AdminMessageHandler(WebSocket sender)
@@ -98,7 +98,7 @@ namespace CarProjectServer.API.Controllers.Notification
         public async Task Start([FromBody] string endTime)
         {
             var end = DateTime.Parse(endTime).ToUniversalTime();
-            await _technicalWorksService.StartWork(end);
+            await _technicalWorksService.StartTechnicalWork(end);
         }
 
         /// <summary>

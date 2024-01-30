@@ -1,7 +1,10 @@
-﻿using CarProjectServer.BL.Exceptions;
+﻿using CarProjectServer.BL.Commands.Cars;
 using CarProjectServer.BL.Models;
+using CarProjectServer.BL.Queries.Authenticate;
 using CarProjectServer.BL.Services.Interfaces;
+using MediatR;
 using Microsoft.Extensions.Logging;
+using NLog.Fluent;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -11,25 +14,17 @@ namespace CarProjectServer.BL.Services.Implementations
     public class AuthenticateService : IAuthenticateService
     {
         /// <summary>
-        /// Сервис для работы с пользователями в БД.
+        /// Посредник.
         /// </summary>
-        private readonly IUserService _userService;
+        private readonly IMediator _mediator;
 
         /// <summary>
-        /// Логгер для логирования в файлы ошибок.
-        /// Настраивается в NLog.config.
+        /// Инициализирует сервис посредником.
         /// </summary>
-        private readonly ILogger _logger;
-
-        /// <summary>
-        /// Инициализирует сервис сервисом для взаимодействия с пользователями в БД.
-        /// </summary>
-        /// <param name="userService">Сервис для отправки запросов в БД.</param>
-        /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
-        public AuthenticateService(IUserService userService, ILogger<AuthenticateService> logger)
+        /// <param name="mediator">Посредник.</param>
+        public AuthenticateService(IMediator mediator)
         {
-            _userService = userService;
-            _logger = logger;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -40,47 +35,27 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <returns>Аутентифицированный пользователь.</returns>
         public async Task<UserModel> AuthenticateUser(string login, string password)
         {
-            try
-            {
-                var users = await _userService.GetUsers();
-                var currentUser = users.FirstOrDefault(authUser => authUser.Login == login 
-                    && authUser.Password == password);
+            AuthenticateUserQuery authenticateUser = new AuthenticateUserQuery() 
+            { 
+                Login = login, 
+                Password = password 
+            };
 
-                return currentUser;
-            }
-            catch(ApiException)
-            {
-                throw;
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ApiException("Неверный логин и/или пароль");
-            }
+            return await _mediator.Send(authenticateUser);
         }
 
         /// <summary>
         /// Удаляет куки.
         /// </summary>
         /// <param name="cookieToRevoke">Строка куки, которое нужно очистить.</param>
-        public async Task Revoke(string cookieToRevoke)
+        public async Task RevokeCookie(string cookieToRevoke)
         {
-            try
+            RevokeCookieCommand revokeCookie = new RevokeCookieCommand()
             {
-                var user = await _userService.GetUserByToken(cookieToRevoke);
-                user.RefreshToken = null;
+                CookieToRevoke = cookieToRevoke
+            };
 
-                _userService.UpdateUser(user);
-            }
-            catch (ApiException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                throw new ApiException("Не удалось выйти из аккаунта");
-            }
+            await _mediator.Send(revokeCookie);
         }
     }
 }

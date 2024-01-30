@@ -29,16 +29,23 @@ namespace CarProjectServer.BL.Queries.Users
             private readonly IUserService _userService;
 
             /// <summary>
+            /// Сервис для работы с ролями.
+            /// </summary>
+            private readonly IRoleService _roleService;
+
+            /// <summary>
             /// Инициализирует обработчик контекстом Б Д, маппером и логгером.
             /// </summary>
             /// <param name="context">Контекст для взаимодействия с БД.</param>
             /// <param name="mapper">Маппер для маппинга моделей.</param>
-            /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
-            public GetUserByEmailHandler(ApplicationContext context, IMapper mapper, IUserService userService)
+            /// <param name="userService">Сервис для работы с пользователями.</param>
+            /// <param name="roleService">Сервис для работы с ролями.</param>
+            public GetUserByEmailHandler(ApplicationContext context, IMapper mapper, IUserService userService, IRoleService roleService)
             {
                 _context = context;
                 _mapper = mapper;
                 _userService = userService;
+                _roleService = roleService;
             }
 
             public async Task<UserModel?> Handle(GetUserByEmailQuery query, CancellationToken cancellationToken)
@@ -72,7 +79,7 @@ namespace CarProjectServer.BL.Queries.Users
                     Password = password
                 };
 
-                var roleModel = await _userService.GetDefaultRole();
+                var roleModel = await _roleService.GetDefaultRole();
                 user.Role = roleModel;
                 await _userService.AddUser(user);
 

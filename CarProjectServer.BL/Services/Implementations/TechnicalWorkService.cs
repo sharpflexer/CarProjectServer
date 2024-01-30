@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using CarProjectServer.BL.Commands.Token;
 using CarProjectServer.BL.Models;
+using CarProjectServer.BL.Queries.TechnicalWork;
 using CarProjectServer.BL.Services.Interfaces;
 using CarProjectServer.DAL.Context;
 using CarProjectServer.DAL.Entities;
+using MediatR;
 
 namespace CarProjectServer.BL.Services.Implementations
 {
@@ -12,29 +15,17 @@ namespace CarProjectServer.BL.Services.Implementations
     public class TechnicalWorkService : ITechnicalWorkService
     {
         /// <summary>
-        /// Контекст БД.
+        /// Посредник.
         /// </summary>
-        private ApplicationContext _context;
+        private readonly IMediator _mediator;
 
         /// <summary>
-        /// Маппер, для маппинга моделей.
+        /// Инициализирует сервис посредником.
         /// </summary>
-        private IMapper _mapper;
-
-        /// <summary>
-        /// Задержка начала технических работ.
-        /// </summary>
-        private const int timeShift = 5;
-
-        /// <summary>
-        /// Инициализирует сервис контекстом БД.
-        /// </summary>
-        /// <param name="context">Контекст БД.</param>
-        /// <param name="mapper">Маппер, для маппинга моделей.</param>
-        public TechnicalWorkService(ApplicationContext context, IMapper mapper)
+        /// <param name="mediator">Посредник.</param>
+        public TechnicalWorkService(IMediator mediator)
         {
-            _context = context;
-            _mapper = mapper;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -44,29 +35,25 @@ namespace CarProjectServer.BL.Services.Implementations
         /// True - технические работы идут,
         /// False - технических работ сейчас нет.
         /// </returns>
-        public bool IsTechnicalWorkNow()
+        public async Task<bool> CheckTechnicalWork()
         {
-            return _context.TechnicalWorks
-                .Any(work =>
-                work.Start < DateTime.UtcNow &&
-                work.End > DateTime.UtcNow);
+            CheckTechnicalWorkQuery checkTechnicalWork = new CheckTechnicalWorkQuery();
+
+            return await _mediator.Send(checkTechnicalWork);
         }
 
         /// <summary>
         /// Начинает технические работы, с заданной задержкой.
         /// </summary>
         /// <param name="endTime">Время окончания технических работ.</param>
-        public async Task StartWork(DateTime endTime)
+        public async Task StartTechnicalWork(DateTime endTime)
         {
-            var technicalWorkModel = new TechnicalWorkModel()
+            StartTechnicalWorkCommand startTechnicalWork = new StartTechnicalWorkCommand()
             {
-                Start = DateTime.UtcNow.AddSeconds(timeShift),
-                End = endTime.AddSeconds(timeShift)
+                EndTime = endTime
             };
 
-            var technicalWork = _mapper.Map<TechnicalWork>(technicalWorkModel);
-            _context.TechnicalWorks.Add(technicalWork);
-            await _context.SaveChangesAsync();
+            await _mediator.Send(startTechnicalWork);
         }
     }
 }

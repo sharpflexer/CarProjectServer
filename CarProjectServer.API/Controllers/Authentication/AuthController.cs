@@ -49,6 +49,11 @@ namespace CarProjectServer.API.Controllers.Authentication
         private readonly IUserService _userService;
 
         /// <summary>
+        /// Сервис для работы с БД ролей.
+        /// </summary>
+        private readonly IRoleService _roleService;
+
+        /// <summary>
         /// Фабрика, предоставляющая HttpClient.
         /// </summary>
         private readonly IHttpClientFactory _httpFactory;
@@ -63,6 +68,8 @@ namespace CarProjectServer.API.Controllers.Authentication
         /// </summary>
         /// <param name="tokenService">Сервис для работы с JWT токенами.</param>
         /// <param name="authenticateService">Сервис для аутентификации пользователей.</param>
+        /// <param name="userService">Сервис для работы с БД пользователей.</param>
+        /// <param name="roleService'">Сервис для работы с БД ролей.</param>
         /// <param name="mapper">Маппер для маппинга моделей между слоями.</param>
         /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
         /// <param name="httpFactory">Фабрика, предоставляющая HttpClient.</param>
@@ -73,7 +80,8 @@ namespace CarProjectServer.API.Controllers.Authentication
             ILogger<AuthController> logger,
             IUserService userService,
             IHttpClientFactory httpFactory,
-            IOptions<Options.GoogleOptions> googleOptions)
+            IOptions<Options.GoogleOptions> googleOptions,
+            IRoleService roleService)
         {
             _tokenService = tokenService;
             _authenticateService = authenticateService;
@@ -82,6 +90,7 @@ namespace CarProjectServer.API.Controllers.Authentication
             _userService = userService;
             _httpFactory = httpFactory;
             _googleOptions = googleOptions.Value;
+            _roleService = roleService;
         }
 
         /// <summary>
@@ -98,16 +107,16 @@ namespace CarProjectServer.API.Controllers.Authentication
         {
             try
             {
-                var jwtTokenModel = await _tokenService.GetJwtTokenAsync(credentials.Username, credentials.Password);
+                var jwtTokenModel = await _tokenService.GetJwtToken(credentials.Username, credentials.Password);
                 var jwtTokenViewModel = _mapper.Map<JwtTokenViewModel>(jwtTokenModel);
 
                 HttpContext.Response.Cookies.Append("Refresh", jwtTokenViewModel.RefreshToken, new CookieOptions()
                 {
                     HttpOnly = true,
-                    SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax
+                    SameSite = SameSiteMode.Lax
                 });
 
-                string roleName = await _userService.GetRoleName(credentials.Username);
+                string roleName = await _roleService.GetRoleName(credentials.Username);
 
                 return new LoginResponseViewModel 
                 { 
@@ -244,7 +253,7 @@ namespace CarProjectServer.API.Controllers.Authentication
             {
                 var oldToken = TryGetOldJwtToken(HttpContext.Request);
                 var oldTokenModel = _mapper.Map<JwtTokenModel>(oldToken);
-                var newTokenModel = await _tokenService.CreateNewTokenAsync(oldTokenModel);
+                var newTokenModel = await _tokenService.CreateNewToken(oldTokenModel);
                 var newToken = _mapper.Map<JwtTokenViewModel>(newTokenModel);
 
                 HttpContext.Response.Cookies.Append("Refresh", newToken.RefreshToken, new CookieOptions()
@@ -281,7 +290,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                 HttpContext.Response.Cookies.Delete("Refresh");
                 var refreshCookie = HttpContext.Request.Cookies["Refresh"];
 
-                await _authenticateService.Revoke(refreshCookie);
+                await _authenticateService.RevokeCookie(refreshCookie);
 
                 return Ok();
             }
@@ -314,7 +323,7 @@ namespace CarProjectServer.API.Controllers.Authentication
                 var token = new JwtSecurityToken(accessToken);
                 var claims = token.Claims;
 
-                string role = await _userService.GetRoleByClaims(claims);
+                string role = await _roleService.GetRoleByClaims(claims);
 
                 return role;
 

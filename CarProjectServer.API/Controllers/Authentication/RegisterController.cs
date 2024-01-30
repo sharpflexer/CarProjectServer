@@ -15,14 +15,19 @@ namespace CarProjectMVC.Controllers.Authorization
     public class RegisterController : ControllerBase
     {
         /// <summary>
-        /// Маппер для маппинга моделей между слоями.
+        /// Сервис для взаимодействия с пользователями в БД.
         /// </summary>
-        private readonly IMapper _mapper;
+        private readonly IUserService _userService;
 
         /// <summary>
         /// Сервис для взаимодействия с пользователями в БД.
         /// </summary>
-        private readonly IUserService _userService;
+        private readonly IRoleService _roleService;
+
+        /// <summary>
+        /// Маппер для маппинга моделей между слоями.
+        /// </summary>
+        private readonly IMapper _mapper;
 
         /// <summary>
         /// Логгер для логирования в файлы ошибок.
@@ -36,10 +41,11 @@ namespace CarProjectMVC.Controllers.Authorization
         /// <param name="mapper">Маппер для маппинга моделей между слоями.</param>
         /// <param name="userService">Сервис для взаимодействия с пользователями в БД.</param>
         /// <param name="logger">Логгер для логирования в файлы ошибок. Настраивается в NLog.config.</param>
-        public RegisterController(IMapper mapper, IUserService userService, ILogger<RegisterController> logger)
+        public RegisterController(IUserService userService, IRoleService roleService, IMapper mapper, ILogger<RegisterController> logger)
         {
-            _mapper = mapper;
             _userService = userService;
+            _roleService = roleService;
+            _mapper = mapper;
             _logger = logger;
         }
 
@@ -56,7 +62,7 @@ namespace CarProjectMVC.Controllers.Authorization
             {
                 var userModel = _mapper.Map<UserModel>(user);
                 
-                var roleModel = await _userService.GetDefaultRole();
+                var roleModel = await _roleService.GetDefaultRole();
                 userModel.Role = roleModel;
                 
                 await _userService.AddUser(userModel);

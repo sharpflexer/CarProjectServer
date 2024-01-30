@@ -19,6 +19,6 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// Удаляет куки.
         /// </summary>
         /// <param name="cookieToRevoke">Строка куки, которое нужно очистить.</param>
-        Task Revoke(string cookieToRevoke);
+        Task RevokeCookie(string cookieToRevoke);
     }
 }

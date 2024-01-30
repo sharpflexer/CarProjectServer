@@ -13,12 +13,12 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// <returns>
         /// True - технические работы идут,
         /// False - технических работ сейчас нет.
-        public bool IsTechnicalWorkNow();
+        Task<bool> CheckTechnicalWork();
 
         /// <summary>
         /// Начинает технические работы, с заданной задержкой.
         /// </summary>
         /// <param name="endTime">Время окончания технических работ.</param>
-        public Task StartWork(DateTime endTime);
+        Task StartTechnicalWork(DateTime endTime);
     }
 }

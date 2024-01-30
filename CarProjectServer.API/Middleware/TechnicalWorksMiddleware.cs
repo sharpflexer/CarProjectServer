@@ -30,7 +30,7 @@ namespace CarProjectServer.API.Middleware
         /// <param name="httpContext">Контекст запроса.</param>
         public async Task Invoke(HttpContext httpContext, ITechnicalWorkService worksService)
         {
-            if (worksService.IsTechnicalWorkNow())
+            if (await worksService.CheckTechnicalWork())
             {
                 httpContext.Response.StatusCode = 503;
                 httpContext.Response.ContentType = "application/json";

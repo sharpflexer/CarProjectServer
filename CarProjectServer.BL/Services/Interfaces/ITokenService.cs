@@ -12,20 +12,20 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// </summary>
         /// <param name="user">Пользователь для которого создаётся токен.</param>
         /// <returns>Access Token.</returns>
-        public string CreateToken(UserModel user);
+        Task<string> CreateAccessToken(UserModel user);
 
         /// <summary>
         /// Создаёт Refresh Token.
         /// </summary>
         /// <returns>Refresh Token.</returns>
-        public string CreateRefreshToken();
+        Task<string> CreateRefreshToken();
 
         /// <summary>
         /// Обновляет устаревший токен.
         /// </summary>
         /// <param name="oldToken">Устаревший токен.</param>
         /// <returns>Новый токен.</returns>
-        Task<JwtTokenModel> CreateNewTokenAsync(JwtTokenModel oldToken);
+        Task<JwtTokenModel> CreateNewToken(JwtTokenModel oldToken);
 
         /// <summary>
         /// Получает JWT-токен.
@@ -34,6 +34,6 @@ namespace CarProjectServer.BL.Services.Interfaces
         /// <param name="password">Пароль.</param>
         /// <returns>JWT-токен</returns>
         /// <exception cref="ApiException">Внутренняя ошибка сервера.</exception>
-        Task<JwtTokenModel> GetJwtTokenAsync(string username, string password);
+        Task<JwtTokenModel> GetJwtToken(string username, string password);
     }
 }

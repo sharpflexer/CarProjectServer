@@ -13,14 +13,14 @@ namespace CarProjectServer.BL.Services.Implementations
     public class CarService : ICarService
     {
         /// <summary>
-        /// Медиатор.
+        /// Посредник.
         /// </summary>
         private readonly IMediator _mediator;
 
         /// <summary>
-        /// Инициализирует сервис медиатором.
+        /// Инициализирует сервис посредником.
         /// </summary>
-        /// <param name="mediator">Медиатор.</param>
+        /// <param name="mediator">Посредник.</param>
         public CarService(IMediator mediator)
         {
             _mediator = mediator;
