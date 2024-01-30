@@ -1,4 +1,5 @@
 using AutoMapper;
+using CarProjectServer.API.HostServices;
 using CarProjectServer.API.Middleware;
 using CarProjectServer.API.Options;
 using CarProjectServer.API.Profiles;
@@ -12,6 +13,7 @@ using CarProjectServer.DAL.Context;
 using CarProjectServer.DAL.Entities.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using NLog.Web;
 using System.Reflection;
 
@@ -71,6 +73,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<ITechnicalWorkService, TechnicalWorkService>();
 
+builder.Services.AddHostedService<TechnicalWorkHostService>();
 builder.Services.AddHttpClient("Google");
 builder.Services.AddHttpClient("Role", client =>
 {
