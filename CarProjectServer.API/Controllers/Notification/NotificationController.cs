@@ -1,6 +1,8 @@
 ﻿using CarProjectServer.API.Timers;
+using CarProjectServer.BL.Services.Implementations;
 using CarProjectServer.BL.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 using System.Net.WebSockets;
 using System.Text;
 
@@ -30,9 +32,9 @@ namespace CarProjectServer.API.Controllers.Notification
         private readonly ITechnicalWorkService _technicalWorksService;
 
         /// <summary>
-        /// Сообщение о технических работах.
+        /// Сервис для работы с веб-сокетами.
         /// </summary>
-        private const string notifyString = "Технические работы!";
+        private readonly IWebSocketService _webSocketService;
 
         /// <summary>
         /// Фабрика, предоставляющая HttpClient.
@@ -40,14 +42,20 @@ namespace CarProjectServer.API.Controllers.Notification
         private readonly IHttpClientFactory _httpFactory;
 
         /// <summary>
+        /// Сообщение о технических работах.
+        /// </summary>
+        private const string notifyString = "Технические работы!";
+
+        /// <summary>
         /// Инициализирует контроллер сервисом для технических работ и фабрикой Http-клиентов.
         /// </summary>
         /// <param name="technicalWorksService">Сервис технических работ.</param>
         /// <param name="httpFactory">Фабрика, предоставляющая HttpClient.</param>
-        public NotificationController(ITechnicalWorkService technicalWorksService, IHttpClientFactory httpFactory)
+        public NotificationController(ITechnicalWorkService technicalWorksService, IHttpClientFactory httpFactory, IWebSocketService webSocketService)
         {
             _technicalWorksService = technicalWorksService;
             _httpFactory = httpFactory;
+            _webSocketService = webSocketService;
         }
 
         /// <summary>
@@ -58,6 +66,7 @@ namespace CarProjectServer.API.Controllers.Notification
         public async Task Get()
         {
             using WebSocket webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
+            _webSocketService.AddSocket(webSocket);
             NotificationTimer.GetInstance().Notify += MessageHandler;
             NotifyByAdmin += AdminMessageHandler;
 
@@ -127,7 +136,7 @@ namespace CarProjectServer.API.Controllers.Notification
         /// <param name="buffer">Сообщение в виде массива байтов.</param>
         /// <param name="receiveResult">Результат получения сообщения.</param>
         /// <param name="client">Http-клиент для проверки роли.</param>
-        private static async Task<WebSocketReceiveResult> HandleMessages(WebSocket webSocket, byte[] buffer, WebSocketReceiveResult receiveResult, HttpClient client)
+        private async Task<WebSocketReceiveResult> HandleMessages(WebSocket webSocket, byte[] buffer, WebSocketReceiveResult receiveResult, HttpClient client)
         {
             var message = Encoding.UTF8.GetString(buffer);
 
@@ -137,7 +146,7 @@ namespace CarProjectServer.API.Controllers.Notification
 
                 if (role == "Админ")
                 {
-                    await NotifyByAdmin.Invoke(webSocket);
+                    await _webSocketService.SendAllExcept(notifyString, webSocket);
                 }
             }
 

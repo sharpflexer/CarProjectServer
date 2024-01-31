@@ -58,7 +58,7 @@ namespace CarProjectServer.BL.Queries.Users
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message);
-                    throw new ApiException("Пользователь не найден");
+                    throw new ApiException("Пользователь иди нахуй");
                 }
             }
         }

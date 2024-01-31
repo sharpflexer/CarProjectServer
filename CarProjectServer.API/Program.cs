@@ -73,6 +73,8 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<ITechnicalWorkService, TechnicalWorkService>();
 
+builder.Services.AddSingleton<IWebSocketService, WebSocketService>();
+
 builder.Services.AddHostedService<TechnicalWorkHostService>();
 builder.Services.AddHttpClient("Google");
 builder.Services.AddHttpClient("Role", client =>

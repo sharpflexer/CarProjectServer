@@ -59,7 +59,10 @@ namespace CarProjectServer.BL.Services.Implementations
         /// <returns>Наименование роли.</returns>
         public async Task<string> GetRoleName(string username)
         {
-            GetRoleNameQuery getUserByToken = new GetRoleNameQuery();
+            GetRoleNameQuery getUserByToken = new GetRoleNameQuery()
+            {
+                Username = username
+            };
 
             return await _mediator.Send(getUserByToken);
         }
