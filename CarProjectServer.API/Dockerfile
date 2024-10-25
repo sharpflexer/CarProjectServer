@@ -1,25 +1,31 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+# См. статью по ссылке https://aka.ms/customizecontainer, чтобы узнать как настроить контейнер отладки и как Visual Studio использует этот Dockerfile для создания образов для ускорения отладки.
 
-#Depending on the operating system of the host machines(s) that will build or run the containers, the image specified in the FROM statement may need to be changed.
-#For more information, please see https://aka.ms/containercompat
-
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+# Этот этап используется при запуске из VS в быстром режиме (по умолчанию для конфигурации отладки)
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 7191
+EXPOSE 5118
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+
+# Этот этап используется для сборки проекта службы
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["CarProjectServer/CarProjectServer.csproj", "CarProjectServer/"]
-RUN dotnet restore "CarProjectServer/CarProjectServer.csproj"
+COPY ["CarProjectServer.API/CarProjectServer.API.csproj", "CarProjectServer.API/"]
+COPY ["CarProjectServer.BL/CarProjectServer.BL.csproj", "CarProjectServer.BL/"]
+COPY ["CarProjectServer.DAL/CarProjectServer.DAL.csproj", "CarProjectServer.DAL/"]
+RUN dotnet restore "./CarProjectServer.API/CarProjectServer.API.csproj"
 COPY . .
-WORKDIR "/src/CarProjectServer"
-RUN dotnet build "CarProjectServer.csproj" -c Release -o /app/build
+WORKDIR "/src/CarProjectServer.API"
+RUN dotnet build "./CarProjectServer.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+# Этот этап используется для публикации проекта службы, который будет скопирован на последний этап
 FROM build AS publish
-RUN dotnet publish "CarProjectServer.csproj" -c Release -o /app/publish /p:UseAppHost=false
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./CarProjectServer.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
+# Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "CarProjectServer.dll"]
+ENTRYPOINT ["dotnet", "CarProjectServer.API.dll"]

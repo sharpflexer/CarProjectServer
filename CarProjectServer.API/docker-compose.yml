@@ -1,0 +1,24 @@
+﻿version: '3.8'
+
+services:
+  db:
+    image: postgres:15  # образ PostgreSQL
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234  # задайте свой пароль
+      - POSTGRES_DB=carprojectdb  # имя базы данных
+    ports:
+      - "5432:5432"  # перенаправление порта PostgreSQL
+
+  app:
+    image: mcr.microsoft.com/dotnet/aspnet:8.0  # образ для ASP.NET
+    build:
+      context: .
+      dockerfile: Dockerfile  # Dockerfile с конфигурацией ASP.NET приложения
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=carprojectdb;Username=postgres;Password=1234;  # строка подключения к базе данных
+    ports:
+      - "7191:7191"  # перенаправление порта для доступа к ASP.NET приложению
+      - "5118:5118"  # перенаправляем дополнительный порт, если нужен
+    depends_on:
+      - db  # запускаем сначала базу данных
