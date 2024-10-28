@@ -9,6 +9,7 @@ EXPOSE 8080
 # Этот этап используется для сборки проекта службы
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
+ENV DOTNET_RUNNING_IN_CONTAINER=true
 WORKDIR /src
 COPY ["CarProjectServer.API/CarProjectServer.API.csproj", "CarProjectServer.API/"]
 COPY ["CarProjectServer.BL/CarProjectServer.BL.csproj", "CarProjectServer.BL/"]

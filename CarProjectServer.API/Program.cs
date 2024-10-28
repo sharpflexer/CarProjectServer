@@ -2,7 +2,6 @@ using AutoMapper;
 using CarProjectServer.API.Middleware;
 using CarProjectServer.API.Options;
 using CarProjectServer.API.Profiles;
-using CarProjectServer.API.Timers;
 using CarProjectServer.BL.Profiles;
 using CarProjectServer.BL.Services.Implementations;
 using CarProjectServer.BL.Services.Interfaces;
@@ -36,8 +35,20 @@ builder.Services.AddControllers();
 builder.Services.Configure<GoogleOptions>(
     builder.Configuration.GetSection("GoogleOptions"));
 
-builder.Logging.ClearProviders();
-builder.Host.UseNLog();
+// Проверяем, запущено ли приложение в Docker-контейнере
+var isRunningInContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER");
+
+if (isRunningInContainer is not null && isRunningInContainer == "true")
+{
+  // Настраиваем логирование для Docker (включаем только Console логгирование)
+  builder.Logging.ClearProviders();
+  builder.Logging.AddConsole();
+}
+else
+{
+  builder.Logging.ClearProviders();
+  builder.Host.UseNLog();
+}
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -90,7 +101,6 @@ var app = builder.Build();
 app.UseCors(clientOrigin);
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<LogMiddleware>();
-app.UseMiddleware<TechnicalWorksMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -107,13 +117,6 @@ app.UseAuthorization();
 app.UseWebSockets();
  
 app.MapControllers();
-
-app.Use(async (context, next) =>
-{
-    NotificationTimer.GetInstance().StartTimer();
-
-    await next.Invoke();
-});
 
 app.Run();
 
