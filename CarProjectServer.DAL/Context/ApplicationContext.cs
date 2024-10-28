@@ -273,16 +273,6 @@ namespace CarProjectServer.DAL.Context
                 new User() { Email = "user456@yandex.ru", Login = "user", Password = "user1234", Role = Roles.Single(role => role.Name == "Пользователь") }
             );
             SaveChanges();
-
-            TechnicalWorks.AddRange(
-                new TechnicalWork() { Start = DateTime.UtcNow, End = DateTime.UtcNow.AddMinutes(5) },
-                new TechnicalWork() { Start = DateTime.UtcNow.AddMinutes(10), End = DateTime.UtcNow.AddMinutes(15) },
-                new TechnicalWork() { Start = DateTime.UtcNow.AddMinutes(20), End = DateTime.UtcNow.AddMinutes(25) },
-                new TechnicalWork() { Start = DateTime.UtcNow.AddMinutes(30), End = DateTime.UtcNow.AddMinutes(35) },
-                new TechnicalWork() { Start = DateTime.UtcNow.AddMinutes(40), End = DateTime.UtcNow.AddMinutes(45) },
-                new TechnicalWork() { Start = DateTime.UtcNow.AddMinutes(50), End = DateTime.UtcNow.AddMinutes(55) }
-            );
-            SaveChanges();
         }
     }
 }

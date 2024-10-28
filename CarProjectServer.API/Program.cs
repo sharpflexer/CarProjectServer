@@ -66,7 +66,6 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<ITechnicalWorksService, TechnicalWorksService>();
 
 builder.Services.AddHttpClient("Google");
 builder.Services.AddHttpClient("Role", client =>
